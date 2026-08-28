@@ -54,6 +54,26 @@
 
 상세 확인 절차는 [기존 SQL Server 라이선스 및 AWS 이전권 확인](./anasa-existing-sql-server-license-and-aws-mobility.md)을 따른다.
 
+### 운영 라이선스 필수 여부
+
+ANASA가 운영 DB로 Microsoft SQL Server를 계속 사용하는 경우에는 **정식 운영 라이선스 또는 라이선스가 포함된 서비스 계약이 반드시 필요하다.** 다만 별도의 4코어 영구 라이선스 구매만이 유일한 방법은 아니다.
+
+| 운영 방식 | 라이선스 처리 | ANASA 판단 |
+| --- | --- | --- |
+| EC2에 SQL Server Standard 직접 설치 | 코어 또는 Server+CAL 라이선스 별도 확보 | 현재 견적은 4코어 영구 라이선스 기준 |
+| SQL Server 라이선스 포함 EC2 AMI | EC2 시간당 요금에 라이선스 포함 | 초기 구매비는 없지만 월 사용료 증가 |
+| RDS for SQL Server License Included | RDS 요금에 라이선스 포함 | 관리 부담은 줄지만 호환성 PoC와 별도 견적 필요 |
+| 기존 보유 라이선스 사용(BYOL) | 유효한 사용권과 AWS 적용 조건 필요 | Software Assurance·License Mobility를 CSP에 확인 |
+| Developer Edition | 무료 | 개발·테스트 전용이므로 실제 사용자 대상 운영 불가 |
+| Express Edition | 무료 | DB당 10GB 제한으로 MISTO·MISPD·MISTW 수용 불가 |
+| PostgreSQL 등으로 완전 이전 | SQL Server 라이선스 불필요 | 프로시저·스키마·애플리케이션·약 279GB 데이터 이전과 검증 필요 |
+
+현재와 같이 SQL Server를 유지하면서 Developer Edition으로 실제 ERP를 운영하는 것은 허용되지 않는다. 따라서 운영 전환 전까지 `영구/구독 라이선스`, `라이선스 포함 AWS 서비스`, `적격 BYOL` 중 하나를 확정해야 한다. SQL Server를 완전히 제거하고 다른 DB로 이전한 경우에만 SQL Server 라이선스 비용이 없어지며, 그때는 DB 전환 개발비와 검증 비용을 별도로 산정한다.
+
+4코어는 현재 DB가 반드시 4코어 성능을 요구해서가 아니라, VM의 코어 라이선스에 적용되는 최소 수량이다. ANASA의 현재 서버와 제안 서버는 모두 AWS EC2 가상머신이며, 코어 방식은 VM에 2 vCPU만 할당해도 VM당 최소 4코어를 라이선스해야 한다. 제안 DB 서버인 `r7i.xlarge`는 4 vCPU이므로 4코어 라이선스와 일치한다.
+
+SQL Server Standard는 Server+CAL 방식도 가능하다. 서버 라이선스 1개와 SQL Server에 접근할 수 있는 실제 사용자 또는 장치마다 CAL을 구매하며, 애플리케이션 서버가 DB 계정 하나로 접속해도 실제 ERP 이용 인원을 기준으로 산정한다. Microsoft 공개가 기준으로 약 30 CAL에서 4코어 영구 라이선스와 비용이 비슷해지므로, 사용자·공용 단말기가 29개 이하로 고정된다면 CSP에 Server+CAL 비교 견적을 요청한다. 사용자·장치가 더 많거나 외부 이용자를 정확히 셀 수 없다면 4코어 방식이 단순하고 안전하다.
+
 ## 3. 예상 리스크 1 — 조회 최적화
 
 조회 최적화 비용은 기본 견적에 포함하지 않고 선택 예비비로 둔다. 인덱스·캐시·EBS 성능·DB 서버 증설은 부하 측정 후 필요한 단계까지만 적용한다.
@@ -155,5 +175,7 @@ SQL Server Standard의 Basic Availability Group은 한 가용성 그룹에 단�
 - [AWS EBS gp3 저장공간 가격 기준](./aws-ebs-gp3-pricing.md)
 - [ANASA 단일 서버 가용성 및 클라우드 전환 위험 분석](../인프라/anasa-single-server-availability-and-cloud-migration.md)
 - [Microsoft SQL Server 2022 가격](https://www.microsoft.com/en-us/sql-server/sql-server-2022-pricing)
+- [AWS: SQL Server on EC2 라이선스 방식](https://docs.aws.amazon.com/sql-server-ec2/latest/userguide/sql-server-on-ec2-licensing.html)
+- [AWS: RDS for SQL Server 라이선스](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Concepts.General.Licensing.html)
 - [AWS Elastic Load Balancing 가격](https://aws.amazon.com/elasticloadbalancing/pricing/)
 - [AWS SQL Server on EC2 HA/DR Guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/sql-server-ec2-ha-dr/welcome.html)
