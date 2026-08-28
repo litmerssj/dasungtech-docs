@@ -62,7 +62,7 @@ ANASA가 운영 DB로 Microsoft SQL Server를 계속 사용하는 경우에는 *
 | --- | --- | --- |
 | EC2에 SQL Server Standard 직접 설치 | 코어 또는 Server+CAL 라이선스 별도 확보 | 현재 견적은 4코어 영구 라이선스 기준 |
 | SQL Server 라이선스 포함 EC2 AMI | EC2 시간당 요금에 라이선스 포함 | 초기 구매비는 없지만 월 사용료 증가 |
-| RDS for SQL Server License Included | RDS 요금에 라이선스 포함 | 관리 부담은 줄지만 호환성 PoC와 별도 견적 필요 |
+| RDS for SQL Server License Included | RDS 요금에 라이선스 포함 | 관리 부담은 줄지만 [동일 사양 RDS 별도 견적](./anasa-rds-sql-server-cost-estimate.md)과 호환성 PoC 필요 |
 | 기존 보유 라이선스 사용(BYOL) | 유효한 사용권과 AWS 적용 조건 필요 | Software Assurance·License Mobility를 CSP에 확인 |
 | Developer Edition | 무료 | 개발·테스트 전용이므로 실제 사용자 대상 운영 불가 |
 | Express Edition | 무료 | DB당 10GB 제한으로 MISTO·MISPD·MISTW 수용 불가 |
@@ -172,6 +172,7 @@ SQL Server Standard의 Basic Availability Group은 한 가용성 그룹에 단�
 ## 7. 참고 자료
 
 - [ANASA 서버·DB·SQL Server 통합 예상 견적 조사](./anasa-infrastructure-cost-estimate.md)
+- [ANASA RDS for SQL Server 운영 견적](./anasa-rds-sql-server-cost-estimate.md)
 - [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./anasa-existing-sql-server-license-and-aws-mobility.md)
 - [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./anasa-stored-procedure-to-orm-migration-assessment.md)
 - [SQL Server 2022 에디션 비교](./sql-server-2022-edition-comparison.md)
