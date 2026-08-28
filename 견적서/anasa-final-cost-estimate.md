@@ -74,6 +74,8 @@ ANASA가 운영 DB로 Microsoft SQL Server를 계속 사용하는 경우에는 *
 
 SQL Server Standard는 Server+CAL 방식도 가능하다. 서버 라이선스 1개와 SQL Server에 접근할 수 있는 실제 사용자 또는 장치마다 CAL을 구매하며, 애플리케이션 서버가 DB 계정 하나로 접속해도 실제 ERP 이용 인원을 기준으로 산정한다. Microsoft 공개가 기준으로 약 30 CAL에서 4코어 영구 라이선스와 비용이 비슷해지므로, 사용자·공용 단말기가 29개 이하로 고정된다면 CSP에 Server+CAL 비교 견적을 요청한다. 사용자·장치가 더 많거나 외부 이용자를 정확히 셀 수 없다면 4코어 방식이 단순하고 안전하다.
 
+SP를 ORM으로 바꾸는 것만으로 SQL Server 라이선스가 없어지지는 않는다. PostgreSQL 등으로 DB 엔진까지 전환해야 하며, 현재 API·SP 규모를 반영한 상세 비용은 [저장 프로시저 → ORM 전환 타당성·비용 평가](./anasa-stored-procedure-to-orm-migration-assessment.md)를 따른다.
+
 ## 3. 예상 리스크 1 — 조회 최적화
 
 조회 최적화 비용은 기본 견적에 포함하지 않고 선택 예비비로 둔다. 인덱스·캐시·EBS 성능·DB 서버 증설은 부하 측정 후 필요한 단계까지만 적용한다.
@@ -171,6 +173,7 @@ SQL Server Standard의 Basic Availability Group은 한 가용성 그룹에 단�
 
 - [ANASA 서버·DB·SQL Server 통합 예상 견적 조사](./anasa-infrastructure-cost-estimate.md)
 - [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./anasa-existing-sql-server-license-and-aws-mobility.md)
+- [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./anasa-stored-procedure-to-orm-migration-assessment.md)
 - [SQL Server 2022 에디션 비교](./sql-server-2022-edition-comparison.md)
 - [AWS EBS gp3 저장공간 가격 기준](./aws-ebs-gp3-pricing.md)
 - [ANASA 단일 서버 가용성 및 클라우드 전환 위험 분석](../인프라/anasa-single-server-availability-and-cloud-migration.md)
