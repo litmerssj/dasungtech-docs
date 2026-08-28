@@ -101,6 +101,37 @@ flowchart TB
 | DBMS | SQL Server 2022 Standard 4코어 |
 | 네트워크 | 공인 IPv4 1개 및 현재 수준의 외부 전송량 |
 
+### 앱 서버 `t3.large` 증설 검토
+
+`t3.medium`에서 `t3.large`로 변경하는 방안이 언급되었으나 확정된 변경으로 확인되지는 않았다. 아래 표는 변경 시의 비용 영향이다.
+
+| 항목 | 현재 `t3.medium` | 검토안 `t3.large` | 차이 |
+| --- | ---: | ---: | ---: |
+| vCPU | 2 | 2 | 동일 |
+| 메모리 | 4GiB | 8GiB | 2배 증가 |
+| 네트워크 | 최대 5Gbps | 최대 5Gbps | 동일 |
+| 서울 리전 Linux 온디맨드 단가 | $0.052/시간 | $0.104/시간 | 2배 증가 |
+| 월 744시간 세전 | $38.69 | $77.38 | **+$38.69** |
+| 월 VAT 포함 | $42.56 | $85.11 | **+$42.56 / 약 6만원** |
+| 연 VAT 포함 | $510.68 | $1,021.36 | **+$510.68 / 약 72만원** |
+
+`t3.large`는 메모리를 2배로 늘리지만 vCPU는 그대로이므로, 메모리 부족 완화에는 효과가 있으나 CPU 병목을 직접 해결하는 증설은 아니다.
+
+#### 3배 성장 통합 견적에 미치는 영향
+
+| 라이선스 방식 | `t3.medium` 기준 | `t3.large` 변경 시 | 증가액 |
+| --- | ---: | ---: | ---: |
+| Standard 연간 구독·월 | $688 / 약 96만원 | **$731 / 약 102만원** | **약 $43 / 6만원** |
+| Standard 연간 구독·연 | $8,261 / 약 1,156만원 | **$8,771 / 약 1,228만원** | **약 $511 / 72만원** |
+| Standard 영구 구매·첫해 | $13,820 / 약 1,935만원 | **$14,331 / 약 2,006만원** | **약 $511 / 72만원** |
+| Standard 영구 구매·2년 차 이후 | $5,141 / 약 720만원 | **$5,652 / 약 791만원** | **약 $511 / 72만원** |
+
+DB 증가 배수와 관계없이 앱 서버 변경에 따른 증액은 동일하다. 실제 전환 전에는 CloudWatch 메모리 지표를 추가 수집해 메모리 부족 여부를 확인해야 한다.
+
+- [AWS 공식 T3 인스턴스 사양](https://aws.amazon.com/ec2/instance-types/t3/)
+- [AWS 공식 EC2 온디맨드 가격](https://aws.amazon.com/ec2/pricing/on-demand/)
+- [AWS 서울 리전 EC2 공개 가격표](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/ap-northeast-2/index.json)
+
 DB 저장공간은 다음 방식으로 계산했다.
 
 ```text
@@ -192,5 +223,7 @@ SQL Server Standard 4코어 영구 라이선스 공개 정가는 7,890달러다.
 - [Microsoft SQL Server 2022 가격 및 라이선스](https://www.microsoft.com/en-us/sql-server/sql-server-2022-pricing)
 - [Microsoft SQL Server 2022 에디션 및 지원 기능](https://learn.microsoft.com/en-us/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16)
 - [AWS EBS 가격](https://aws.amazon.com/ebs/pricing/)
+- [AWS T3 인스턴스 사양](https://aws.amazon.com/ec2/instance-types/t3/)
+- [AWS EC2 온디맨드 가격](https://aws.amazon.com/ec2/pricing/on-demand/)
 - AWS Cost Explorer 계정 조회 기준일: 2026-08-27
 - AWS 공개 서울 리전 EC2 가격표 확인일: 2026-08-28
