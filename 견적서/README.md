@@ -4,6 +4,7 @@
 
 ## 문서 목록
 
+- [ANASA 최종 운영 견적서 — 영구 라이선스·t3.large](./anasa-final-cost-estimate.md)
 - [ANASA 서버·DB·SQL Server 통합 예상 견적](./anasa-infrastructure-cost-estimate.md)
 - [ANASA DB 비용 절감 및 조회 성능 최적화 옵션 평가](./anasa-db-cost-reduction-and-query-performance-options.md)
 - [SQL Server 2022 에디션 비교](./sql-server-2022-edition-comparison.md)
