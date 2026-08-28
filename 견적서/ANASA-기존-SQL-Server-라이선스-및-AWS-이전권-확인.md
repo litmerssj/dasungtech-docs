@@ -156,7 +156,7 @@ AWS 이전 불가는 데이터를 옮길 수 없다는 의미가 아니다. 기�
 
 ## 10. 견적에 미치는 영향
 
-현재 [최종 운영 견적서](./anasa-final-cost-estimate.md)는 기존 라이선스를 재사용할 수 없다고 가정해 SQL Server Standard 4코어 영구 라이선스 약 1,215만원을 첫해 비용에 포함한다.
+현재 [최종 운영 견적서](./ANASA-최종-운영-견적서.md)는 기존 라이선스를 재사용할 수 없다고 가정해 SQL Server Standard 4코어 영구 라이선스 약 1,215만원을 첫해 비용에 포함한다.
 
 | 시나리오 | 기본안 첫해 | 2년 차 이후 반복비 |
 | --- | ---: | ---: |
@@ -172,4 +172,4 @@ AWS 이전 불가는 데이터를 옮길 수 없다는 의미가 아니다. 기�
 - [AWS Microsoft 라이선스 안내](https://aws.amazon.com/windows/resources/licensing/)
 - [AWS License Mobility](https://aws.amazon.com/windows/resources/licensemobility/)
 - [SQL Server 2022 에디션 및 지원 기능](https://learn.microsoft.com/en-us/sql/sql-server/editions-and-components-of-sql-server-2022)
-- [ANASA SQL Server 2022 에디션 비교](./sql-server-2022-edition-comparison.md)
+- [ANASA SQL Server 2022 에디션 비교](./SQL-Server-2022-에디션-비교.md)

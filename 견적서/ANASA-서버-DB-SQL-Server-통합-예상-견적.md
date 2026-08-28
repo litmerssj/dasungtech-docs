@@ -93,7 +93,7 @@ flowchart TB
 
 에디션별 용도, 성능·용량 한도, 고가용성 기능 및 가격은 별도 문서에서 확인한다.
 
-- [SQL Server 2022 전체 에디션 비교](./sql-server-2022-edition-comparison.md)
+- [SQL Server 2022 전체 에디션 비교](./SQL-Server-2022-에디션-비교.md)
 - [Microsoft 공식 SQL Server 2022 기능 비교](https://learn.microsoft.com/en-us/sql/sql-server/editions-and-components-of-sql-server-2022?view=sql-server-ver16)
 - [Microsoft 공식 SQL Server 2022 가격](https://www.microsoft.com/en-us/sql-server/sql-server-2022-pricing)
 
@@ -163,7 +163,7 @@ DB 저장공간은 다음 방식으로 계산했다.
 | 1.1TB | $110.35 / 약 15.4만원 | $1,324.22 / 약 185.4만원 | 현재 DB의 3배 |
 | 1.8TB | $180.58 / 약 25.3만원 | $2,166.96 / 약 303.4만원 | 현재 DB의 5배 |
 
-- [EBS gp3 가격 산정 상세](./aws-ebs-gp3-pricing.md)
+- [EBS gp3 가격 산정 상세](./AWS-EBS-gp3-저장공간-가격-기준.md)
 - [AWS 공식 EBS 가격](https://aws.amazon.com/ebs/pricing/)
 - [AWS 공식 gp3 성능·기본 제공량](https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html#gp3-ebs-volume-type)
 

@@ -262,7 +262,7 @@ RTO 4시간과 RPO 15분은 확정 약속이 아니라 복원 훈련과 경영 �
 
 ## 10. 비용 문서와의 관계
 
-기존 [ANASA 서버·DB·SQL Server 통합 예상 견적](../견적서/anasa-infrastructure-cost-estimate.md)은 앱/DB 분리를 기준으로 하지만 다음 비용을 제외한다고 명시한다.
+기존 [ANASA 서버·DB·SQL Server 통합 예상 견적](../견적서/ANASA-서버-DB-SQL-Server-통합-예상-견적.md)은 앱/DB 분리를 기준으로 하지만 다음 비용을 제외한다고 명시한다.
 
 - 별도 오프사이트 백업 및 장기 보관
 - 이중화 서버 및 재해복구 환경
@@ -279,7 +279,7 @@ RTO 4시간과 RPO 15분은 확정 약속이 아니라 복원 훈련과 경영 �
 - `be_anasa/.github/workflows/deploy-staging.yml` — GHCR/SSH 기반 스테이징 배포, 헬스체크와 롤백
 - `be_anasa/.github/workflows/recover-staging-sqlserver.yml` — 동일 EC2의 SQL Server 컨테이너 수동 재시작
 - `be_anasa/ENVIRONMENT.md` — Candidate·Staging·Production 환경 계약
-- [ANASA 서버·DB·SQL Server 통합 예상 견적](../견적서/anasa-infrastructure-cost-estimate.md) — 현재 사양, DB 크기와 분리 견적
+- [ANASA 서버·DB·SQL Server 통합 예상 견적](../견적서/ANASA-서버-DB-SQL-Server-통합-예상-견적.md) — 현재 사양, DB 크기와 분리 견적
 
 ### 공식 참고자료
 

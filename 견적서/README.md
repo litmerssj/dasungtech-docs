@@ -4,11 +4,11 @@
 
 ## 문서 목록
 
-- [ANASA 최종 운영 견적서 — 영구 라이선스·t3.large](./anasa-final-cost-estimate.md)
-- [ANASA RDS for SQL Server 운영 견적서](./anasa-rds-sql-server-cost-estimate.md)
-- [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./anasa-existing-sql-server-license-and-aws-mobility.md)
-- [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./anasa-stored-procedure-to-orm-migration-assessment.md)
-- [ANASA 서버·DB·SQL Server 통합 예상 견적](./anasa-infrastructure-cost-estimate.md)
-- [ANASA DB 비용 절감 및 조회 성능 최적화 옵션 평가](./anasa-db-cost-reduction-and-query-performance-options.md)
-- [SQL Server 2022 에디션 비교](./sql-server-2022-edition-comparison.md)
-- [AWS EBS gp3 저장공간 가격 기준](./aws-ebs-gp3-pricing.md)
+- [ANASA 최종 운영 견적서 — 영구 라이선스·t3.large](./ANASA-최종-운영-견적서.md)
+- [ANASA RDS for SQL Server 운영 견적서](./ANASA-RDS-SQL-Server-운영-견적서.md)
+- [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./ANASA-기존-SQL-Server-라이선스-및-AWS-이전권-확인.md)
+- [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./ANASA-저장-프로시저-ORM-전환-타당성-비용-평가.md)
+- [ANASA 서버·DB·SQL Server 통합 예상 견적](./ANASA-서버-DB-SQL-Server-통합-예상-견적.md)
+- [ANASA DB 비용 절감 및 조회 성능 최적화 옵션 평가](./ANASA-DB-비용-절감-및-조회-성능-최적화-옵션-평가.md)
+- [SQL Server 2022 에디션 비교](./SQL-Server-2022-에디션-비교.md)
+- [AWS EBS gp3 저장공간 가격 기준](./AWS-EBS-gp3-저장공간-가격-기준.md)

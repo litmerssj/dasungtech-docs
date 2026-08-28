@@ -17,7 +17,7 @@
 
 > **앱 `t3.large` + RDS for SQL Server 2022 Standard `db.r7i.xlarge` Single-AZ + RDS gp3 1.1TB**
 
-기존 [ANASA 최종 운영 견적서](./anasa-final-cost-estimate.md)의 서울 리전, 앱 서버, DB CPU·메모리, DB 저장공간과 SQL Server Standard 조건을 유지하고 DB 운영 방식만 EC2 직접 설치에서 RDS로 변경한 견적이다.
+기존 [ANASA 최종 운영 견적서](./ANASA-최종-운영-견적서.md)의 서울 리전, 앱 서버, DB CPU·메모리, DB 저장공간과 SQL Server Standard 조건을 유지하고 DB 운영 방식만 EC2 직접 설치에서 RDS로 변경한 견적이다.
 
 | 구분 | 금액(VAT 포함) |
 | --- | ---: |
@@ -215,9 +215,9 @@ Single-AZ RDS는 관리형 백업을 제공하지만 인스턴스 또는 AZ 장�
 
 ## 9. 참고 자료
 
-- [ANASA 최종 운영 견적서 — EC2 직접 설치안](./anasa-final-cost-estimate.md)
-- [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./anasa-stored-procedure-to-orm-migration-assessment.md)
-- [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./anasa-existing-sql-server-license-and-aws-mobility.md)
+- [ANASA 최종 운영 견적서 — EC2 직접 설치안](./ANASA-최종-운영-견적서.md)
+- [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./ANASA-저장-프로시저-ORM-전환-타당성-비용-평가.md)
+- [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./ANASA-기존-SQL-Server-라이선스-및-AWS-이전권-확인.md)
 - [AWS RDS for SQL Server 요금](https://aws.amazon.com/rds/sqlserver/pricing/)
 - [AWS Amazon RDS 관리 모델](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html)
 - [AWS Price List API — Amazon RDS 서울 리전](https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonRDS/current/ap-northeast-2/index.json)

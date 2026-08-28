@@ -327,10 +327,10 @@ Disk Queue, 읽기·쓰기 지연과 IOPS가 병목일 때만 gp3 IOPS 또는 �
 
 ## 10. 참고 자료
 
-- [ANASA 서버·DB·SQL Server 통합 예상 견적](./anasa-infrastructure-cost-estimate.md)
-- [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./anasa-stored-procedure-to-orm-migration-assessment.md)
-- [SQL Server 2022 에디션 비교](./sql-server-2022-edition-comparison.md)
-- [AWS EBS gp3 저장공간 가격 기준](./aws-ebs-gp3-pricing.md)
+- [ANASA 서버·DB·SQL Server 통합 예상 견적](./ANASA-서버-DB-SQL-Server-통합-예상-견적.md)
+- [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./ANASA-저장-프로시저-ORM-전환-타당성-비용-평가.md)
+- [SQL Server 2022 에디션 비교](./SQL-Server-2022-에디션-비교.md)
+- [AWS EBS gp3 저장공간 가격 기준](./AWS-EBS-gp3-저장공간-가격-기준.md)
 - [Microsoft SQL Server 2022 가격](https://www.microsoft.com/en-us/sql-server/sql-server-2022-pricing)
 - [Microsoft SQL Server 라이선스 자료](https://www.microsoft.com/licensing/docs/view/SQL-Server)
 - [AWS gp3 성능과 기본 제공량](https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html#gp3-ebs-volume-type)
