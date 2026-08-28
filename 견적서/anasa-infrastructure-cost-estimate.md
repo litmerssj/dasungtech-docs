@@ -66,7 +66,7 @@ flowchart TB
 | MISCM | 3.23GB | 0.09GB | 3.32GB |
 | **합계** | **263.41GB** | **15.31GB** | **278.72GB** |
 
-`BIZCLIENT`는 조회 계정의 접근 권한이 없어 용량과 기능 검사 범위에서 제외되었다.
+`BIZCLIENT`는 레거시 `FAX송부로그` 기능의 `biz_log` 조회에만 직접 참조되는 보조 DB다. 해당 기능은 신규 ANASA 운영 범위에서 제외하므로 BIZCLIENT의 용량·권한·비용은 본 견적에 포함하지 않는다.
 
 ## 4. SQL Server Standard 선정 근거
 
@@ -78,7 +78,7 @@ flowchart TB
 - Standard의 최대 24코어 및 128GB 버퍼 풀 한도는 견적 기준인 4 vCPU·32GB보다 충분히 높다.
 - 현재 확인 범위에서는 Enterprise Edition의 추가 비용을 정당화할 전용 기능 요구가 없다.
 
-`BIZCLIENT`가 운영 범위에 포함된다면 접근 권한 확보 후 같은 기능 검사를 수행해야 최종 확정할 수 있다.
+운영 대상 5개 DB에서는 Standard 이전을 막는 영구 기능이 확인되지 않았다. 운영 범위에서 제외한 BIZCLIENT는 에디션 판정 대상에도 포함하지 않는다.
 
 ## 5. SQL Server 2022 에디션 비교 요약
 
@@ -342,7 +342,6 @@ DB 성장 시나리오별 상세 합계는 9.1–9.4 표를 따른다. `t3.large
 - 운영·유지보수 인력 비용
 - 환율 변동 및 Microsoft CSP 할인·계약 조건
 - Software Assurance 및 License Mobility 비용·적용 요건
-- `BIZCLIENT` 용량과 Enterprise 전용 기능 사용 여부
 
 ## 15. 참고
 
