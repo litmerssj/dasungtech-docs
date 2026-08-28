@@ -45,6 +45,15 @@
 
 영구 라이선스를 AWS EC2에 적용할 수 있는지, Software Assurance와 License Mobility가 필요한지는 Microsoft CSP의 최종 확인을 받아야 한다.
 
+이 금액은 기존 전산실 서버의 라이선스를 재사용할 수 없다는 보수적인 상한이다. 실제 운영 데이터가 Express 한도를 넘으므로 기존 서버에서 유료 SQL Server 에디션을 사용했을 가능성이 매우 높다. **기존 계약과 AWS 이전권을 확인하기 전에는 신규 영구 라이선스를 구매하지 않는다.**
+
+| 기존 권리 확인 결과 | 기본안 첫해 예상비용 | 판단 |
+| --- | ---: | --- |
+| 재사용 불가 또는 증빙 없음 | **약 2,006만원** | 현재 최종 견적의 보수적 상한 |
+| 적격 기존 권리를 추가 구매비 없이 사용 가능 | **약 791만원 + 계약·SA 관련 비용** | 신규 4코어 구매비 약 1,215만원 감소 가능 |
+
+상세 확인 절차는 [기존 SQL Server 라이선스 및 AWS 이전권 확인](./anasa-existing-sql-server-license-and-aws-mobility.md)을 따른다.
+
 ## 3. 예상 리스크 1 — 조회 최적화
 
 조회 최적화 비용은 기본 견적에 포함하지 않고 선택 예비비로 둔다. 인덱스·캐시·EBS 성능·DB 서버 증설은 부하 측정 후 필요한 단계까지만 적용한다.
@@ -141,6 +150,7 @@ SQL Server Standard의 Basic Availability Group은 한 가용성 그룹에 단�
 ## 7. 참고 자료
 
 - [ANASA 서버·DB·SQL Server 통합 예상 견적 조사](./anasa-infrastructure-cost-estimate.md)
+- [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./anasa-existing-sql-server-license-and-aws-mobility.md)
 - [SQL Server 2022 에디션 비교](./sql-server-2022-edition-comparison.md)
 - [AWS EBS gp3 저장공간 가격 기준](./aws-ebs-gp3-pricing.md)
 - [ANASA 단일 서버 가용성 및 클라우드 전환 위험 분석](../인프라/anasa-single-server-availability-and-cloud-migration.md)
