@@ -1,4 +1,4 @@
-# ANASA 서버·DB·SQL Server 통합 예상 견적
+# ANASA 서버·DB·SQL Server 통합 예상 견적 조사
 
 | 항목 | 내용 |
 | --- | --- |
