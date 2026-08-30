@@ -5,6 +5,7 @@
 ## 문서 목록
 
 - [ANASA 최종 운영 견적서 — 영구 라이선스·t3.large](./ANASA-최종-운영-견적서.md)
+- [ANASA 고객사 전달용 최종 운영 견적서](./ANASA-고객사-전달용-최종-운영-견적서.md)
 - [ANASA RDS for SQL Server 운영 견적서](./ANASA-RDS-SQL-Server-운영-견적서.md)
 - [ANASA 기존 SQL Server 라이선스 및 AWS 이전권 확인](./ANASA-기존-SQL-Server-라이선스-및-AWS-이전권-확인.md)
 - [ANASA 저장 프로시저 → ORM 전환 타당성·비용 평가](./ANASA-저장-프로시저-ORM-전환-타당성-비용-평가.md)
