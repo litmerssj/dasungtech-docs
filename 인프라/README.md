@@ -6,6 +6,7 @@ ANASA ERP의 클라우드 전환, 운영 가용성, 백업 및 재해복구 문�
 
 - [단일 서버 가용성 위험 및 클라우드 전환 권고안](./anasa-single-server-availability-and-cloud-migration.md)
 - [백업·복구 준비 및 복원 훈련 체크리스트](./anasa-backup-restore-readiness-checklist.md)
+- [PostgreSQL 단일 데이터베이스·5개 스키마 전환 리스크 검토](./anasa-postgresql-single-database-five-schema-risk-review.md)
 
 ## 현재 결론
 
