@@ -1,0 +1,6875 @@
+# MISPD SP 전체 원문
+
+우선 조사 대상 SP 20개. 각 SP의 화면·route 호출 정보와 원문 상태를 머리말에 적고, 아래 fenced code block은 선택한 원문 파일 전체다.
+
+| SP | 화면/route 수 | 원문 기준 |
+| --- | ---: | --- |
+| [`str_PDREPA00800_S`](#mispd-str-pdrepa00800-s) | 0 | be_anasa develop 원문 |
+| [`str_PDREPA01100_S`](#mispd-str-pdrepa01100-s) | 0 | be_anasa develop 원문 |
+| [`str_PDREPA01200_S`](#mispd-str-pdrepa01200-s) | 0 | be_anasa develop 원문 |
+| [`str_PDREPA01101P_S`](#mispd-str-pdrepa01101p-s) | 0 | be_anasa develop 원문 |
+| [`str_PDREPA01201P_S`](#mispd-str-pdrepa01201p-s) | 0 | be_anasa develop 원문 |
+| [`str_PDPLNA00200_S`](#mispd-str-pdplna00200-s) | 0 | be_anasa develop 원문 |
+| [`str_PDPlanItemProduct_S2`](#mispd-str-pdplanitemproduct-s2) | 0 | be_anasa develop 원문 |
+| [`str_PDPLNA00400_S`](#mispd-str-pdplna00400-s) | 0 | be_anasa develop 원문 |
+| [`str_PDPlanProcessDetail_S2`](#mispd-str-pdplanprocessdetail-s2) | 0 | be_anasa develop 원문 |
+| [`str_PDPLNB00700_S`](#mispd-str-pdplnb00700-s) | 0 | be_anasa develop 원문 |
+| [`str_PDPLNC00100_S`](#mispd-str-pdplnc00100-s) | 0 | be_anasa develop 원문 |
+| [`str_PDPlanProcessDetail_BasicQty_U`](#mispd-str-pdplanprocessdetail-basicqty-u) | 0 | be_anasa develop 원문 |
+| [`str_PDMaterialInput_IU`](#mispd-str-pdmaterialinput-iu) | 0 | be_anasa develop 원문 |
+| [`str_PDMaterialInput_S`](#mispd-str-pdmaterialinput-s) | 0 | be_anasa develop 원문 |
+| [`str_PDPRGA00101_S`](#mispd-str-pdprga00101-s) | 0 | be_anasa develop 원문 |
+| [`str_PDOutsourceingIn_IU`](#mispd-str-pdoutsourceingin-iu) | 0 | be_anasa develop 원문 |
+| [`str_PDOutsourceingIn_S`](#mispd-str-pdoutsourceingin-s) | 0 | be_anasa develop 원문 |
+| [`str_PDPLNB00400P_S`](#mispd-str-pdplnb00400p-s) | 0 | be_anasa develop 원문 |
+| [`str_PDWork_D`](#mispd-str-pdwork-d) | 0 | be_anasa develop 원문 |
+| [`str_PDWorkJournal_U`](#mispd-str-pdworkjournal-u) | 0 | 운영 snapshot 원문 우선 |
+
+<a id="mispd-str-pdrepa00800-s"></a>
+## `MISPD.dbo.str_PDREPA00800_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDREPA00800_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDREPA00800_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 생산계획 대비실적(수량)
+프로그램 :				
+등 록 일 : 2016-06-02
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20170314	강윤철		화면(PDREPA00800)과 레포트(PDREPA00801P) 내역 동일하게 변경 시 수정
+
+EXEC [str_PDREPA00800_S] @iYM = '201703'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDREPA00800_S]
+	 @iYM varchar(6)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	IF @iYM >'201900'
+	BEGIN 
+	--TABLE[01]
+	SELECT	CASE WHEN ItemNm = '90 ELBOW'		THEN '90˚ 엘보'
+		 		WHEN ItemNm = '45 ELBOW'		THEN '45˚ 엘보'
+				WHEN ItemNm = 'SOCKET'			THEN '소켓'
+				WHEN ItemNm = '보수용 SOCKET'	THEN '베어소켓'
+				WHEN ItemNm = 'CAP'				THEN '캡'
+				WHEN ItemNm = 'TEE'				THEN 'TEE'
+				WHEN ItemNm = 'REDUCER'			THEN 'REDUCER'
+				END	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		--, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		--, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		--, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		--, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		--, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		--, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		--, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		--, SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)	AS [TOTAL] --[TOTAL]
+		, CASE WHEN ItemNm = '90 ELBOW'			THEN 1
+			   WHEN ItemNm = '45 ELBOW'			THEN 2
+			   WHEN ItemNm = 'SOCKET'			THEN 3
+			   WHEN ItemNm = '보수용 SOCKET'	THEN 4
+			   WHEN ItemNm = 'CAP'				THEN 5
+			   WHEN ItemNm = 'TEE'				THEN 98
+			   WHEN ItemNm = 'REDUCER'			THEN 99
+			   END	[SORT2]
+		--, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.INQTY,0)	AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+			    --          SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('90 ELBOW','45 ELBOW','SOCKET','보수용 SOCKET','CAP','TEE','REDUCER')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT CASE WHEN ItemNm = 'AE(M)'		THEN 'A.E (M)'
+		 		WHEN ItemNm = 'AE(F)'		THEN 'A.E (F)'
+				WHEN ItemNm = 'AS(M)'		THEN 'A.S (M)'
+				WHEN ItemNm = 'AS(F)'		THEN 'A.S (F)'
+				WHEN ItemNm = 'W.ELBOW'		THEN 'W-EL'
+				WHEN ItemNm = 'W.SOCKET'	THEN 'W-SOCKET'
+				WHEN ItemNm = 'SP-UNION'	THEN 'SP-UNION 허브형'
+				END	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		, CASE WHEN ItemNm = 'AE(M)'		THEN 6
+		 	   WHEN ItemNm = 'AE(F)'		THEN 7
+			   WHEN ItemNm = 'AS(M)'		THEN 8
+			   WHEN ItemNm = 'AS(F)'		THEN 9
+			   WHEN ItemNm = 'W.ELBOW'		THEN 10
+			   WHEN ItemNm = 'W.SOCKET'		THEN 12
+			   WHEN ItemNm = 'SP-UNION'		THEN 97
+   			   END	[SORT2]
+		--, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+			    --          SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('AE(M)','AE(F)','AS(M)','AS(F)','W.ELBOW','W.SOCKET','SP-UNION')
+			   AND	IM.Spec IN ('13*1/2','20*3/4','25*1','30*11/4','40*11/2','50*2','60*21/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (½)'	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		, 13	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+						--SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						--   FROM	PDInMaster 
+						--  WHERE	InYm = @iYM
+						-- GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('13*1/2','20*1/2','25*1/2','30*1/2','40*1/2','50*1/2','60*1/2','75*1/2','80*1/2','100*1/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (1)', '25*1', '30*1', '40*1', '50*1', '', '', '', '', '', '', '', 14, 0
+
+	UNION ALL
+
+	SELECT 'W-T (1)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '25*1' THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '30*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '40*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '50*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('25*1','30*1','40*1','50*1') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 14	[SORT2]
+		, 1		[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+			    --         SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('25*1','30*1','40*1','50*1')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (¾)', '20*3/4', '25*3/4', '30*3/4', '40*3/4', '50*3/4', '', '', '', '', '', '', 15, 0
+
+	UNION ALL
+
+	SELECT 'W-T (¾)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '25*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '30*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '40*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '50*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('20*3/4','25*3/4','30*3/4','40*3/4','50*3/4') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 15	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+			    --         SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('20*3/4','25*3/4','30*3/4','40*3/4','50*3/4')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'SP플렌지 (10K)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 17	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+			    --          SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 10K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'SP플렌지 (20K)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 18	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+			    --          SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 20K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '고정앙카 (300L)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 19	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,9) AS ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+			    --         SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemGb = '02'
+			   AND	IM.ItemNm = '앙카소켓'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '양플랜지', '65', '80', '100', '', '', '', '', '', '', '', '', 20, 0
+
+	UNION ALL
+
+	SELECT '양플랜지'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('65*65*150L') THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('80*80*150L') THEN QTY ELSE '' END)),1),'.00','') 		AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('100*100*150L') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, '' 	AS [SPEC04] --[30(1 1/4)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('65*65*150L','80*80*150L','100*100*150L') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 20	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,8)	AS ITEMNM
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+
+			    --         SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm  LIKE '양 FLANGE%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-EL (S)', '13*1/2', '', '', '', '', '', '', '', '', '', '', 11, 0
+
+	UNION ALL
+
+	SELECT 'W-EL (S)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '13*1/2' THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, '' 	AS [SPEC02] --[20(3/4)]
+		, '' 	AS [SPEC03] --[25(1)]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*1/2' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, '' 	AS [SPEC04] --[30(1 1/2)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('13*1/2') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('13*1/2','20*1/2','20*3/4') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 11	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ItemNm
+				,	ISNULL(I.INQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+			    --          SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+						 --  FROM	PDInMaster 
+						 -- WHERE	InYm = @iYM
+						 --GROUP BY	ITEMNO
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = 'W.ELBOW(S)'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '총 계', '', '', '', '', '', '', '', '', '', '', '', 110, 1
+
+	ORDER BY [SORT2],[SORT1]
+
+
+	--TABLE[02] 
+
+	SELECT	SUM(ISNULL(I.INQTY,0))	TOTAL
+	FROM	PDItemMaster	IM
+	LEFT JOIN	(SELECT ITEMNO, ISNULL(MonInQty,0)	INQTY
+			              FROM MISTW..tbLogMonStk 
+						  WHERE StkYm = @iYM 
+	    --          SELECT	ITEMNO, ISNULL(SUM(INQTY),0)	INQTY
+				 --  FROM	PDInMaster 
+				 -- WHERE	InYm = @iYM
+				 --GROUP BY ITEMNO
+	)	I	ON	I.ItemNo = IM.ItemNo
+	WHERE	IM.AcctGb = 'CP'
+	AND  IM.ItemGrpCd ='SP'
+	AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+
+
+	
+
+
+
+	--TABLE[03]
+SELECT	SUM(I.PLANQTY)	TOTAL
+	FROM	PDItemMaster	IM
+	LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+				FROM	PDPlanMaster	PM
+				JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+				WHERE	PM.PlanYm = @iYM
+				AND	PM.PlanGb = '01'
+				AND	PM.ConfirmFl = 'Y'
+				GROUP BY PM.ItemNo
+	)	I	ON	I.ItemNo = IM.ItemNo
+	WHERE	IM.AcctGb = 'CP'
+	  AND  IM.ItemGrpCd ='SP'
+	  AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+	END
+END
+```
+
+<a id="mispd-str-pdrepa01100-s"></a>
+## `MISPD.dbo.str_PDREPA01100_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDREPA01100_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDREPA01100_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 생산계획(수량)
+프로그램 :				
+등 록 일 : 2016-06-28
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20170313	강윤철		화면(PDREPA01100)과 레포트(PDREPA01100P) 내역 동일하게 변경 시 주석처리
+
+EXEC [str_PDREPA01100_S] @iYM = '201703'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDREPA01100_S]
+	 @iYM varchar(6)
+AS
+
+
+BEGIN
+	SET NOCOUNT ON;
+	
+	--TABLE[01]
+	SELECT	CASE WHEN ItemNm = '90 ELBOW'		THEN '90˚ 엘보'
+		 		WHEN ItemNm = '45 ELBOW'		THEN '45˚ 엘보'
+				WHEN ItemNm = 'SOCKET'			THEN '소켓'
+				WHEN ItemNm = '보수용 SOCKET'	THEN '베어소켓'
+				WHEN ItemNm = 'CAP'				THEN '캡'
+				WHEN ItemNm = 'TEE'				THEN 'TEE'
+				WHEN ItemNm = 'REDUCER'			THEN 'REDUCER'
+				END	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')  AS TOTAL --[100]
+		--, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		--, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		--, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		--, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		--, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		--, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		--, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		--, SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)	AS [TOTAL] --[TOTAL]
+		, CASE WHEN ItemNm = '90 ELBOW'			THEN 1
+			   WHEN ItemNm = '45 ELBOW'			THEN 2
+			   WHEN ItemNm = 'SOCKET'			THEN 3
+			   WHEN ItemNm = '보수용 SOCKET'	THEN 4
+			   WHEN ItemNm = 'CAP'				THEN 5
+			   WHEN ItemNm = 'TEE'				THEN 98
+			   WHEN ItemNm = 'REDUCER'			THEN 99
+			   END	[SORT2]
+		--, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)	AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('90 ELBOW','45 ELBOW','SOCKET','보수용 SOCKET','CAP','TEE','REDUCER')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+
+
+	UNION ALL
+
+	SELECT CASE WHEN ItemNm = 'AE(M)'		THEN 'A.E (M)'
+		 		WHEN ItemNm = 'AE(F)'		THEN 'A.E (F)'
+				WHEN ItemNm = 'AS(M)'		THEN 'A.S (M)'
+				WHEN ItemNm = 'AS(F)'		THEN 'A.S (F)'
+				WHEN ItemNm = 'W.ELBOW'		THEN 'W-EL'
+				WHEN ItemNm = 'W.SOCKET'	THEN 'W-SOCKET'
+				WHEN ItemNm = 'SP-UNION'	THEN 'SP-UNION 허브형'
+				END	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		, CASE WHEN ItemNm = 'AE(M)'		THEN 6
+		 	   WHEN ItemNm = 'AE(F)'		THEN 7
+			   WHEN ItemNm = 'AS(M)'		THEN 8
+			   WHEN ItemNm = 'AS(F)'		THEN 9
+			   WHEN ItemNm = 'W.ELBOW'		THEN 10
+			   WHEN ItemNm = 'W.SOCKET'		THEN 12
+			   WHEN ItemNm = 'SP-UNION'		THEN 97
+   			   END	[SORT2]
+		--, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('AE(M)','AE(F)','AS(M)','AS(F)','W.ELBOW','W.SOCKET','SP-UNION')
+			   AND	IM.Spec IN ('13*1/2','20*3/4','25*1','30*11/4','40*11/2','50*2','60*21/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (½)'	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		, 13	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('13*1/2','20*1/2','25*1/2','30*1/2','40*1/2','50*1/2','60*1/2','75*1/2','80*1/2','100*1/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (1)', '25*1', '30*1', '40*1', '50*1', '', '', '', '', '', '', '', 14, 0
+
+	UNION ALL
+
+	SELECT 'W-T (1)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '25*1' THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '30*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '40*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '50*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('25*1','30*1','40*1','50*1') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 14	[SORT2]
+		, 1		[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('25*1','30*1','40*1','50*1')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (¾)', '20*3/4', '25*3/4', '30*3/4', '40*3/4', '50*3/4', '', '', '', '', '', '', 15, 0
+
+	UNION ALL
+
+	SELECT 'W-T (¾)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '25*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '30*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '40*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '50*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('20*3/4','25*3/4','30*3/4','40*3/4','50*3/4') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 15	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('20*3/4','25*3/4','30*3/4','40*3/4','50*3/4')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'SP플렌지 (10K)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 17	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 10K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'SP플렌지 (20K)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 18	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 20K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '고정앙카 (300L)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 19	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,9) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemGb = '02'
+			   AND	IM.ItemNm = '앙카소켓'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '양플랜지', '65', '80', '100', '', '', '', '', '', '', '', '', 20, 0
+
+	UNION ALL
+
+	SELECT '양플랜지'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('65*65*150L') THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('80*80*150L') THEN QTY ELSE '' END)),1),'.00','') 		AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('100*100*150L') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, '' 	AS [SPEC04] --[30(1 1/4)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('65*65*150L','80*80*150L','100*100*150L') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 20	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,8)	AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm  LIKE '양 FLANGE%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-EL (S)', '13*1/2', '', '', '', '', '', '', '', '', '', '', 11, 0
+
+	UNION ALL
+
+	SELECT 'W-EL (S)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '13*1/2' THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, '' 	AS [SPEC02] --[20(3/4)]
+		, '' 	AS [SPEC03] --[25(1)]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*1/2' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, '' 	AS [SPEC04] --[30(1 1/2)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('13*1/2') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('13*1/2','20*1/2','20*3/4') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 11	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ItemNm
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = 'W.ELBOW(S)'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '총 계', '', '', '', '', '', '', '', '', '', '', '', 110, 1
+
+	ORDER BY [SORT2],[SORT1]
+	
+
+	--TABLE[02] 
+
+	SELECT	SUM(I.PLANQTY)	TOTAL
+	FROM	PDItemMaster	IM
+	LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+				FROM	PDPlanMaster	PM
+				JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+				WHERE	PM.PlanYm = @iYM
+				AND	PM.PlanGb = '01'
+				AND	PM.ConfirmFl = 'Y'
+				GROUP BY PM.ItemNo
+	)	I	ON	I.ItemNo = IM.ItemNo
+	WHERE	IM.AcctGb = 'CP'
+	  AND  IM.ItemGrpCd ='SP'
+	  AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+
+
+	-- 20170313 강윤철 화면(PDREPA01100)과 레포트(PDREPA01100P) 내역 동일하게 변경 시 주석처리
+	--SELECT ISNULL(ITEMNM, '총계')	[품명]
+	--	 , SUM(CASE WHEN SPEC IN ('13') THEN PLANQTY ELSE 0 END)	[13(1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('20') THEN PLANQTY ELSE 0 END) 	[20(3/4)]
+	--	 , SUM(CASE WHEN SPEC IN ('25') THEN PLANQTY ELSE 0 END) 	[25(1)]
+	--	 , SUM(CASE WHEN SPEC IN ('30') THEN PLANQTY ELSE 0 END) 	[30(1 1/4)]
+	--	 , SUM(CASE WHEN SPEC IN ('40') THEN PLANQTY ELSE 0 END) 	[40(1 1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('50') THEN PLANQTY ELSE 0 END) 	[50(2)]
+	--	 , SUM(CASE WHEN SPEC IN ('60') THEN PLANQTY ELSE 0 END) 	[60(2 1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('75') THEN PLANQTY ELSE 0 END) 	[75]
+	--	 , SUM(CASE WHEN SPEC IN ('80') THEN PLANQTY ELSE 0 END) 	[80]	 
+	--	 , SUM(CASE WHEN SPEC IN ('100') THEN PLANQTY ELSE 0 END) [100]
+	--	 , SUM(CASE WHEN SPEC IN ('32') THEN PLANQTY ELSE 0 END)	[32]
+	--	 , SUM(CASE WHEN SPEC IN ('65') THEN PLANQTY ELSE 0 END)	[65]
+	--	 , SUM(CASE WHEN SPEC IN ('125') THEN PLANQTY ELSE 0 END) [125]
+	--	 , SUM(CASE WHEN SPEC IN ('150') THEN PLANQTY ELSE 0 END) [150]
+	--	 , SUM(CASE WHEN SPEC IN ('200') THEN PLANQTY ELSE 0 END) [200]
+	--	 , SUM(CASE WHEN SPEC NOT IN ('13','20','25','30','40','50','60','75','80','32','65','100','125','150','200') THEN PLANQTY ELSE 0 END) [기타]
+	--	 , SUM(PLANQTY)		[소계]
+	--	 , MAX(SORTORDER) [정렬순서]
+	--  FROM (
+	--		SELECT IM.ITEMNM, PP.PLANQTY, IM.SORTORDER
+	--			 , CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC	 
+	--		  FROM PDPlanMaster PM
+	--		  JOIN PDPlanProduct PP ON PP.PlanYm = PM.PlanYm AND PP.PlanGb = PM.PlanGb AND PP.ItemNo = PM.ItemNo
+	--		  JOIN PDItemMaster IM ON IM.ItemNo = PM.ItemNo
+	--		 WHERE PM.PlanYM = @iYM
+	--		   AND PM.PlanGb = '01'
+	--		   AND PM.ConfirmFl = 'Y'
+	--		) a
+	-- GROUP BY ROLLUP(ITEMNM)
+	-- ORDER BY [정렬순서]
+END
+```
+
+<a id="mispd-str-pdrepa01200-s"></a>
+## `MISPD.dbo.str_PDREPA01200_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDREPA01200_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDREPA01200_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 생산계획
+프로그램 :				
+등 록 일 : 2016-06-28
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20170314	강윤철		화면(PDREPA01200)과 레포트(PDREPA01201P) 내역 동일하게 변경 시 주석처리
+
+EXEC [str_PDREPA01200_S] @iYM = '201703'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDREPA01200_S]
+	 @iYM varchar(6)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	
+	--TABLE[01]
+	SELECT	CASE WHEN ItemNm = '90 ELBOW'		THEN '90˚ 엘보'
+		 		WHEN ItemNm = '45 ELBOW'		THEN '45˚ 엘보'
+				WHEN ItemNm = 'SOCKET'			THEN '소켓'
+				WHEN ItemNm = '보수용 SOCKET'	THEN '베어소켓'
+				WHEN ItemNm = 'CAP'				THEN '캡'
+				WHEN ItemNm = 'TEE'				THEN 'TEE'
+				WHEN ItemNm = 'REDUCER'			THEN 'REDUCER'
+				END	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		--, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		--, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		--, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		--, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		--, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		--, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		--, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		--, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		--, SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)	AS [TOTAL] --[TOTAL]
+		, CASE WHEN ItemNm = '90 ELBOW'			THEN 1
+			   WHEN ItemNm = '45 ELBOW'			THEN 2
+			   WHEN ItemNm = 'SOCKET'			THEN 3
+			   WHEN ItemNm = '보수용 SOCKET'	THEN 4
+			   WHEN ItemNm = 'CAP'				THEN 5
+			   WHEN ItemNm = 'TEE'				THEN 98
+			   WHEN ItemNm = 'REDUCER'			THEN 99
+			   END	[SORT2]
+		--, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)	AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('90 ELBOW','45 ELBOW','SOCKET','보수용 SOCKET','CAP','TEE','REDUCER')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT CASE WHEN ItemNm = 'AE(M)'		THEN 'A.E (M)'
+		 		WHEN ItemNm = 'AE(F)'		THEN 'A.E (F)'
+				WHEN ItemNm = 'AS(M)'		THEN 'A.S (M)'
+				WHEN ItemNm = 'AS(F)'		THEN 'A.S (F)'
+				WHEN ItemNm = 'W.ELBOW'		THEN 'W-EL'
+				WHEN ItemNm = 'W.SOCKET'	THEN 'W-SOCKET'
+				WHEN ItemNm = 'SP-UNION'	THEN 'SP-UNION 허브형'
+				END	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		, CASE WHEN ItemNm = 'AE(M)'		THEN 6
+		 	   WHEN ItemNm = 'AE(F)'		THEN 7
+			   WHEN ItemNm = 'AS(M)'		THEN 8
+			   WHEN ItemNm = 'AS(F)'		THEN 9
+			   WHEN ItemNm = 'W.ELBOW'		THEN 10
+			   WHEN ItemNm = 'W.SOCKET'		THEN 12
+			   WHEN ItemNm = 'SP-UNION'		THEN 97
+   			   END	[SORT2]
+		--, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('AE(M)','AE(F)','AS(M)','AS(F)','W.ELBOW','W.SOCKET','SP-UNION')
+			   AND	IM.Spec IN ('13*1/2','20*3/4','25*1','30*11/4','40*11/2','50*2','60*21/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (½)'	[ITEMNM]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		,	REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[100]
+		, 13	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('13*1/2','20*1/2','25*1/2','30*1/2','40*1/2','50*1/2','60*1/2','75*1/2','80*1/2','100*1/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (1)', '25*1', '30*1', '40*1', '50*1', '', '', '', '', '', '', '', 14, 0
+
+	UNION ALL
+
+	SELECT 'W-T (1)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '25*1' THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '30*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '40*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '50*1' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('25*1','30*1','40*1','50*1') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 14	[SORT2]
+		, 1		[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('25*1','30*1','40*1','50*1')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-T (¾)', '20*3/4', '25*3/4', '30*3/4', '40*3/4', '50*3/4', '', '', '', '', '', '', 15, 0
+
+	UNION ALL
+
+	SELECT 'W-T (¾)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '25*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '30*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '40*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '50*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('20*3/4','25*3/4','30*3/4','40*3/4','50*3/4') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 15	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('20*3/4','25*3/4','30*3/4','40*3/4','50*3/4')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'SP플렌지 (10K)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 17	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 10K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'SP플렌지 (20K)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 18	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 20K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '고정앙카 (300L)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC04] --[30(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC05] --[40(1 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC06] --[50(2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC07] --[60(2 1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC08] --[75]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC09] --[80]	 
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)),1),'.00','')	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC IN ('13','20','25','30','40','50','60','75','80','100') THEN QTY ELSE '' END)),1),'.00','')	AS [TOTAL] --[TOTAL]
+		, 19	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,9) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemGb = '02'
+			   AND	IM.ItemNm = '앙카소켓'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '양플랜지', '65', '80', '100', '', '', '', '', '', '', '', '', 20, 0
+
+	UNION ALL
+
+	SELECT '양플랜지'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('65*65*150L') THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('80*80*150L') THEN QTY ELSE '' END)),1),'.00','') 		AS [SPEC02] --[20(3/4)]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('100*100*150L') THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, '' 	AS [SPEC04] --[30(1 1/4)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('65*65*150L','80*80*150L','100*100*150L') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 20	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,8)	AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm  LIKE '양 FLANGE%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT 'W-EL (S)', '13*1/2', '', '', '', '', '', '', '', '', '', '', 11, 0
+
+	UNION ALL
+
+	SELECT 'W-EL (S)'	[ITEMNM]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '13*1/2' THEN QTY ELSE '' END)),1),'.00','')		AS [SPEC01] --[13(1/2)]
+		, '' 	AS [SPEC02] --[20(3/4)]
+		, '' 	AS [SPEC03] --[25(1)]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*1/2' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC02] --[20(3/4)]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END)),1),'.00','') 	AS [SPEC03] --[25(1)]
+		, '' 	AS [SPEC04] --[30(1 1/2)]
+		, '' 	AS [SPEC05] --[40(1 1/2)]
+		, '' 	AS [SPEC06] --[50(2)]
+		, '' 	AS [SPEC07] --[60(2 1/2)]
+		, '' 	AS [SPEC08] --[75]
+		, '' 	AS [SPEC09] --[80]	 
+		, ''	AS [SPEC10] --[100]
+		, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('13*1/2') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		--, REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(CASE WHEN SPEC_O IN ('13*1/2','20*1/2','20*3/4') THEN QTY ELSE '' END)),1),'.00','') 	AS [TOTAL] --[TOTAL]
+		, 11	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ItemNm
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = 'W.ELBOW(S)'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT '총 계', '', '', '', '', '', '', '', '', '', '', '', 110, 1
+
+	ORDER BY [SORT2],[SORT1]
+
+
+		--TABLE[02]
+
+
+
+
+	SELECT	SUM(ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0))	TOTAL
+	FROM	PDItemMaster	IM
+	LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+				FROM	PDPlanMaster	PM
+				JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+				WHERE	PM.PlanYm = @iYM
+				AND	PM.PlanGb = '01'
+				AND	PM.ConfirmFl = 'Y'
+				GROUP BY PM.ItemNo
+	)	I	ON	I.ItemNo = IM.ItemNo
+	WHERE	IM.AcctGb = 'CP'
+	AND  IM.ItemGrpCd ='SP'
+	AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+
+
+	-- 20170314 강윤철 화면(PDREPA01100)과 레포트(PDREPA01100P) 내역 동일하게 변경 시 주석처리
+	--SELECT ISNULL(ITEMNM, '총계')	[품명]
+	--	 , SUM(CASE WHEN SPEC IN ('13') THEN PLANQTY ELSE 0 END)	[13(1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('20') THEN PLANQTY ELSE 0 END) 	[20(3/4)]
+	--	 , SUM(CASE WHEN SPEC IN ('25') THEN PLANQTY ELSE 0 END) 	[25(1)]
+	--	 , SUM(CASE WHEN SPEC IN ('30') THEN PLANQTY ELSE 0 END) 	[30(1 1/4)]
+	--	 , SUM(CASE WHEN SPEC IN ('40') THEN PLANQTY ELSE 0 END) 	[40(1 1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('50') THEN PLANQTY ELSE 0 END) 	[50(2)]
+	--	 , SUM(CASE WHEN SPEC IN ('60') THEN PLANQTY ELSE 0 END) 	[60(2 1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('75') THEN PLANQTY ELSE 0 END) 	[75]
+	--	 , SUM(CASE WHEN SPEC IN ('80') THEN PLANQTY ELSE 0 END) 	[80]
+	--	 , SUM(CASE WHEN SPEC IN ('100') THEN PLANQTY ELSE 0 END) [100]
+	--	 , SUM(CASE WHEN SPEC IN ('32') THEN PLANQTY ELSE 0 END)	[32]
+	--	 , SUM(CASE WHEN SPEC IN ('65') THEN PLANQTY ELSE 0 END)	[65]
+	--	 , SUM(CASE WHEN SPEC IN ('125') THEN PLANQTY ELSE 0 END) [125]
+	--	 , SUM(CASE WHEN SPEC IN ('150') THEN PLANQTY ELSE 0 END) [150]
+	--	 , SUM(CASE WHEN SPEC IN ('200') THEN PLANQTY ELSE 0 END) [200]
+	--	 , SUM(CASE WHEN SPEC NOT IN ('13','20','25','30','40','50','60','75','80','32','65','100','125','150','200') THEN PLANQTY ELSE 0 END) [기타]
+	--	 , SUM(PLANQTY)		[소계]
+	--	 , MAX(SORTORDER) [정렬순서]
+	--  FROM (
+	--		SELECT IM.ITEMNM, PP.PLANQTY*IM.Hyeopga AS PLANQTY, IM.SORTORDER
+	--			 , CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC	 
+	--		  FROM PDPlanMaster PM
+	--		  JOIN PDPlanProduct PP ON PP.PlanYm = PM.PlanYm AND PP.PlanGb = PM.PlanGb AND PP.ItemNo = PM.ItemNo
+	--		  JOIN PDItemMaster IM ON IM.ItemNo = PM.ItemNo
+	--		 WHERE PM.PlanYM = @iYM
+	--		   AND PM.PlanGb = '01'
+	--		   AND PM.ConfirmFl = 'Y'
+	--		) a
+	-- GROUP BY ROLLUP(ITEMNM)
+	-- ORDER BY [정렬순서]
+END
+```
+
+<a id="mispd-str-pdrepa01101p-s"></a>
+## `MISPD.dbo.str_PDREPA01101P_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDREPA01101P_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDREPA01101P_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 생산계획(수량) 레포트
+프로그램 :				
+등 록 일 : 2016-10-27
+등 록 자 : 강윤철
+수정일		수정자		내용
+-----------------------------------------------------------------------
+
+EXEC [str_PDREPA01101P_S] @iYM = '201703'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDREPA01101P_S]
+	@iYM varchar(6)
+	
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	
+		--TABLE[01]
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('90 ELBOW','45 ELBOW','SOCKET','보수용 SOCKET','CAP','AHS(M)','AHS(F)','라리카 SOCKET')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('AE(M)','AE(F)','AS(M)','AS(F)','W.ELBOW','W.SOCKET','AT(M)','SP-UNION','SP 유니온볼밸브 (보온형)')
+			   AND	IM.Spec IN ('13*1/2','20*3/4','25*1','30*11/4','40*11/2','50*2','60*21/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계') + '_H'	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('13*1/2','20*1/2','25*1/2','30*1/2','40*1/2','50*1/2','60*1/2','75*1/2','80*1/2','100*1/2')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC_O = '25*1' THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC_O = '30*1' THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC_O = '40*1' THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC_O = '50*1' THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '25*3/4' THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC_O = '30*3/4' THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC_O = '40*3/4' THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC_O = '50*3/4' THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC_O = '100' THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('25*1','30*1','40*1','50*1','20*3/4','25*3/4','30*3/4','40*3/4','50*3/4')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 10K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 20K%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,9) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemGb = '02'
+			   AND	IM.ItemNm = '앙카소켓'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC_O IN ('65*65*150L') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('80*80*150L') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC_O IN ('100*100*150L') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/4)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 7					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,8)	AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm  LIKE '양 FLANGE%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC_O IN ('25*1') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('30*1') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC_O IN ('40*1') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC_O IN ('50*1') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/4)]
+		, SUM(CASE WHEN SPEC_O IN ('60*1') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 9					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,8) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm  LIKE 'AT(M) 소화' + '%'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC_O = '13*1/2' THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC_O = '20*1/2' THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ItemNm
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = 'W.ELBOW(S)'
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	ORDER BY [SORT1],[SORT2]
+
+
+
+	--TABLE[02]
+	SELECT	A.ITEMNM
+		,	A.SPEC1
+		,	SUM(CASE WHEN SPEC2 = '13' THEN QTY ELSE '' END)	AS [13]
+		,	SUM(CASE WHEN SPEC2 = '20' THEN QTY ELSE '' END)	AS [20]
+		,	SUM(CASE WHEN SPEC2 = '25' THEN QTY ELSE '' END)	AS [25]
+		,	SUM(CASE WHEN SPEC2 = '30' THEN QTY ELSE '' END)	AS [30]
+		,	SUM(CASE WHEN SPEC2 = '40' THEN QTY ELSE '' END)	AS [40]
+		,	SUM(CASE WHEN SPEC2 = '50' THEN QTY ELSE '' END)	AS [50]
+		,	SUM(CASE WHEN SPEC2 = '60' THEN QTY ELSE '' END)	AS [60]
+		,	SUM(CASE WHEN SPEC2 = '75' THEN QTY ELSE '' END)	AS [75]
+		,	SUM(CASE WHEN SPEC2 = '80' THEN QTY ELSE '' END)	AS [80]
+		,	SUM(CASE WHEN SPEC2 = '100' THEN QTY ELSE '' END)	AS [100]
+		,	MAX(A.SortOrder)	AS SORT
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,9) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0)		AS QTY
+				,	SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) SPEC1
+				,	SUBSTRING(SPEC,CHARINDEX('*',SPEC)+1,LEN(SPEC)) SPEC2
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('TEE', 'REDUCER')
+			   AND  IM.ItemGrpCd ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) A
+	GROUP BY ITEMNM, SPEC1
+	ORDER BY SORT
+
+
+--TABLE[03] 
+
+	SELECT	SUM(I.PLANQTY)	TOTAL
+	FROM	PDItemMaster	IM
+	LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+				FROM	PDPlanMaster	PM
+				JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+				WHERE	PM.PlanYm = @iYM
+				AND	PM.PlanGb = '01'
+				AND	PM.ConfirmFl = 'Y'
+				GROUP BY PM.ItemNo
+	)	I	ON	I.ItemNo = IM.ItemNo
+	WHERE	IM.AcctGb = 'CP'
+	  AND  IM.ItemGrpCd ='SP'
+	  AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+
+
+	-- 20170313 강윤철 화면(PDREPA01100)과 레포트(PDREPA01100P) 내역 동일하게 변경 시 주석처리
+	--SELECT ISNULL(ITEMNM, '총계')	[품명]
+	--	 , SUM(CASE WHEN SPEC IN ('13') THEN PLANQTY ELSE 0 END)	[13(1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('20') THEN PLANQTY ELSE 0 END) 	[20(3/4)]
+	--	 , SUM(CASE WHEN SPEC IN ('25') THEN PLANQTY ELSE 0 END) 	[25(1)]
+	--	 , SUM(CASE WHEN SPEC IN ('30') THEN PLANQTY ELSE 0 END) 	[30(1 1/4)]
+	--	 , SUM(CASE WHEN SPEC IN ('40') THEN PLANQTY ELSE 0 END) 	[40(1 1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('50') THEN PLANQTY ELSE 0 END) 	[50(2)]
+	--	 , SUM(CASE WHEN SPEC IN ('60') THEN PLANQTY ELSE 0 END) 	[60(2 1/2)]
+	--	 , SUM(CASE WHEN SPEC IN ('75') THEN PLANQTY ELSE 0 END) 	[75]
+	--	 , SUM(CASE WHEN SPEC IN ('80') THEN PLANQTY ELSE 0 END) 	[80]	 
+	--	 , SUM(CASE WHEN SPEC IN ('100') THEN PLANQTY ELSE 0 END) [100]
+	--	 , SUM(CASE WHEN SPEC IN ('32') THEN PLANQTY ELSE 0 END)	[32]
+	--	 , SUM(CASE WHEN SPEC IN ('65') THEN PLANQTY ELSE 0 END)	[65]
+	--	 , SUM(CASE WHEN SPEC IN ('125') THEN PLANQTY ELSE 0 END) [125]
+	--	 , SUM(CASE WHEN SPEC IN ('150') THEN PLANQTY ELSE 0 END) [150]
+	--	 , SUM(CASE WHEN SPEC IN ('200') THEN PLANQTY ELSE 0 END) [200]
+	--	 , SUM(CASE WHEN SPEC NOT IN ('13','20','25','30','40','50','60','75','80','32','65','100','125','150','200') THEN PLANQTY ELSE 0 END) [기타]
+	--	 , SUM(PLANQTY)		[소계]
+	--	 , MAX(SORTORDER) [정렬순서]
+	--  FROM (
+	--		SELECT IM.ITEMNM, PP.PLANQTY, IM.SORTORDER
+	--			 , CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC	 
+	--		  FROM PDPlanMaster PM
+	--		  JOIN PDPlanProduct PP ON PP.PlanYm = PM.PlanYm AND PP.PlanGb = PM.PlanGb AND PP.ItemNo = PM.ItemNo
+	--		  JOIN PDItemMaster IM ON IM.ItemNo = PM.ItemNo
+	--		 WHERE PM.PlanYM = @iYM
+	--		   AND PM.PlanGb = '01'
+	--		   AND PM.ConfirmFl = 'Y'
+	--		) a
+	-- GROUP BY ROLLUP(ITEMNM)
+	-- ORDER BY [정렬순서]
+END
+```
+
+<a id="mispd-str-pdrepa01201p-s"></a>
+## `MISPD.dbo.str_PDREPA01201P_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDREPA01201P_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDREPA01201P_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 생산계획금액 레포트
+프로그램 :				
+등 록 일 : 2016-10-28
+등 록 자 : 강윤철
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20170314	강윤철		화면(PDREPA01200)과 레포트(PDREPA01201P) 내역 동일하게 변경 시 주석처리
+
+EXEC [str_PDREPA01201P_S] @iYM = '201703'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDREPA01201P_S]
+	@iYM varchar(6)
+	
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	
+	--TABLE[01]
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('90 ELBOW','45 ELBOW','SOCKET','보수용 SOCKET','CAP','AHS(M)','AHS(F)','라리카 SOCKET')
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('AE(M)','AE(F)','AS(M)','AS(F)','W.ELBOW','W.SOCKET','AT(M)','SP-UNION','SP 유니온볼밸브 (보온형)')
+			   AND	IM.Spec IN ('13*1/2','20*3/4','25*1','30*11/4','40*11/2','50*2','60*21/2')
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계') + '_H'	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('13*1/2','20*1/2','25*1/2','30*1/2','40*1/2','50*1/2','60*1/2','75*1/2','80*1/2','100*1/2')
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC_O = '25*1' THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC_O = '30*1' THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC_O = '40*1' THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC_O = '50*1' THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '25*3/4' THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC_O = '30*3/4' THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC_O = '40*3/4' THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC_O = '50*3/4' THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC_O = '100' THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = '수전.TEE'
+			   AND	IM.Spec IN ('25*1','30*1','40*1','50*1','20*3/4','25*3/4','30*3/4','40*3/4','50*3/4')
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 10K%'
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,13) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm LIKE 'SP FLANGE 20K%'
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC IN ('13') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC IN ('20') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC IN ('25') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC IN ('30') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('40') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC IN ('50') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC IN ('60') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC IN ('75') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC IN ('80') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC IN ('100') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,9) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemGb = '02'
+			   AND	IM.ItemNm = '앙카소켓'
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC_O IN ('65*65*150L') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('80*80*150L') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC_O IN ('100*100*150L') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/4)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 7					[SORT1]
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,8)	AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm  LIKE '양 FLANGE%'
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	--UNION ALL
+
+	--SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+	--	, SUM(CASE WHEN SPEC_O IN ('25*1') THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+	--	, SUM(CASE WHEN SPEC_O IN ('30*1') THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+	--	, SUM(CASE WHEN SPEC_O IN ('40*1') THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+	--	, SUM(CASE WHEN SPEC_O IN ('50*1') THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/4)]
+	--	, SUM(CASE WHEN SPEC_O IN ('60*1') THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+	--	, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+	--	, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+	--	, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+	--	, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+	--	, SUM(CASE WHEN SPEC_O IN ('') THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+	--	, MAX(SORTORDER)	[SORT2]
+	--	, 9					[SORT1]
+	--FROM (
+	--		SELECT	SUBSTRING(IM.ITEMNM,1,8) AS ITEMNM
+	--			,	ISNULL(I.PLANQTY,0) * ISNULL(ROUND(IM.Hyeopga,0),0)		AS QTY
+	--			,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+	--			,	IM.Spec AS SPEC_O
+	--			,	IM.SORTORDER
+	--		  FROM	PDItemMaster	IM
+	--		  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+	--					   FROM	PDPlanMaster	PM
+	--					   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+	--					  WHERE	PM.PlanYm = @iYM
+	--						AND	PM.PlanGb = '01'
+	--						AND	PM.ConfirmFl = 'Y'
+	--					 GROUP BY PM.ItemNo
+	--		  )	I	ON	I.ItemNo = IM.ItemNo
+	--		 WHERE	IM.AcctGb = 'CP'
+	--		   AND	IM.ItemNm  LIKE 'AT(M) 소화' + '%'
+	--	) a
+	--GROUP BY ITEMNM
+
+	UNION ALL
+
+	SELECT ISNULL(ITEMNM, '총계')	[ITEMNM]
+		, SUM(CASE WHEN SPEC_O = '13*1/2' THEN QTY ELSE '' END)	AS [SPEC01] --[13(1/2)]
+		, SUM(CASE WHEN SPEC_O = '20*1/2' THEN QTY ELSE '' END) 	AS [SPEC02] --[20(3/4)]
+		, SUM(CASE WHEN SPEC_O = '20*3/4' THEN QTY ELSE '' END) 	AS [SPEC03] --[25(1)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC04] --[30(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC05] --[40(1 1/2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC06] --[50(2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC07] --[60(2 1/2)]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC08] --[75]
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END) 	AS [SPEC09] --[80]	 
+		, SUM(CASE WHEN SPEC_O = '' THEN QTY ELSE '' END)	AS [SPEC10] --[100]
+		, MAX(SORTORDER)	[SORT2]
+		, 1					[SORT1]
+	FROM (
+			SELECT	IM.ItemNm
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	CASE WHEN IM.SPEC LIKE '%*%' THEN SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) ELSE IM.SPEC END SPEC
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm = 'W.ELBOW(S)'
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a
+	GROUP BY ITEMNM
+
+	ORDER BY [SORT1],[SORT2]
+
+
+	--TABLE[02]
+	SELECT	A.ITEMNM
+		,	A.SPEC1
+		,	SUM(CASE WHEN SPEC2 = '13' THEN QTY ELSE '' END)	AS [13]
+		,	SUM(CASE WHEN SPEC2 = '20' THEN QTY ELSE '' END)	AS [20]
+		,	SUM(CASE WHEN SPEC2 = '25' THEN QTY ELSE '' END)	AS [25]
+		,	SUM(CASE WHEN SPEC2 = '30' THEN QTY ELSE '' END)	AS [30]
+		,	SUM(CASE WHEN SPEC2 = '40' THEN QTY ELSE '' END)	AS [40]
+		,	SUM(CASE WHEN SPEC2 = '50' THEN QTY ELSE '' END)	AS [50]
+		,	SUM(CASE WHEN SPEC2 = '60' THEN QTY ELSE '' END)	AS [60]
+		,	SUM(CASE WHEN SPEC2 = '75' THEN QTY ELSE '' END)	AS [75]
+		,	SUM(CASE WHEN SPEC2 = '80' THEN QTY ELSE '' END)	AS [80]
+		,	SUM(CASE WHEN SPEC2 = '100' THEN QTY ELSE '' END)	AS [100]
+		,	MAX(A.SortOrder)	AS SORT
+	FROM (
+			SELECT	SUBSTRING(IM.ITEMNM,1,9) AS ITEMNM
+				,	ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0)		AS QTY
+				,	SUBSTRING(IM.SPEC, 1, CHARINDEX('*',IM.SPEC)-1) SPEC1
+				,	SUBSTRING(SPEC,CHARINDEX('*',SPEC)+1,LEN(SPEC)) SPEC2
+				,	IM.Spec AS SPEC_O
+				,	IM.SORTORDER
+			  FROM	PDItemMaster	IM
+			  LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+						   FROM	PDPlanMaster	PM
+						   JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+						  WHERE	PM.PlanYm = @iYM
+							AND	PM.PlanGb = '01'
+							AND	PM.ConfirmFl = 'Y'
+						 GROUP BY PM.ItemNo
+			  )	I	ON	I.ItemNo = IM.ItemNo
+			 WHERE	IM.AcctGb = 'CP'
+			   AND	IM.ItemNm IN ('TEE', 'REDUCER')
+			   AND  IM.ItemGrpCd           ='SP'
+			   AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) A
+	GROUP BY ITEMNM, SPEC1
+	ORDER BY SORT
+
+
+	
+
+
+
+	--TABLE[03]
+	SELECT	SUM(ISNULL(I.PLANQTY,0) * ISNULL(IM.PRICE,0))	TOTAL
+	FROM	PDItemMaster	IM
+	LEFT JOIN	(SELECT	PM.ItemNo, SUM(ISNULL(PP.PlanQty,0))	PLANQTY
+				FROM	PDPlanMaster	PM
+				JOIN	PDPlanProduct	PP	ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb
+				WHERE	PM.PlanYm = @iYM
+				AND	PM.PlanGb = '01'
+				AND	PM.ConfirmFl = 'Y'
+				GROUP BY PM.ItemNo
+	)	I	ON	I.ItemNo = IM.ItemNo
+	WHERE	IM.AcctGb = 'CP'
+	AND     IM.ItemGrpCd           ='SP'
+	AND     ISNULL(IM.ItemInfo,'') <> 'DUZON'
+END
+```
+
+<a id="mispd-str-pdplna00200-s"></a>
+## `MISPD.dbo.str_PDPLNA00200_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPLNA00200_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPLNA00200_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 완제품 생산계획등록
+프로그램 : 
+등 록 일 : 2015-11-04 [PDInsidePlan][PDPlanMaster]
+등 록 자 : 김재환
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20161007	강윤철		공정재고로 봐야할 구간의 공정만 SUM하도록 변경
+20161220	강윤철		기준수량들을 전월말 기준으로 변경
+20161222	강윤철		좌측그리드의 공정재고를 우측그리드의 공정재고 중 공정재고로 봐야할 구간의 공정의 SUM으로 변경
+20170215	강윤철		SOCKET은 공정재고에 컷팅공정 제외
+20170310	강윤철		공정재고는 참조공정은 제외되도록 수정
+20170426	정재광		현재고 구할때 참조공정은 제외하니.. PDVPlanProcessDetail -> PDPlanProcessDetail 변경하여 속도 개선.
+
+EXEC MISPD.dbo.str_PDPLNA00200_S @iPLANYM = '201610', @iItemGb= '%',@iItemNm='TEE', @iSpec='30*25'
+EXEC MISPD.dbo.str_PDPLNA00200_S @iPLANYM = '201901', @iItemGb= '%',@iItemNm='', @iSpec=''
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPLNA00200_S]
+	 @iPlanYm varchar(6) -- 계획년월
+	,@iItemGb varchar(2) = '%' -- 품목분류
+	,@iItemNm varchar(50) = '' -- 품명
+	,@iSpec varchar(50) = '' -- 규격
+	,@iItemGrpCd varchar(10) = '%' -- 품목군
+AS
+
+DECLARE @wPlanYm VARCHAR(6)
+
+BEGIN
+	SET NOCOUNT ON;
+	
+	SET @wPlanYm = CONVERT(VARCHAR(6), DATEADD(MONTH,-1, CONVERT(DATETIME, @iPlanYm + '01')), 112)
+
+	SELECT M.ITEMNO 
+		,  M.ITEMGB	AS ITEMGB
+		,  M.UNIT		AS UNIT		
+		,  M.ITEMNM	AS ITEMNM
+		,  M.SPEC		AS SPEC
+		,  ISNULL(B.CONFIRMFL,'N')	CONFIRMFL
+		,  B.CONFIRMEMPNO			CONFIRMEMPNO
+		,  S.STOCKQTY  				AS STOCKQTY
+		, PS.STOCKQTY				AS PROCESSQTY
+		, S.STOCKQTY +PS.STOCKQTY	AS STOCKSUM
+		, C.PLANQTY
+		,  'S' AUD
+		, M.sortORder  SORTORDER
+		FROM PDITEMMASTER M	  
+		--계획확정 및 계획 수량
+		LEFT JOIN PDPLANMASTER B ON B.ITEMNO = M.ITEMNO AND B.PLANYM = @IPLANYM AND B.PLANGB = '01' 
+		LEFT JOIN PDPlanProduct C ON C.ITEMNO = B.ITEMNO AND C.PLANYM = @IPLANYM AND C.PLANGB = B.PlanGb
+		LEFT JOIN (	
+		    --          SELECT ITEMNO, SUM(BeginQty) STOCKQTY 
+						--FROM PDSTOCK S
+						--WHERE STOCKYM = CONVERT(VARCHAR(6), GETDATE(), 112)
+						--GROUP BY ITEMNO
+					SELECT ITEMNO, BASICSTKQTY STOCKQTY 
+					 FROM MISTW..tbLogMonStk
+					WHERE STKYM = @iPlanYm
+
+				) S ON S.ITEMNO = M.ITEMNO
+		--20161222 강윤철 좌측그리드의 공정재고를 우측그리드의 공정재고 중 공정재고로 봐야할 구간의 공정의 SUM으로 변경
+		LEFT JOIN (	SELECT	IM.ItemNo	ITEMNO
+						,	SUM(PD.BASICQTY)	STOCKQTY
+					  FROM	PDItemMaster	IM
+					  JOIN	PDPlanProcessDetail	PD	ON	IM.ItemNo = PD.ITEMNO AND PD.PLANYM = @iPlanYm
+						--참조공정의 재고는 제외니까 원래 재고테이블에서 가져오도록 변경함. 20170426 정재광
+						/*	--튜닝 전 쿼리
+						JOIN	PDVPlanProcessDetail	PD	ON	IM.ItemNo = PD.ITEMNO AND PD.PLANYM = @iPlanYm
+														-- 20170310 강윤철 공정재고는 참조공정은 제외되도록 수정
+														AND	PD.REFYN = 'N'
+						*/					 
+					 WHERE	IM.AcctGb = 'CP'
+					   AND	IM.ItemGb IN ('01','02')
+					   -- 20170215 강윤철 SOCKET은 공정재고에 컷팅공정 제외
+					   -- 20170721 강윤철 90ELBOW 규격60 품목도 공정재고에 컷팅공정 제외
+					   --AND	(PD.PROCESSNM != '컷팅' OR PD.ITEMNO NOT IN ('A03-030','A03-040','A03-050','A03-060','A03-070','A03-080','A03-090'))
+					   AND	(PD.PROCESSNM != '컷팅' OR PD.ITEMNO NOT IN ('A03-030','A03-040','A03-050','A03-060','A03-070','A03-080','A03-090','A01-060'))
+					   AND	EXISTS (SELECT	1
+									  FROM	PDItemProcess	IP
+									  JOIN	PDVHalfItemSeq	HS	ON HS.ITEMNO = IP.ItemNo AND IP.ProcessSeq >= HS.seq_F AND IP.ProcessSeq < HS.seq_T
+									 WHERE	IP.ItemNo = PD.ItemNo
+									   AND	IP.ProcessCd = PD.ProcessCd)
+					GROUP BY IM.ITEMNO
+				 )	PS	ON	PS.ITEMNO = M.ItemNo
+		--LEFT JOIN (	SELECT PD.ItemNo, SUM(PD.StockQty) STOCKQTY
+		--				FROM PDItemMaster IM
+		--				--20161220 강윤철 기준수량들을 전월말 기준으로 변경(공정재고)
+		--				JOIN PDPlanProcessDetail PD ON PD.ItemNo = IM.ItemNo AND PD.PlanYm = CONVERT(VARCHAR(6),DATEADD(M,-1,CONVERT(DATETIME, @iPlanYm+'01')),112)
+		--				--JOIN PDPlanProcessDetail PD ON PD.ItemNo = IM.ItemNo AND PD.PlanYm = CONVERT(VARCHAR(6), GETDATE(), 112)
+		--				WHERE IM.ACCTGB = 'CP'
+		--				AND IM.ItemGb IN ('01','02')
+		--				--20161007 강윤철 공정재고로 봐야할 구간의 공정만 SUM하도록 변경
+		--				AND	EXISTS (SELECT	1
+		--							  FROM	PDItemProcess	IP
+		--							  JOIN	PDVHalfItemSeq	HS	ON HS.ITEMNO = IP.ItemNo AND IP.ProcessSeq >= HS.seq_F AND IP.ProcessSeq < HS.seq_T
+		--							 WHERE	IP.ItemNo = PD.ItemNo
+		--							   AND	IP.ProcessCd = PD.ProcessCd)
+		--				GROUP BY PD.ItemNo
+		--		) PS ON PS.ItemNo = M.ItemNo
+		WHERE M.ACCTGB = 'CP'
+		  AND ISNULL(M.NotPlanYn,'N') != 'Y'
+		AND M.ItemGb IN ('01','02','03')
+		AND M.ItemGb = CASE WHEN @iItemGb = '%' THEN m.ItemGb ELSE @iItemGb END
+		--AND m.ItemNm LIKE '%' + @iItemNm + '%'
+		--AND ISNULL(m.Spec,'') LIKE '%' + @iSpec + '%' 
+		AND ( @iItemNm      is null or @iItemNm      = ''  or  ( @iItemNm      is not null and @iItemNm      <> ''  and m.ItemNm      LIKE  '%' +@iItemNm+ '%' ))
+	    AND ( @iSpec        is null or @iSpec        = ''  or  ( @iSpec        is not null and @iSpec        <> ''  and ISNULL(m.Spec,'')       LIKE  '%' +@iSpec+ '%' ))
+		AND (@iItemGrpCd = '%' OR M.ItemGrpCd = @iItemGrpCd)
+		AND ISNULL(M.ItemInfo,'') <> 'DUZON' 
+		 ORDER BY CONFIRMFL DESC
+				,CASE WHEN PLANQTY > 0 THEN 1 ELSE 2 END
+				,SORTORDER
+
+	--SELECT *
+	--  FROM (
+	--		SELECT M.ITEMNO 
+	--			,  MAX(M.ITEMGB)	AS ITEMGB
+	--			,  MAX(M.UNIT)		AS UNIT		
+	--			,  MAX(M.ITEMNM)	AS ITEMNM
+	--			,  MAX(M.SPEC)		AS SPEC
+	--			,  MAX(CASE WHEN B.PLANYM = @IPLANYM THEN ISNULL(B.CONFIRMFL,'N') ELSE 'N' END)	CONFIRMFL
+	--			,  MAX(CASE WHEN B.PLANYM = @IPLANYM THEN B.CONFIRMEMPNO ELSE '' END) CONFIRMEMPNO
+	--			,  SUM(CASE WHEN C.PLANYM = @WPLANYM THEN ISNULL(PLANQTY,0) ELSE 0 END) AS LPLANQTY
+	--			,  SUM(CASE WHEN C.PLANYM = @IPLANYM THEN ISNULL(PLANQTY,0) ELSE 0 END) AS PLANQTY
+	--			,  SUM(ISNULL(S.STOCKQTY,0)) BASICQTY
+	--			,  SUM(ISNULL(O.OUTQTY  ,0)) OUTQTY
+	--			,  SUM(ISNULL(I.INQTY   ,0)) INQTY
+	--			,  SUM(ISNULL(S.STOCKQTY,0)) + SUM(ISNULL(I.INQTY   ,0)) - SUM(ISNULL(O.OUTQTY  ,0)) STOCKQTY
+	--			,  'S' AUD
+	--			, MAX(M.sortORder)  SORTORDER
+	--		  FROM PDITEMMASTER M	  
+	--		  --계획확정 및 계획 수량
+	--		  LEFT JOIN PDPLANMASTER B ON B.ITEMNO = M.ITEMNO AND B.PLANYM = @IPLANYM AND B.PLANGB = '01'
+	--		  LEFT JOIN PDPlanProduct C ON C.ITEMNO = M.ITEMNO AND C.PLANYM BETWEEN @WPLANYM AND @IPLANYM AND C.PLANGB = '01'	  
+	--		  --입고, 출고, 재고
+	--		  LEFT JOIN (SELECT ITEMNO, SUM(INQTY) INQTY FROM PDINMASTER I WHERE I.INYM = @WPLANYM GROUP BY ITEMNO) I 
+	--				 ON I.ITEMNO = M.ITEMNO
+	--		  LEFT JOIN (SELECT ITEMNO, SUM(OUTQTY) OUTQTY FROM PDOUTMASTER O WHERE O.OUTYM = @WPLANYM GROUP BY ITEMNO) O
+	--				 ON O.ITEMNO = M.ITEMNO
+	--		  LEFT JOIN (	SELECT ITEMNO, SUM(STOCKQTY) STOCKQTY 
+	--						  FROM PDSTOCK S 
+	--						 WHERE STOCKYM = CONVERT(VARCHAR(6), DATEADD(MONTH,-2, CONVERT(DATETIME, @iPlanYm + '01')), 112) 
+	--						 GROUP BY ITEMNO) S
+	--				 ON S.ITEMNO = M.ITEMNO
+	--		 WHERE M.ACCTGB = 'CP'
+	--		   AND M.ItemGb IN ('01','02')
+	--		   AND M.ItemGb = CASE WHEN @iItemGb = '%' THEN m.ItemGb ELSE @iItemGb END
+	--		   AND m.ItemNm LIKE '%' + @iItemNm + '%'
+	--		   AND m.Spec LIKE '%' + @iSpec + '%' 
+	--		 GROUP BY M.ITEMNO
+	--		) a
+	-- ORDER BY CONFIRMFL DESC
+	--		,CASE WHEN PLANQTY > 0 THEN 1 ELSE 2 END
+	--		,CASE WHEN LPLANQTY > 0 THEN 1 ELSE 2 END
+	--		,SORTORDER
+	    
+END
+```
+
+<a id="mispd-str-pdplanitemproduct-s2"></a>
+## `MISPD.dbo.str_PDPlanItemProduct_S2`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPlanItemProduct_S2.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPlanItemProduct_S2.sql
+
+```sql
+
+/********************************************************************************
+제    목 : (당월기초재고)제품이 필요로 하는 제품 생산계획량 조회
+프로그램 : 
+등 록 일 : 2016-12-20
+등 록 자 : 강윤철
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20161207	강윤철		[PDITEMMASTER]테이블에 [NotPlanYn]컬럼 추가하여 공정계획 대상여부 체크
+20161222	강윤철		조회대상을 전월말 현재고에서 당월기초재고로 변경
+20170216	강윤철		완제품생산계획량에 하위 전체공정 나오도록 변경(자신제외 / 참조,차감포함)
+20170216	강윤철		TEE 공정 중 명성입고(뽑기)에 대한 기초재고를 표기
+20170316	강윤철		해당품목의 공정재고를 좌측그리드의 공정재고로 가져오도록 수정
+20170316	강윤철		20170216에 추가한 명성입고(뽑기)에 대해 TEE 공정 중 명성입고(뽑기)에 대한 공정계획량으로 변경
+20170320	강윤철		20170216에 자신제외를 자신포함으로 변경
+20170426	정재광		현재고 구할때 참조공정은 제외하니.. PDVPlanProcessDetail -> PDPlanProcessDetail 변경하여 속도 개선.
+20170526	강윤철		특정품목(TEE 30X30, 40X30, 40X40, 50X25, 50X50)에 대해 완제품생산계획량에 일부품목이 나오지 않도록 기타코드과 함께 처리
+20220308	안진주		속도가 느려지는 조건 수정
+20220901 박병주/안진주	하단의 조건을 하단의 서브쿼리 안쪽에 넣어서 속도 개선
+
+EXEC [str_PDPlanItemProduct_S2] @iItemNo = 'A06-05050', @iPlanYm = '201705', @iPlanGb = '02'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPlanItemProduct_S2]
+	@iPlanYm VARCHAR(6)
+	,@iPlanGb VARCHAR(3)
+	,@iItemNo VARCHAR(50)
+AS 
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT IM.ITEMNO					AS ITEMNO
+		,  MAX(IM.itemnm)				AS ITEMNM		
+		,  MAX(IM.Spec)					AS SPEC
+		,  MAX(ISNULL(PP.PLANQTY,0))	AS PLANQTY
+		,  ISNULL(SUM(PD.BasicQty),0)	AS HALFSTOCKQTY
+		--,  ISNULL(SUM(PD.StockQty),0)	AS HALFSTOCKQTY
+		,  MAX(IM.SortOrder)			AS SORTORDER
+		-- 20170216 강윤철 TEE 공정 중 명성입고(뽑기)에 대한 기초재고를 표기
+		--,  MAX(ISNULL(CT.BASICQTY,0))		AS BASICQTY
+		-- 20170316 강윤철 20170216에 추가한 명성입고(뽑기)에 대해 TEE 공정 중 명성입고(뽑기)에 대한 공정계획량으로 변경 시 추가
+		,  MAX(ISNULL(CT.CTQTY,0))		AS CTQTY
+		-- 20170316 강윤철 해당품목의 공정재고를 좌측그리드의 공정재고로 가져오도록 수정
+		,  MAX(ISNULL(PS.STOCKQTY,0))	AS PROCESSQTY
+		,  MAX(ISNULL(PP.PLANQTY,0)) - MAX(ISNULL(PS.STOCKQTY,0))	AS NEEDQTY
+	  FROM PDItemMaster IM
+	  LEFT JOIN PDVHalfItemSeq HS ON HS.itemno = IM.Itemno
+	  LEFT JOIN PDItemProcess IP ON IP.ItemNo = HS.ItemNo AND IP.ProcessSeq >= HS.seq_F AND IP.ProcessSeq < HS.seq_T
+	  LEFT JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iPlanYm AND PD.ItemNo = IP.ItemNo AND PD.ProcessCd = ip.ProcessCd
+	  LEFT JOIN PDPlanMaster  PM ON PM.ItemNo = IM.ItemNo AND PM.PlanYm = @iPlanYm AND PM.CONFIRMFL = 'Y' AND PM.PlanGb = PD.PlanGb
+	  LEFT JOIN PDPlanProduct PP ON PP.ItemNo = PM.ItemNo AND PP.PlanYm = PM.PlanYm AND PP.PlanGb = PM.PlanGb
+	  -- 20170316 강윤철 해당품목의 공정재고를 좌측그리드의 공정재고로 가져오도록 수정
+	  LEFT JOIN (SELECT	IM.ItemNo	ITEMNO
+					,	SUM(PD.BASICQTY)	STOCKQTY
+				FROM	PDItemMaster	IM
+				JOIN	PDPlanProcessDetail	PD	ON	IM.ItemNo = PD.ITEMNO AND PD.PLANYM = @iPlanYm
+				--참조공정의 재고는 제외니까 원래 재고테이블에서 가져오도록 변경함. 20170426 정재광
+				/*	--튜닝 전 쿼리
+				JOIN	PDVPlanProcessDetail	PD	ON	IM.ItemNo = PD.ITEMNO AND PD.PLANYM = @iPlanYm
+												-- 20170310 강윤철 공정재고는 참조공정은 제외되도록 수정
+												AND	PD.REFYN = 'N'
+				*/
+
+				WHERE	IM.AcctGb = 'CP'
+				AND	IM.ItemGb IN ('01','02')
+				-- 20170215 강윤철 SOCKET은 공정재고에 컷팅공정 제외
+				AND	(PD.PROCESSNM != '컷팅' OR PD.ITEMNO NOT IN ('A03-030','A03-040','A03-050','A03-060','A03-070','A03-080','A03-090'))
+				AND	EXISTS (SELECT	1
+								FROM	PDItemProcess	IP
+								JOIN	PDVHalfItemSeq	HS	ON HS.ITEMNO = IP.ItemNo AND IP.ProcessSeq >= HS.seq_F AND IP.ProcessSeq < HS.seq_T
+								WHERE	IP.ItemNo = PD.ItemNo
+								AND	IP.ProcessCd = PD.ProcessCd)
+				GROUP BY IM.ITEMNO
+	  )	PS	ON	PS.ITEMNO = IM.ItemNo
+	  -- 20170316 강윤철 20170216에 추가한 명성입고(뽑기)에 대해 TEE 공정 중 명성입고(뽑기)에 대한 공정계획량으로 변경 시 추가
+	  LEFT JOIN	(SELECT	IM.ItemNo, PP.ProcessNm, PP.PlanQty	AS CTQTY
+				   FROM	PDItemMaster	IM
+				   JOIN	PDPlanProcess	PP	ON	PP.PlanYm = @iPlanYm AND PP.PlanGb = '03' AND PP.ProcessNm = '명성입고 (뽑기)' AND IM.ItemNo = PP.ItemNo
+				  WHERE	IM.ItemNm = 'TEE'
+	  )	CT	ON	CT.ItemNo = IM.ItemNo
+	  -- 20170316 강윤철 20170216에 추가한 명성입고(뽑기)에 대해 TEE 공정 중 명성입고(뽑기)에 대한 공정계획량으로 변경 시 주석처리
+	  -- 20170216 강윤철 TEE 공정 중 명성입고(뽑기)에 대한 기초재고를 표기
+	  --LEFT JOIN	(SELECT	PD.ItemNo, PD.ProcessNm, PD.BasicQty
+			--	   FROM	PDPlanProcessDetail	PD
+			--	   JOIN	PDItemMaster	IM	ON	IM.ItemNo = PD.ItemNo AND IM.ItemNm = 'TEE'
+			--	  WHERE	PlanYm = @iPlanYm
+			--	    AND	ProcessNm = '명성입고 (뽑기)'
+	  --)	CT	ON	CT.ItemNo = IM.ItemNo
+	 WHERE IM.ItemNo IN (SELECT x.ItemNo
+						  FROM [PDVBomDedItem] x
+						 WHERE X.DEDITEMNO = @iItemNo
+						 -- 20170216 강윤철 완제품생산계획량에 하위 전체공정 나오도록 변경(참조포함) 시 추가
+						  UNION 
+						SELECT x.ItemNo
+						  FROM [PDVBomRefItem] x
+						 WHERE X.REFITEMNO = @iItemNo)
+       -- 20161207 강윤철 [PDITEMMASTER]테이블에 [NotPlanYn]컬럼 추가하여 공정계획 대상여부 체크
+	   AND ISNULL(IM.NotPlanYn,'N') != 'Y'
+	   AND IM.ACCTGB = 'CP'
+	   AND IM.ItemGb IN ('01','02','03')
+	   AND IM.ItemGrpCd ='SP' 
+	   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+	   -- 20161220 강윤철 특정 REDUCER는 대상에서 제외
+	   --AND IM.ItemNo NOT IN ('A07-02520','A07-03025','A07-04030','A07-05040')
+	   -- 20171030 강윤철 특정 REDUCER는 대상에서 제외(제외항목변경)
+	   -- 20220901 박병주/안진주 하단의 조건을 하단의 서브쿼리 안쪽에 넣어서 속도 개선
+	   --AND IM.ItemNo NOT IN ('A07-04030','A07-05040')
+	   -- 20170526	강윤철	특정품목(TEE 30X30, 40X30, 40X40, 50X25, 50X50)에 대해 완제품생산계획량에 일부품목이 나오지 않도록 기타코드과 함께 처리
+		-- 20220308 안진주 속도가 느려지는 조건 수정
+	   AND IM.ItemNo NOT IN (SELECT	CDBS
+							FROM	MISCM..CMETCCD
+							WHERE	SYSIDCD = 'PD'
+							  AND   CDNM = @iItemNo
+							   UNION SELECT 'A07-04030' UNION SELECT 'A07-05040'
+							--AND		COMKDCD = (SELECT	TOP 1 CDBS
+							--					FROM	MISCM..CMETCCD
+							--					WHERE	SYSIDCD = 'PD'
+							--					AND		CDNM = @iItemNo)
+												)
+	   -- 20170216 강윤철 완제품생산계획량에 하위 전체공정 나오도록 변경(자신제외) 시 추가
+	   -- 20170320 강윤철 자신포함으로 변경 시 주석처리
+	   --AND IM.ItemNo <> @iItemNo
+	 GROUP BY IM.ItemNo
+	 ORDER BY CASE WHEN SUM(PLANQTY) > 0 THEN 1 ELSE 2 END, SORTORDER
+END
+```
+
+<a id="mispd-str-pdplna00400-s"></a>
+## `MISPD.dbo.str_PDPLNA00400_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPLNA00400_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPLNA00400_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 반제품 생산계획등록
+프로그램 : 
+등 록 일 : 2015-11-09 [PDInsidePlan][PDPlanMaster]
+등 록 자 : 김재환
+수정일		수정자		내용
+-----------------------------------------------------------------------
+16.08.22	정재광		반제품을 사용하고 있는 완제품의 공정(가접 ~ 물류출고전 또는 성훈입고 ~ 물류출고전) 중 합을 계산해서
+						완제품 소요량 대비 완제품 공정재고를 빼주자.
+20170119	강윤철		좌측그리드의 소요량을 우측 완제품생산계획량그리드의 계획량으로 변경
+20170203	강윤철		소요량은 완제품의 계획량에 대한 해당 반제품의 차감수량 배수 적용
+20170214	강윤철		소요량은 완제품 생산계획량에서 반제품들 중 특정품목(앙카소켓)은 차감수량 배수 적용
+20170220	강윤철		소요량 조회대상 변경에 따른 재수정 및 공정재고도 BOM배수 적용되도록 수정
+20170315	강윤철		본사진행여부 조회조건 추가
+20170104	강윤철		참조공정 제외되도록 수정
+
+EXEC MISPD.dbo.str_PDPLNA00400_S @iPLANYM = '201901', @iItemNm = '', @iSpec='', @iHQYN = 'Y'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPLNA00400_S]
+		@iPlanYm	varchar(6)			-- 계획년월
+	,	@iItemNm	varchar(50)	= ''	-- 품명
+	,	@iSpec		varchar(50)	= ''	-- 규격
+	,	@iHQYN		VARCHAR(1)	= 'Y'	-- 본사진행여부
+AS
+
+DECLARE @wPlanYm VARCHAR(6)
+
+BEGIN
+	SET NOCOUNT ON;
+
+/* 20210601 / 속도 문제로 변경
+	SELECT	A.ITEMNO, A.ITEMNM, A.SPEC, A.ITEMGB,PROCESSSEQ,PROCESSCD,PROCESSNM,STOCKQTY,PROCESSQTY
+		,	ISNULL(C.HALFSTOCKQTY,0)	AS HALFSTOCKQTY
+		,	ISNULL(B.QTY,0)				AS REQUIREQTY
+		-- 20170119 강윤철 좌측그리드의 소요량을 우측 완제품생산계획량그리드의 계획량으로 변경 시 재변경
+		,	ISNULL(A.STOCKQTY,0) + ISNULL(A.PROCESSQTY,0) + ISNULL(C.HALFSTOCKQTY,0) - ISNULL(B.QTY,0)	AS DIFFENCEQTY
+		-- 20161004 강윤철 다성테크 요청으로 공식 변경
+		--,  ISNULL(STOCKSUM,0) + ISNULL(HALFSTOCKQTY,0)  - ISNULL(b.QTY,0)	AS DIFFENCEQTY
+		--,  ISNULL(b.QTY,0) - ISNULL(STOCKSUM,0) - ISNULL(HALFSTOCKQTY,0)	AS DIFFENCEQTY
+		,	ISNULL(PP.PlanQty,0)		AS PLANQTY
+		,	ISNULL(PM.CONFIRMFL,'N')	AS CONFIRMFL
+		,	'S' AUD
+	  FROM (
+			SELECT A.ITEMNO
+				,  MAX(A.ITEMGB)		ITEMGB
+				,  MAX(A.ITEMNM)		ITEMNM
+				,  MAX(A.SPEC)			SPEC	
+				,  MAX(A.PROCESSSEQ)	PROCESSSEQ
+				,  MAX(A.PROCESSCD)		PROCESSCD
+				,  MAX(A.PROCESSNM)		PROCESSNM
+				,  SUM(CASE WHEN a.StockGb IN ('02','03') THEN PD.BasicQty ELSE 0 END)	STOCKQTY	--현재고
+				,  SUM(CASE WHEN a.StockGb IN ('01','03') THEN PD.BasicQty ELSE 0 END)	PROCESSQTY	--공정재고
+				,  SUM(PD.StockQty)	STOCKSUM
+				,  MAX(a.SortOrder)	SORTORDER
+				--,  MAX(A.HQYn)	HQYN
+			  FROM (
+					SELECT	IM.ITEMNO, IM.ITEMNM, IM.SPEC, IM.ITEMGB, IM.SortOrder, IP.PROCESSCD, IP.PROCESSNM, IP.PROCESSSEQ, IP.StockGb
+						--, IM.HQYn
+					  FROM	PDItemMaster IM
+					  JOIN	PDItemProcess IP ON IP.ItemNo = IM.ItemNo
+					 WHERE	IM.AcctGb = 'HP'
+					 -- 20170315 강윤철 본사진행여부 조회조건 추가
+					 AND	IM.HQYn = @iHQYN
+					 -- 20180104 강윤철 참조공정 제외되도록 수정
+					 AND	NOT EXISTS (SELECT	1
+										FROM	PDBomRefItem	X
+										WHERE	X.ItemNo = IM.ItemNo
+										AND		X.ProcessCd = IP.ProcessCd)
+					 -- 20161229 강윤철 해당컬럼은 완제품에만 해당하여 주석처리
+					 -- 20180718 정재광 반제품도 적용되도록 변경
+					  AND (IM.NotPlanYn != 'Y' OR IM.NotPlanYn IS NULL)
+					  AND IM.ItemGrpCd ='SP'
+					  AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+					) a 
+			  -- 20161220 강윤철 기준수량들을 전월말 기준으로 변경(현재고,공정재고)
+			  LEFT JOIN PDPlanProcessDetail PD ON PD.ItemNo = a.ItemNo AND PD.ProcessCd = a.ProcessCd AND PD.PlanGb = '02' AND pd.PlanYm = @iPlanYm
+			  --LEFT JOIN PDPlanProcessDetail PD ON PD.ItemNo = a.ItemNo AND PD.ProcessCd = a.ProcessCd AND PD.PlanGb = '02' AND pd.PlanYm = @iPlanYm
+			 GROUP BY A.ITEMNO
+		  ) A
+	  -- 20170220 강윤철 소요량 조회대상 변경에 따른 재수정
+	  LEFT JOIN (SELECT	RESULT.DEDITEMNO, SUM(RESULT.QTY)	QTY
+				   FROM	(SELECT	IM.DEDITEMNO
+							,	IM.ITEMNO
+							,	ISNULL(PP.PlanQty,0) * IM.DEDQTY	QTY
+						   FROM	(SELECT	IIM.ITEMNO
+									,	MAX(IIM.DEDQTY)		DEDQTY
+									,	IIM.DEDITEMNO
+								   FROM	(SELECT	BD.ITEMNO
+											,	MAX(BD.DEDQTY)	DEDQTY
+											,	BD.DEDITEMNO
+										   FROM	PDVBomDedItem	BD
+										   JOIN	PDItemMaster	PIM	ON	PIM.ItemNo = BD.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.NotPlanYn != 'Y' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+																	AND PIM.ItemGb IN ('01','02','03') AND PIM.ItemNo NOT IN ('A07-02520','A07-03025','A07-04030','A07-05040')
+										  WHERE	BD.DEDQTYUNIT = 'EA'
+										 GROUP BY BD.ITEMNO,	BD.DEDITEMNO
+										 UNION
+										 SELECT	BR.ItemNo
+											,	1	DEDQTY
+											,	BR.RefItemNo	TARGET_ITEMNO
+										   FROM	PDBomRefItem	BR
+										   JOIN	PDItemMaster	PIM	ON	BR.ItemNo = PIM.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+										 GROUP BY BR.ItemNo, BR.RefItemNo
+								)	IIM
+								GROUP BY ITEMNO, DEDITEMNO
+						  ) IM
+						 JOIN PDPlanProduct	PP	ON	IM.ITEMNO = PP.ItemNo AND PP.PlanYm = @iPlanYm
+				)	RESULT
+				GROUP BY RESULT.DEDITEMNO
+	  )	B	ON	B.DEDITEMNO = A.ItemNo
+	  -- 20170220 강윤철 공정재고에도 BOM배수 적용에 따른 재수정
+	  LEFT JOIN (	SELECT RESULT.DEDITEMNO, SUM(RESULT.BasicQty) HALFSTOCKQTY
+					  FROM (SELECT	IM.DEDITEMNO
+								,	IM.ITEMNO
+								,	ISNULL(PD.BasicQty,0) * IM.DEDQTY	BASICQTY
+							  FROM	(SELECT	IIM.ITEMNO
+										,	MAX(IIM.DEDQTY)		DEDQTY
+										,	IIM.DEDITEMNO
+									   FROM	(SELECT	BD.ITEMNO
+												,	MAX(BD.DEDQTY)	DEDQTY
+												,	BD.DEDITEMNO
+											   FROM	PDVBomDedItem	BD
+											   JOIN	PDItemMaster	PIM	ON	PIM.ItemNo = BD.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.NotPlanYn != 'Y' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+																		AND PIM.ItemGb IN ('01','02','03') AND PIM.ItemNo NOT IN ('A07-02520','A07-03025','A07-04030','A07-05040')
+											  WHERE	BD.DEDQTYUNIT = 'EA'
+											 GROUP BY BD.ITEMNO,	BD.DEDITEMNO
+											UNION
+											 SELECT	BR.ItemNo
+												,	1	DEDQTY
+												,	BR.RefItemNo	TARGET_ITEMNO
+											   FROM	PDBomRefItem	BR
+											   JOIN	PDItemMaster	PIM	ON	BR.ItemNo = PIM.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+											 GROUP BY BR.ItemNo, BR.RefItemNo
+									)	IIM
+									GROUP BY ITEMNO, DEDITEMNO
+							) IM
+					  JOIN PDVHalfItemSeq HS ON HS.itemno = IM.Itemno
+				      JOIN PDItemProcess IP ON IP.ItemNo = HS.ItemNo AND IP.ProcessSeq >= HS.seq_F AND IP.ProcessSeq < HS.seq_T
+					  -- 20161220 강윤철 기준수량들을 전월말 기준으로 변경(완제품공정재고)
+					  JOIN PDPlanProcessDetail PD ON PD.ItemNo = IP.ItemNo AND PD.ProcessCd = IP.ProcessCd AND PD.PlanYm = @iPlanYm
+					  --JOIN PDPlanProcessDetail PD ON PD.ItemNo = IP.ItemNo AND PD.ProcessCd = IP.ProcessCd AND PD.PlanYm = @iPlanYm
+				)	RESULT
+				GROUP BY RESULT.DEDITEMNO
+	  ) c ON c.DedItemNo = a.ItemNo
+	  LEFT JOIN PDPlanMaster  PM ON PM.ItemNo = a.ItemNo AND PM.PlanYm = @iPlanYm AND PM.CONFIRMFL = 'Y' AND PM.PlanGb = '02'
+	  LEFT JOIN PDPlanProduct PP ON PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb AND PP.PlanYm = PM.PlanYm
+	WHERE	1=1 --A.ITEMNM LIKE '%' + @iItemNm + '%'
+	--AND		A.SPEC LIKE '%' + @iSpec + '%'
+	AND ( @iItemNm      is null or @iItemNm      = ''  or  ( @iItemNm      is not null and @iItemNm      <> ''  and A.ITEMNM      LIKE  '%' +@iItemNm+ '%' ))
+	AND ( @iSpec        is null or @iSpec        = ''  or  ( @iSpec        is not null and @iSpec        <> ''  and A.SPEC        LIKE  '%' +@iSpec+ '%' ))
+	--AND		ISNULL(A.HQYN,'N') = @iHQYN
+	 ORDER BY CASE WHEN PLANQTY > 0 THEN 1 ELSE 2 END
+			, CASE a.ITEMNM WHEN '45 편엘보'	THEN 1 
+							WHEN '편소켓'		THEN 2
+							WHEN 'RED-바디'		THEN 3 
+							WHEN 'T 편소켓'		THEN 4 
+							WHEN '유니온 편소켓' THEN 5 
+							WHEN '엘보 밴딩'	THEN 6
+							WHEN '90 엘보벤딩'	THEN 7 
+							WHEN '90 편엘보'	THEN 8 
+							WHEN 'SU 단관'		THEN 9 
+							WHEN '용접 단관'	THEN 10 
+			  ELSE 99 END
+			, SORTORDER
+*/
+
+
+
+	SELECT A.ITEMNO
+		,  MAX(A.ITEMGB)		ITEMGB
+		,  MAX(A.ITEMNM)		ITEMNM
+		,  MAX(A.SPEC)			SPEC	
+		,  MAX(A.PROCESSSEQ)	PROCESSSEQ
+		,  MAX(A.PROCESSCD)		PROCESSCD
+		,  MAX(A.PROCESSNM)		PROCESSNM
+		,  SUM(CASE WHEN a.StockGb IN ('02','03') THEN PD.BasicQty ELSE 0 END)	STOCKQTY	--현재고
+		,  SUM(CASE WHEN a.StockGb IN ('01','03') THEN PD.BasicQty ELSE 0 END)	PROCESSQTY	--공정재고
+		,  SUM(PD.StockQty)	STOCKSUM
+		,  MAX(a.SortOrder)	SORTORDER
+		--,  MAX(A.HQYn)	HQYN
+	INTO #TEMP1
+	FROM (
+		SELECT	IM.ITEMNO, IM.ITEMNM, IM.SPEC, IM.ITEMGB, IM.SortOrder, IP.PROCESSCD, IP.PROCESSNM, IP.PROCESSSEQ, IP.StockGb
+			--, IM.HQYn
+			FROM	PDItemMaster IM
+			JOIN	PDItemProcess IP ON IP.ItemNo = IM.ItemNo
+			WHERE	IM.AcctGb = 'HP'
+			-- 20170315 강윤철 본사진행여부 조회조건 추가
+			AND	IM.HQYn = @iHQYN
+			-- 20180104 강윤철 참조공정 제외되도록 수정
+			AND	NOT EXISTS (SELECT	1
+							FROM	PDBomRefItem	X
+							WHERE	X.ItemNo = IM.ItemNo
+							AND		X.ProcessCd = IP.ProcessCd)
+			-- 20161229 강윤철 해당컬럼은 완제품에만 해당하여 주석처리
+			-- 20180718 정재광 반제품도 적용되도록 변경
+			AND (IM.NotPlanYn != 'Y' OR IM.NotPlanYn IS NULL)
+			AND IM.ItemGrpCd ='SP'
+			AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		) a 
+	-- 20161220 강윤철 기준수량들을 전월말 기준으로 변경(현재고,공정재고)
+	LEFT JOIN PDPlanProcessDetail PD ON PD.ItemNo = a.ItemNo AND PD.ProcessCd = a.ProcessCd AND PD.PlanGb = '02' AND pd.PlanYm = @iPlanYm
+	--LEFT JOIN PDPlanProcessDetail PD ON PD.ItemNo = a.ItemNo AND PD.ProcessCd = a.ProcessCd AND PD.PlanGb = '02' AND pd.PlanYm = @iPlanYm
+	GROUP BY A.ITEMNO
+
+
+	SELECT	RESULT.DEDITEMNO, SUM(RESULT.QTY)	QTY
+	INTO    #TEMP2
+	FROM	(SELECT	IM.DEDITEMNO
+			,	IM.ITEMNO
+			,	ISNULL(PP.PlanQty,0) * IM.DEDQTY	QTY
+			FROM	(SELECT	IIM.ITEMNO
+					,	MAX(IIM.DEDQTY)		DEDQTY
+					,	IIM.DEDITEMNO
+					FROM	(SELECT	BD.ITEMNO
+							,	MAX(BD.DEDQTY)	DEDQTY
+							,	BD.DEDITEMNO
+							FROM	PDVBomDedItem	BD
+							JOIN	PDItemMaster	PIM	ON	PIM.ItemNo = BD.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.NotPlanYn != 'Y' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+													AND PIM.ItemGb IN ('01','02','03') AND PIM.ItemNo NOT IN ('A07-02520','A07-03025','A07-04030','A07-05040')
+							WHERE	BD.DEDQTYUNIT = 'EA'
+							GROUP BY BD.ITEMNO,	BD.DEDITEMNO
+							UNION
+							SELECT	BR.ItemNo
+							,	1	DEDQTY
+							,	BR.RefItemNo	TARGET_ITEMNO
+							FROM	PDBomRefItem	BR
+							JOIN	PDItemMaster	PIM	ON	BR.ItemNo = PIM.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+							GROUP BY BR.ItemNo, BR.RefItemNo
+				)	IIM
+				GROUP BY ITEMNO, DEDITEMNO
+			) IM
+			JOIN PDPlanProduct	PP	ON	IM.ITEMNO = PP.ItemNo AND PP.PlanYm = @iPlanYm
+	)	RESULT
+	GROUP BY RESULT.DEDITEMNO
+
+	SELECT RESULT.DEDITEMNO, SUM(RESULT.BasicQty) HALFSTOCKQTY
+	INTO   #TEMP3
+	FROM (SELECT	IM.DEDITEMNO
+			,	IM.ITEMNO
+			,	ISNULL(PD.BasicQty,0) * IM.DEDQTY	BASICQTY
+			FROM	(SELECT	IIM.ITEMNO
+					,	MAX(IIM.DEDQTY)		DEDQTY
+					,	IIM.DEDITEMNO
+					FROM	(SELECT	BD.ITEMNO
+							,	MAX(BD.DEDQTY)	DEDQTY
+							,	BD.DEDITEMNO
+							FROM	PDVBomDedItem	BD
+							JOIN	PDItemMaster	PIM	ON	PIM.ItemNo = BD.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.NotPlanYn != 'Y' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+													AND PIM.ItemGb IN ('01','02','03') AND PIM.ItemNo NOT IN ('A07-02520','A07-03025','A07-04030','A07-05040')
+							WHERE	BD.DEDQTYUNIT = 'EA'
+							GROUP BY BD.ITEMNO,	BD.DEDITEMNO
+						UNION
+							SELECT	BR.ItemNo
+							,	1	DEDQTY
+							,	BR.RefItemNo	TARGET_ITEMNO
+							FROM	PDBomRefItem	BR
+							JOIN	PDItemMaster	PIM	ON	BR.ItemNo = PIM.ITEMNO AND PIM.AcctGb = 'CP' AND PIM.ItemGrpCd ='SP' AND ISNULL(PIM.ItemInfo,'') <> 'DUZON'
+							GROUP BY BR.ItemNo, BR.RefItemNo
+				)	IIM
+				GROUP BY ITEMNO, DEDITEMNO
+		) IM
+		JOIN PDVHalfItemSeq HS ON HS.itemno = IM.Itemno
+		JOIN PDItemProcess IP ON IP.ItemNo = HS.ItemNo AND IP.ProcessSeq >= HS.seq_F AND IP.ProcessSeq < HS.seq_T
+		-- 20161220 강윤철 기준수량들을 전월말 기준으로 변경(완제품공정재고)
+		JOIN PDPlanProcessDetail PD ON PD.ItemNo = IP.ItemNo AND PD.ProcessCd = IP.ProcessCd AND PD.PlanYm = @iPlanYm
+		--JOIN PDPlanProcessDetail PD ON PD.ItemNo = IP.ItemNo AND PD.ProcessCd = IP.ProcessCd AND PD.PlanYm = @iPlanYm
+	)	RESULT
+	GROUP BY RESULT.DEDITEMNO
+
+
+
+
+	SELECT	A.ITEMNO, A.ITEMNM, A.SPEC, A.ITEMGB,PROCESSSEQ,PROCESSCD,PROCESSNM,STOCKQTY,PROCESSQTY
+		,	ISNULL(C.HALFSTOCKQTY,0)	AS HALFSTOCKQTY
+		,	ISNULL(B.QTY,0)				AS REQUIREQTY
+		-- 20170119 강윤철 좌측그리드의 소요량을 우측 완제품생산계획량그리드의 계획량으로 변경 시 재변경
+		,	ISNULL(A.STOCKQTY,0) + ISNULL(A.PROCESSQTY,0) + ISNULL(C.HALFSTOCKQTY,0) - ISNULL(B.QTY,0)	AS DIFFENCEQTY
+		-- 20161004 강윤철 다성테크 요청으로 공식 변경
+		--,  ISNULL(STOCKSUM,0) + ISNULL(HALFSTOCKQTY,0)  - ISNULL(b.QTY,0)	AS DIFFENCEQTY
+		--,  ISNULL(b.QTY,0) - ISNULL(STOCKSUM,0) - ISNULL(HALFSTOCKQTY,0)	AS DIFFENCEQTY
+		,	ISNULL(PP.PlanQty,0)		AS PLANQTY
+		,	ISNULL(PM.CONFIRMFL,'N')	AS CONFIRMFL
+		,	'S' AUD
+	  FROM #TEMP1 A
+	  -- 20170220 강윤철 소요량 조회대상 변경에 따른 재수정
+	  LEFT JOIN #TEMP2	B	ON	B.DEDITEMNO = A.ItemNo
+	  -- 20170220 강윤철 공정재고에도 BOM배수 적용에 따른 재수정
+	  LEFT JOIN #TEMP3 c ON c.DedItemNo = a.ItemNo
+	  LEFT JOIN PDPlanMaster  PM ON PM.ItemNo = a.ItemNo AND PM.PlanYm = @iPlanYm AND PM.CONFIRMFL = 'Y' AND PM.PlanGb = '02'
+	  LEFT JOIN PDPlanProduct PP ON PP.ItemNo = PM.ItemNo AND PP.PlanGb = PM.PlanGb AND PP.PlanYm = PM.PlanYm
+	WHERE	1=1 --A.ITEMNM LIKE '%' + @iItemNm + '%'
+	--AND		A.SPEC LIKE '%' + @iSpec + '%'
+	AND ( @iItemNm      is null or @iItemNm      = ''  or  ( @iItemNm      is not null and @iItemNm      <> ''  and A.ITEMNM      LIKE  '%' +@iItemNm+ '%' ))
+	AND ( @iSpec        is null or @iSpec        = ''  or  ( @iSpec        is not null and @iSpec        <> ''  and A.SPEC        LIKE  '%' +@iSpec+ '%' ))
+	--AND		ISNULL(A.HQYN,'N') = @iHQYN
+	 ORDER BY CASE WHEN PLANQTY > 0 THEN 1 ELSE 2 END
+			, CASE a.ITEMNM WHEN '45 편엘보'	THEN 1 
+							WHEN '편소켓'		THEN 2
+							WHEN 'RED-바디'		THEN 3 
+							WHEN 'T 편소켓'		THEN 4 
+							WHEN '유니온 편소켓' THEN 5 
+							WHEN '엘보 밴딩'	THEN 6
+							WHEN '90 엘보벤딩'	THEN 7 
+							WHEN '90 편엘보'	THEN 8 
+							WHEN 'SU 단관'		THEN 9 
+							WHEN '용접 단관'	THEN 10 
+			  ELSE 99 END
+			, SORTORDER
+
+
+	DROP TABLE #TEMP1
+	DROP TABLE #TEMP2
+	DROP TABLE #TEMP3
+END
+```
+
+<a id="mispd-str-pdplanprocessdetail-s2"></a>
+## `MISPD.dbo.str_PDPlanProcessDetail_S2`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPlanProcessDetail_S2.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPlanProcessDetail_S2.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 품목별 공정진행 현황
+프로그램 : 
+등 록 일 : 2017-07-05
+등 록 자 : 강윤철
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20170106	강윤철		재열처리수량 추가 시 공정진행현황 상에 재열처리공정에 생산수량으로 재열처리 수량보이기 추가
+20170705	강윤철		TEE의 경우성훈출고까지만 보이도록 수정
+
+EXEC [str_PDPlanProcessDetail_S2] @iPlanYm ='201701', @iPlanGb = '01', @iItemNo = 'A06-02020'
+EXEC [str_PDPlanProcessDetail_S2] @iPlanYm ='201701', @iPlanGb = '01', @iItemNo = 'A01-050'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPlanProcessDetail_S2]
+	@iPlanYm	VARCHAR(6), -- 계획년월
+	@iPlanGb	VARCHAR(3),
+	@iItemNo	VARCHAR(50)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	
+	DECLARE	@wTemperingProcessCd	VARCHAR(30) = ''
+		,	@wTemperingQty			INT = 0
+
+	SELECT	@wTemperingProcessCd = ProcessCd
+	  FROM	PDItemProcess
+	 WHERE	ItemNo = @iItemNo
+	AND	ProcessNm LIKE '재열처리' + '%'
+
+	SELECT	@wTemperingQty = SUM(ISNULL(TemperingQty,0))
+	  FROM	PDWork
+	 WHERE	PlanYm = @iPlanYm
+	   AND	PlanGb = @iPlanGb
+	   AND	ItemNo = @iItemNo
+
+	IF @wTemperingProcessCd = '' BEGIN
+		--기존쿼리 그대로 사용(해당품목에 재열처리 공정이 없을 경우)
+		SELECT PD.ITEMNO
+			,  PD.PROCESSSEQ
+			,  PD.PROCESSCD
+			,  PD.PROCESSNM
+			,  PD.PROCESSGB
+			,  PD.STOCKGB
+			,  PD.PLANYM
+			,  PD.PLANGB
+			,  PD.OUTSOURCINGFL
+			,  PD.CUSTCD
+			,  PD.OUTSOURCINGPRICE
+			,  PD.REFITEMNO
+			,  PD.REFPROCESSCD
+			,  PD.BASICQTY
+			,  PD.ADJUSTQTY
+			,  CONVERT(INT, ROUND(PD.STOCKQTY / (CASE WHEN M.UNIT = '本' THEN 6000.0 ELSE 1.0 END),0)) AS  STOCKQTY
+			,  PD.STOCKQTY	AS EXCQTY
+			,  PD.REFYN
+			 , ISNULL(a.PLANQTY, 0) PLANQTY
+			 , ISNULL(b.WORKQTY, 0) WORKQTY
+			 , CASE WHEN ISNULL(a.PLANQTY, 0) > 0 THEN ROUND(ISNULL(b.WORKQTY, 0) / (ISNULL(a.PLANQTY, 0)*1.0), 3) ELSE 0 END COMPRATE
+		  FROM PDVPlanProcessDetail PD
+		  JOIN PDITEMMASTER M ON M.ITEMNO = PD.ITEMNO AND M.ItemGrpCd ='SP'  AND ISNULL(M.ItemInfo,'') <> 'DUZON'
+		  LEFT JOIN (SELECT	ItemNo
+						,	MAX(ProcessSeq)	PROCESSSEQ
+					   FROM	PDItemProcess
+					  WHERE	ProcessNm LIKE '%성훈입고%'
+					GROUP BY ItemNo
+					)	X	ON	M.ItemNo = X.ItemNo
+		  LEFT JOIN (	SELECT PM.ITEMNO, PP.PROCESSCD, PLANQTY
+						  FROM PDPlanMaster PM
+						  JOIN PDPlanProcess PP ON PP.ItemNo = PM.ItemNo AND PP.PlanYm = PM.PlanYm AND PP.PlanGb = PM.PlanGb AND PP.ConfirmFl = 'Y'
+						 WHERE PM.ItemNo = @iItemNo
+						   AND PM.PlanYm = @iPlanYm
+						   AND PM.PlanGb = '03'
+					) a ON 	a.ItemNo = PD.ITEMNO AND a.ProcessCd = PD.PROCESSCD
+		  LEFT JOIN (	SELECT PROCESSCD, SUM(WORKQTY) WORKQTY
+						  FROM (
+								SELECT VPD.PROCESSCD, ISNULL(W.WORKQTY,0) WORKQTY
+								  FROM PDVPlanProcessDetail VPD
+								  LEFT JOIN PDWork W 
+									ON W.ItemNo = VPD.RefitemNo AND W.ProcessCd = VPD.RefProcessCD AND W.PlanYm = VPD.PlanYm 
+								   AND W.PlanGb = VPD.PlanGb
+								 WHERE VPD.ItemNo = @iItemNo
+									AND VPD.PlanYm = @iPlanYm
+								 UNION ALL
+								SELECT VPD.PROCESSCD, I.INQTY
+								  FROM PDVPlanProcessDetail VPD
+								  JOIN PDOutsourceingIn I
+									ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd LIKE VPD.PlanYm + '%'
+								 WHERE VPD.ItemNo = @iItemNo
+								   AND VPD.PlanYm = @iPlanYm
+								 UNION ALL
+								SELECT VPD.PROCESSCD, O.OUTQTY
+								  FROM PDVPlanProcessDetail VPD
+								  JOIN PDOutsourcingOut O
+									ON O.ItemNo = VPD.RefitemNo AND O.ProcessCd = VPD.RefProcessCD AND O.OutYmd LIKE VPD.PlanYm + '%'
+								 WHERE VPD.ItemNo = @iItemNo
+								   AND VPD.PlanYm = @iPlanYm
+								 UNION ALL
+								SELECT VPD.PROCESSCD, MI.inQty
+								  FROM PDVPlanProcessDetail VPD
+								  JOIN PDMaterialInput MI ON MI.ItemNo = VPD.RefitemNo AND MI.ProcessCd = VPD.RefProcessCD 
+								   AND MI.InYmd LIKE VPD.PlanYm + '%'
+								 WHERE VPD.ItemNo = @iItemNo
+								   AND VPD.PlanYm = @iPlanYm
+							) x
+						 GROUP BY PROCESSCD
+					) b ON b.PROCESSCD = pd.PROCESSCD
+		 WHERE PD.ItemNo = @iItemNo
+		   AND PD.PlanYm = @iPlanYm
+		   AND PD.PROCESSSEQ <= ISNULL(X.ProcessSeq,'99')
+		 ORDER BY PD.PROCESSSEQ
+	END
+	ELSE BEGIN
+		SELECT PD.ITEMNO
+			,  PD.PROCESSSEQ
+			,  PD.PROCESSCD
+			,  PD.PROCESSNM
+			,  PD.PROCESSGB
+			,  PD.STOCKGB
+			,  PD.PLANYM
+			,  PD.PLANGB
+			,  PD.OUTSOURCINGFL
+			,  PD.CUSTCD
+			,  PD.OUTSOURCINGPRICE
+			,  PD.REFITEMNO
+			,  PD.REFPROCESSCD
+			,  PD.BASICQTY
+			,  PD.ADJUSTQTY
+			,  CONVERT(INT, ROUND(PD.STOCKQTY / (CASE WHEN M.UNIT = '本' THEN 6000.0 ELSE 1.0 END),0)) AS  STOCKQTY
+			,  PD.STOCKQTY	AS EXCQTY
+			,  PD.REFYN
+			 , ISNULL(a.PLANQTY, 0) PLANQTY
+			 , CASE WHEN PD.PROCESSCD = @wTemperingProcessCd THEN @wTemperingQty ELSE ISNULL(b.WORKQTY, 0) END WORKQTY
+			 , CASE WHEN ISNULL(a.PLANQTY, 0) > 0 THEN ROUND(ISNULL(b.WORKQTY, 0) / (ISNULL(a.PLANQTY, 0)*1.0), 3) ELSE 0 END COMPRATE
+		  FROM PDVPlanProcessDetail PD
+		  JOIN PDITEMMASTER M ON M.ITEMNO = PD.ITEMNO AND M.ItemGrpCd ='SP'  AND ISNULL(M.ItemInfo,'') <> 'DUZON'
+		  LEFT JOIN (SELECT	ItemNo
+						,	MAX(ProcessSeq)	PROCESSSEQ
+					   FROM	PDItemProcess
+					  WHERE	ProcessNm LIKE '%성훈입고%'
+					GROUP BY ItemNo
+					)	X	ON	M.ItemNo = X.ItemNo
+		  LEFT JOIN (	SELECT PM.ITEMNO, PP.PROCESSCD, PLANQTY
+						  FROM PDPlanMaster PM
+						  JOIN PDPlanProcess PP ON PP.ItemNo = PM.ItemNo AND PP.PlanYm = PM.PlanYm AND PP.PlanGb = PM.PlanGb AND PP.ConfirmFl = 'Y'
+						 WHERE PM.ItemNo = @iItemNo
+						   AND PM.PlanYm = @iPlanYm
+						   AND PM.PlanGb = '03'
+					) a ON 	a.ItemNo = PD.ITEMNO AND a.ProcessCd = PD.PROCESSCD
+		  LEFT JOIN (	SELECT PROCESSCD, SUM(WORKQTY) WORKQTY
+						  FROM (
+								SELECT VPD.PROCESSCD, ISNULL(W.WORKQTY,0) WORKQTY
+								  FROM PDVPlanProcessDetail VPD
+								  LEFT JOIN PDWork W 
+									ON W.ItemNo = VPD.RefitemNo AND W.ProcessCd = VPD.RefProcessCD AND W.PlanYm = VPD.PlanYm 
+								   AND W.PlanGb = VPD.PlanGb
+								 WHERE VPD.ItemNo = @iItemNo
+									AND VPD.PlanYm = @iPlanYm
+								 UNION ALL
+								SELECT VPD.PROCESSCD, I.INQTY
+								  FROM PDVPlanProcessDetail VPD
+								  JOIN PDOutsourceingIn I
+									ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd LIKE VPD.PlanYm + '%'
+								 WHERE VPD.ItemNo = @iItemNo
+								   AND VPD.PlanYm = @iPlanYm
+								 UNION ALL
+								SELECT VPD.PROCESSCD, O.OUTQTY
+								  FROM PDVPlanProcessDetail VPD
+								  JOIN PDOutsourcingOut O
+									ON O.ItemNo = VPD.RefitemNo AND O.ProcessCd = VPD.RefProcessCD AND O.OutYmd LIKE VPD.PlanYm + '%'
+								 WHERE VPD.ItemNo = @iItemNo
+								   AND VPD.PlanYm = @iPlanYm
+								 UNION ALL
+								SELECT VPD.PROCESSCD, MI.inQty
+								  FROM PDVPlanProcessDetail VPD
+								  JOIN PDMaterialInput MI ON MI.ItemNo = VPD.RefitemNo AND MI.ProcessCd = VPD.RefProcessCD 
+								   AND MI.InYmd LIKE VPD.PlanYm + '%'
+								 WHERE VPD.ItemNo = @iItemNo
+								   AND VPD.PlanYm = @iPlanYm
+							) x
+						 GROUP BY PROCESSCD
+					) b ON b.PROCESSCD = pd.PROCESSCD
+		 WHERE PD.ItemNo = @iItemNo
+		   AND PD.PlanYm = @iPlanYm
+		   AND PD.PROCESSSEQ <= ISNULL(X.ProcessSeq,'99')
+		 ORDER BY PD.PROCESSSEQ
+	END
+END
+```
+
+<a id="mispd-str-pdplnb00700-s"></a>
+## `MISPD.dbo.str_PDPLNB00700_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPLNB00700_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPLNB00700_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 외주(성훈) 생산계획 진행현황
+프로그램 : 
+등 록 일 : 2016-08-24
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20170705	강윤철		반제품의 경우 완제품인 TEE를 포함하도록 수정
+20171011	강윤철		완제품의 경우 물류재고 로직 변경
+20171025	강윤철		반제품 그리드의 성훈재고 컬럼을 해당공정의 현재고에서 기초재고로 변경
+20171106	강윤철		TEE품목 조회대상 규격규칙 변경
+
+EXEC [str_PDPLNB00700_S] @iPlanYm ='201711', @iPlanGb = '02', @iAcctGb = 'HP', @iItemNm = '편엘보'
+EXEC [str_PDPLNB00700_S] @iPlanYm ='201703', @iPlanGb = '02', @iAcctGb = 'CP'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPLNB00700_S]
+		@iPlanYm	VARCHAR(6) -- 계획년월
+	,	@iPlanGb	VARCHAR(3)	
+	,	@iItemNm	VARCHAR(50) = ''
+	,	@iSpec		VARCHAR(50) = ''
+	,	@iAcctGb	VARCHAR(10) = '%'
+AS
+
+DECLARE @TEMP TABLE (
+		DEDITEMNO		VARCHAR(50)
+	  , PLANQTY			INT
+	  , ADDPLANQTY		INT
+)
+
+BEGIN
+	SET NOCOUNT ON;
+
+	IF @iAcctGb = 'CP' BEGIN
+		INSERT INTO @TEMP
+		SELECT DEDITEMNO
+			 , SUM(CALCQTY)		PLANQTY
+			 , SUM(ADDPLANQTY)	ADDPLANQTY
+		FROM  (SELECT BD.DEDITEMNO
+					, BD.ITEMNO			ITEMNO
+					, MAX(IM.ItemNm)	ITEMNM
+					, IM.Spec			SPEC
+					, BD.DEDQTY			DEDQTY
+					, ISNULL(SUM(PP.PlanQty),0)	PLANQTY
+					, ISNULL(SUM(PP.PlanQty),0) * ISNULL(BD.DEDQTY,0)	CALCQTY
+					, ISNULL(MAX(PPD.AddPlanQty),0) * ISNULL(BD.DEDQTY,0)	ADDPLANQTY
+			   FROM  PDBomDedItem	BD
+			   INNER JOIN PDItemMaster IM ON IM.ItemNo = BD.ITEMNO AND IM.ItemGrpCd ='SP' AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+			   INNER JOIN PDVHalfItemSeq HS ON HS.itemno = IM.Itemno
+			   INNER JOIN PDItemProcess IP ON BD.ITEMNO = IP.ItemNo AND IP.ProcessSeq BETWEEN HS.seq_F AND HS.seq_T
+			   LEFT JOIN (SELECT * FROM PDPlanProcess WHERE PlanYm = @iPlanYm) PP ON IM.ItemNo = PP.ItemNo AND BD.PROCESSCD = PP.ProcessCd AND PP.PlanYm = @iPlanYm
+			   LEFT JOIN PDPlanProduct PPD ON PPD.PlanYm = @iPlanYm AND PPD.ItemNo = IM.ItemNo AND PPD.PlanGb = (CASE WHEN IM.AcctGb = 'CP' THEN '01' ELSE '02' END)
+			   WHERE  IP.ProcessNm LIKE '성훈입고%'
+				   GROUP BY BD.DEDITEMNO, BD.ITEMNO, IM.Spec, BD.DEDQTY
+			  ) RESULT
+		GROUP BY RESULT.DEDITEMNO
+
+
+		SELECT IM.ITEMNO
+			,  MAX(IM.ITEMNM)				AS ITEMNM
+			,  MAX(IM.SPEC)					AS SPEC		
+			,  MAX(IM.SORTORDER)			AS SORTORDER
+			,  MAX(IM.ACCTGB)				AS ACCTGB
+			,  ISNULL(MAX(PL.PLANQTY),0)	AS PLANQTY	--성훈입고 계획량
+			--,  ISNULL(MAX(SO.PLANQTY),0)	AS SOYOQTY	--소요량(해당 품목을 차감으로 사용하고 있는 계획량 합)
+			,  ISNULL(MAX(SO.PLANQTY),0) + ISNULL(MAX(SO.ADDPLANQTY),0)	AS SOYOQTY	--소요량(해당 품목을 차감으로 사용하고 있는 계획량 합)
+			,  SUM(CASE WHEN IP.ProcessNm LIKE '%성훈출고%' THEN PPD.StockQty ELSE 0 END)		AS PROCESSQTY	--성훈(공정)재고
+			--,  ISNULL(MAX(SO.PLANQTY),0) - SUM(CASE WHEN IP.ProcessNm LIKE '%성훈출고%' THEN PPD.StockQty ELSE 0 END) - ISNULL(MAX(W.PRODUCTQTY), 0)	AS BUJOK
+			,  ISNULL(MAX(SO.PLANQTY),0) + ISNULL(MAX(SO.ADDPLANQTY),0) - SUM(CASE WHEN IP.ProcessNm LIKE '%성훈출고%' THEN PPD.StockQty ELSE 0 END) - ISNULL(MAX(W.PRODUCTQTY), 0)	AS BUJOK
+			-- 20170410 강윤철 기존 부족수량 계산식 변경
+			--,  ISNULL(MAX(SO.PLANQTY),0) - SUM(CASE WHEN IP.ProcessNm LIKE '%성훈출고%' THEN PPD.StockQty ELSE 0 END)	AS BUJOK
+			-- 20171011 강윤철 완제품의 경우 물류재고 로직 변경
+			--,  MAX(CASE WHEN IM.ACCTGB = 'HP' OR IM.ITEMNM = '앙카소켓' THEN PD.STOCKQTY ELSE S.STOCKQTY END)			AS STOCKQTY
+			,  MAX(S.STOCKQTY)			AS STOCKQTY
+			,  ISNULL(MAX(W.PRODUCTQTY),0)	AS PRODUCTQTY		--성훈입고 수량의 합이 생산수량임
+			,  CASE WHEN ISNULL(MAX(PL.PLANQTY),0) > 0 THEN ROUND(ISNULL(MAX(W.PRODUCTQTY),0) / (ISNULL(MAX(PL.PLANQTY),0)*1.0), 3) ELSE 0 END COMPRATE
+		  FROM PDItemMaster IM
+		  JOIN PDItemProcess IP ON IP.ItemNo = IM.ItemNo
+		  JOIN PDPlanProcessDetail PPD ON PPD.ItemNo = IP.ItemNo AND PPD.ProcessCd = IP.ProcessCd AND PPD.PlanYm = @iPlanYm
+		  --계획수량(성훈입고 공정계획량)
+		  LEFT JOIN (	SELECT ITEMNO, SUM(planQTy) PLANQTY
+						  FROM PDPlanProcess	
+						 WHERE PlanYm = @iPlanYm
+						   AND ConfirmFl = 'Y'
+						   AND ProcessNm LIKE '성훈입고' + '%'
+						 GROUP BY ItemNo  
+					) PL ON PL.ITEMNO = IM.ITEMNO
+		  -- 20170410 강윤철 소요량 산출식 변경 str_PDPlanItemProductWithSelf_S의 대상에 대한 합계로 변경함
+		  --소요량(차감항목이 있는 품목들중의 성훈입고 공정계획량 합)
+		  /*20210929 조회속도 저하 문제로 @TEMP로 대체
+		  LEFT JOIN (	SELECT	DEDITEMNO
+							--,	SUM(PLANQTY)	PLANQTY
+							,	SUM(CALCQTY)	PLANQTY
+							,	SUM(ADDPLANQTY)	ADDPLANQTY
+						FROM	(SELECT	BD.DEDITEMNO
+									,	BD.ITEMNO		ITEMNO
+									,	MAX(IM.ItemNm)	ITEMNM
+									,	IM.Spec			SPEC
+									,	BD.DEDQTY		DEDQTY
+									,	ISNULL(SUM(PP.PlanQty),0)	PLANQTY
+									,	ISNULL(SUM(PP.PlanQty),0) * ISNULL(BD.DEDQTY,0)	CALCQTY
+									,	ISNULL(MAX(PPD.AddPlanQty),0) * ISNULL(BD.DEDQTY,0)	ADDPLANQTY
+								FROM	PDBomDedItem	BD
+								JOIN	PDItemMaster	IM	ON	IM.ItemNo = BD.ITEMNO AND IM.ItemGrpCd ='SP' AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+								JOIN	PDVHalfItemSeq	HS	ON	HS.itemno = IM.Itemno
+								JOIN	PDItemProcess	IP	ON	BD.ITEMNO = IP.ItemNo AND IP.ProcessSeq BETWEEN HS.seq_F AND HS.seq_T
+								LEFT JOIN	PDPlanProcess	PP	ON	IM.ItemNo = PP.ItemNo AND BD.PROCESSCD = PP.ProcessCd AND PP.PlanYm = @iPlanYm
+								LEFT JOIN	PDPlanProduct	PPD	ON	PPD.PlanYm = @iPlanYm AND PPD.ItemNo = IM.ItemNo AND PPD.PlanGb = (CASE WHEN IM.AcctGb = 'CP' THEN '01' ELSE '02' END)
+								WHERE	IP.ProcessNm LIKE '성훈입고%'
+									GROUP BY BD.DEDITEMNO, BD.ITEMNO, IM.Spec, BD.DEDQTY
+						) RESULT
+						GROUP BY RESULT.DEDITEMNO
+			)	So	ON So.DedItemNo = IM.ItemNo
+			*/
+		  LEFT JOIN @TEMP SO ON SO.DEDITEMNO = IM.ItemNo
+		  ----소요량(차감항목이 있는 품목들의 계획량 합)
+		  --LEFT JOIN (	SELECT DEDITEMNO, SUM(PP.PLANQTY)	PLANQTY
+				--		  FROM (	
+				--				SELECT ITEMNO, DEDITEMNO
+				--				  FROM PDBomDedItem
+				--				 WHERE ItemNo LIKE '[A,B]%'
+				--				 GROUP BY ITEMNO, DEDITEMNO
+				--				 UNION ALL
+				--				SELECT ITEMNO, ITEMNO
+				--				  FROM PDItemMaster
+				--				 WHERE ItemNo LIKE '[A,B]%'
+				--				 GROUP BY ITEMNO
+				--				) IM
+				--		  JOIN PDPlanMaster  PM ON PM.ItemNo = IM.ItemNo AND PM.PlanYm = @iPlanYm AND PM.CONFIRMFL = 'Y'
+				--		  JOIN PDPlanProduct PP ON PP.ItemNo = PM.ItemNo AND PP.PlanYm = PM.PlanYm AND PP.PlanGb = PM.PlanGb
+				--		 GROUP BY IM.DEDITEMNO
+				--	) So ON So.DedItemNo = IM.ItemNo
+		  --완제품 재고
+		  LEFT JOIN (SELECT ITEMNO, SUM(STOCKQTY) STOCKQTY FROM PDSTOCK WHERE StockYm = @iPlanYm GROUP BY ITEMNO) S ON S.ITEMNO = IM.ITEMNO
+		  --반제품 재고
+		  -- 20171011 강윤철 완제품의 경우 물류재고 로직 변경 시 주석처리
+		  --LEFT JOIN (	SELECT IM.ITEMNO
+				--			, SUM(CASE	WHEN IP.PROCESSNM = '외주입고'	AND	IM.ITEMNM IN ('아답타 F','아답타 M','아답타 W','아답타 W(숏)','랩단관','소화닛불', '소화 아답타 M') THEN PD.StockQty 
+				--					WHEN IP.PROCESSNM = '명성입고'	AND	IM.ITEMNM = 'CAP(제작)' THEN PD.StockQty			   
+				--					WHEN IP.PROCESSNM = '세척'		AND IM.ITEMNM IN ('RED-바디') THEN PD.StockQty  
+				--					WHEN IP.PROCESSNM = '컷팅'		AND IM.ITEMNM = 'SU 단관' THEN PD.StockQty  
+				--					WHEN IP.PROCESSNM = '태양입고'	AND IM.ITEMNM = '90 편엘보' AND IM.Spec IN ('60','50','40','30') THEN PD.StockQty
+				--					WHEN IP.PROCESSNM IN ('성훈입고 (엘보컷팅)','태양입고')	AND IM.ITEMNM = '90 편엘보' AND IM.Spec IN ('25','20','13') THEN PD.StockQty
+				--					WHEN IP.PROCESSNM = '세척'		AND IM.ITEMNM = '편소켓' AND IM.Spec IN ('60','50','40','30')  THEN PD.StockQty
+				--					WHEN IP.PROCESSNM = '보유량'	AND IM.ITEMNM = '편소켓' AND IM.Spec IN ('25','20','13')  THEN PD.StockQty
+				--					WHEN IP.PROCESSNM = '세척'		AND IM.ITEMNM = 'T 편소켓'  AND IM.Spec IN ('60','50','40','30','25')  THEN PD.StockQty
+				--					WHEN IP.PROCESSNM = '명성입고'	AND IM.ITEMNM = 'T 편소켓'  AND IM.Spec IN ('20','13')  THEN PD.StockQty
+				--				ELSE 0 END) STOCKQTY
+				--		FROM PDItemMaster IM
+				--		JOIN PDItemProcess IP ON IP.ItemNo = IM.ItemNo					  
+				--		LEFT JOIN PDPlanProcessDetail PD ON PD.ITEMNO = IP.ItemNo AND PD.PROCESSCD = IP.ProcessCd AND PD.PLANYM = @iPlanYm
+				--		WHERE IM.AcctGb = 'HP'
+				--		GROUP BY IM.ITEMNO
+				--		 UNION ALL
+				--		SELECT IM.ITEMNO
+				--			, SUM(CASE WHEN IP.processNm = '면치' THEN PD.STOCKQTY ELSE 0 END)
+				--		  FROM PDItemMaster IM
+				--		JOIN PDItemProcess IP ON IP.ItemNo = IM.ItemNo					  
+				--		LEFT JOIN PDPlanProcessDetail PD ON PD.ITEMNO = IP.ItemNo AND PD.PROCESSCD = IP.ProcessCd AND PD.PLANYM = @iPlanYm
+				--		WHERE im.ItemNm = '앙카소켓'
+				--		  AND IM.AcctGb = 'CP'
+				--		GROUP BY IM.ITEMNO
+				--	) PD ON PD.ITEMNO = IM.ItemNo
+	  
+		  --생산수량(성훈입고 생산수량 - 20170410_반제품의 경우 화면상의 컬럼명은 성훈출고로 해달라 요청하고 가져가는 값은 성훈입고량임)
+		  LEFT JOIN (	SELECT IP.ItemNo, SUM(W.InQty) PRODUCTQTY
+						  FROM PDItemProcess IP
+						  JOIN PDOutsourceingIn W ON w.ItemNo = IP.ItemNo AND w.ProcessCd = IP.ProcessCd AND W.InYmd LIKe @iPlanYm + '%'
+						 WHERE IP.ProcessNm LIKE '성훈입고' + '%'
+						 GROUP BY IP.ItemNo
+					) W ON W.ItemNo = IM.ItemNo
+		 WHERE IM.AcctGb = 'CP'
+		   AND IM.ITEMNM LIKE '%' + @iItemNm + '%'
+		   AND IM.Spec LIKE  '%' + @iSpec + '%'
+		   AND IM.ItemGrpCd ='SP'
+		   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		   AND EXISTS (	SELECT 1
+						  FROM PDItemProcess x
+						 WHERE x.ItemNo = IM.ItemNo
+						   AND x.ProcessNm LIKE '%성훈%')
+		   AND NOT EXISTS (	select 1
+						  from PDBomRefItem x
+						 where x.ItemNo = ip.ItemNo
+						   AND x.ProcessCd = IP.ProcessCd)
+		GROUP BY IM.ItemNo
+		ORDER BY ACCTGB, SORTORDER
+	END
+	-- 20170705 강윤철 반제품의 경우 완제품중 TEE추가
+	ELSE IF @iAcctGb = 'HP' BEGIN
+		INSERT INTO @TEMP
+		SELECT DEDITEMNO
+			 , SUM(CALCQTY)		PLANQTY
+			 , SUM(ADDPLANQTY)	ADDPLANQTY
+		FROM  (SELECT BD.DEDITEMNO
+					, BD.ITEMNO			ITEMNO
+					, MAX(IM.ItemNm)	ITEMNM
+					, IM.Spec			SPEC
+					, BD.DEDQTY			DEDQTY
+					, ISNULL(SUM(PP.PlanQty),0)	PLANQTY
+					, ISNULL(SUM(PP.PlanQty),0) * ISNULL(BD.DEDQTY,0)	CALCQTY
+					, ISNULL(MAX(PPD.AddPlanQty),0) * ISNULL(BD.DEDQTY,0)	ADDPLANQTY
+			   FROM   PDBomDedItem BD
+			   INNER JOIN PDItemMaster IM ON IM.ItemNo = BD.ITEMNO AND IM.ItemGrpCd ='SP' AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+			   INNER JOIN PDVHalfItemSeq HS ON HS.itemno = IM.Itemno
+			   INNER JOIN PDItemProcess IP ON BD.ITEMNO = IP.ItemNo AND IP.ProcessSeq BETWEEN HS.seq_F AND HS.seq_T
+			   LEFT JOIN (SELECT * FROM PDPlanProcess WHERE PlanYm = @iPlanYm) PP ON IM.ItemNo = PP.ItemNo AND BD.PROCESSCD = PP.ProcessCd AND PP.PlanYm = @iPlanYm
+			   LEFT JOIN PDPlanProduct PPD ON PPD.PlanYm = @iPlanYm AND PPD.ItemNo = IM.ItemNo AND PPD.PlanGb = (CASE WHEN IM.AcctGb = 'CP' THEN '01' ELSE '02' END)
+			   WHERE  IP.ProcessNm LIKE '성훈입고%'
+				   GROUP BY BD.DEDITEMNO, BD.ITEMNO, IM.Spec, BD.DEDQTY
+			  ) RESULT
+		GROUP BY RESULT.DEDITEMNO
+
+		SELECT	'HP'						AS GB
+			,	IM.ItemNo					AS ITEMNO
+			,	IM.ItemNm					AS ITEMNM
+			,	MAX(IM.Spec)				AS SPEC
+			--,	ISNULL(MAX(SO.PLANQTY),0)	AS SOYOQTY
+			,	ISNULL(MAX(SO.PLANQTY),0) + ISNULL(MAX(SO.ADDPLANQTY),0)	AS SOYOQTY
+			,	ISNULL(MAX(R1.SH_STOCK),0)	AS SH_STOCK
+			,	ISNULL(MAX(R1.HQ_STOCK),0)	AS HQ_STOCK
+			,	ISNULL(MAX(B.WORKQTY),0)	AS WORKQTY
+			--,	ISNULL(MAX(SO.PLANQTY),0) - ISNULL(MAX(B.WORKQTY),0) - ISNULL(MAX(R1.SH_STOCK),0)	AS BUJOK
+			, 0 - ISNULL(MAX(SO.PLANQTY),0) - ISNULL(MAX(SO.ADDPLANQTY),0) + ISNULL(MAX(B.WORKQTY),0) + ISNULL(MAX(R1.SH_STOCK),0)	AS BUJOK
+			-- +, - 서로 변경함 20180201 정재광(최광수과장 요청)
+			--,	ISNULL(MAX(SO.PLANQTY),0) + ISNULL(MAX(SO.ADDPLANQTY),0) - ISNULL(MAX(B.WORKQTY),0) - ISNULL(MAX(R1.SH_STOCK),0)	AS BUJOK
+			,	MAX(IM.SORTORDER)			AS SORTORDER
+		FROM	PDItemMaster	IM
+		JOIN	PDItemProcess	IP	ON IP.ItemNo = IM.ItemNo
+		--소요량(차감항목이 있는 품목들중의 성훈입고 공정계획량 합)
+		/*20210929 조회속도 저하 개선을 위해 @TEMP로 변경
+		LEFT JOIN (	SELECT	DEDITEMNO
+						--,	SUM(PLANQTY)	PLANQTY
+						,	SUM(CALCQTY)	PLANQTY
+						,	SUM(ADDPLANQTY)	ADDPLANQTY
+					FROM	(SELECT	BD.DEDITEMNO
+								,	BD.ITEMNO		ITEMNO
+								,	MAX(IM.ItemNm)	ITEMNM
+								,	IM.Spec			SPEC
+								,	BD.DEDQTY		DEDQTY
+								,	ISNULL(SUM(PP.PlanQty),0)	PLANQTY
+								,	ISNULL(SUM(PP.PlanQty),0) * ISNULL(BD.DEDQTY,0)	CALCQTY
+								,	ISNULL(MAX(PPD.AddPlanQty),0) * ISNULL(BD.DEDQTY,0)	ADDPLANQTY
+							FROM	PDBomDedItem	BD
+							JOIN	PDItemMaster	IM	ON	IM.ItemNo = BD.ITEMNO AND IM.ItemGrpCd ='SP' AND  ISNULL(IM.ItemInfo,'') <> 'DUZON'
+							JOIN	PDVHalfItemSeq	HS	ON	HS.itemno = IM.Itemno
+							JOIN	PDItemProcess	IP	ON	BD.ITEMNO = IP.ItemNo AND IP.ProcessSeq BETWEEN HS.seq_F AND HS.seq_T
+							LEFT JOIN	PDPlanProcess	PP	ON	IM.ItemNo = PP.ItemNo AND BD.PROCESSCD = PP.ProcessCd AND PP.PlanYm = @iPlanYm
+							LEFT JOIN	PDPlanProduct	PPD	ON	PPD.PlanYm = @iPlanYm AND PPD.ItemNo = IM.ItemNo AND PPD.PlanGb = (CASE WHEN IM.AcctGb = 'CP' THEN '01' ELSE '02' END)
+							WHERE	IP.ProcessNm LIKE '성훈입고%'
+								GROUP BY BD.DEDITEMNO, BD.ITEMNO, IM.Spec, BD.DEDQTY
+					) RESULT
+					GROUP BY RESULT.DEDITEMNO
+		)	So	ON So.DedItemNo = IM.ItemNo
+		*/
+		LEFT JOIN @TEMP SO ON SO.DEDITEMNO = IM.ItemNo
+		LEFT JOIN	(SELECT	ITEMNO
+						,	SUM(SH_STOCK)	SH_STOCK
+						,	SUM(HQ_STOCK)	HQ_STOCK
+					FROM	(SELECT	ITEMNO
+								-- 20171025 강윤철 반제품 그리드의 성훈재고 컬럼을 해당공정의 현재고에서 기초재고로 변경
+								,	CASE WHEN PROCESSNM LIKE '성훈출고%' THEN BASICQTY ELSE 0 END SH_STOCK
+								--,	CASE WHEN PROCESSNM LIKE '성훈출고%' THEN STOCKQTY ELSE 0 END SH_STOCK
+								,	CASE WHEN PROCESSNM LIKE '성훈입고%' THEN STOCKQTY ELSE 0 END HQ_STOCK
+							FROM	PDVPlanProcessDetail
+							WHERE	PROCESSNM LIKE '성훈%'
+							AND		PLANYM = @iPlanYm
+							AND		REFYN = 'N'
+					) RESULT
+					GROUP BY RESULT.ITEMNO
+		)	R1	ON R1.ITEMNO = IM.ItemNo
+		LEFT JOIN (SELECT	ITEMNO
+						,	PROCESSCD
+						,	PROCESSNM
+						,	SUM(WORKQTY)	WORKQTY
+					FROM	(SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(W.WORKQTY,0) WORKQTY
+							FROM	PDVPlanProcessDetail	VPD
+							LEFT JOIN	PDWork	W	ON W.ItemNo = VPD.RefitemNo AND W.ProcessCd = VPD.RefProcessCD AND W.PlanYm = VPD.PlanYm AND W.PlanGb = VPD.PlanGb
+							WHERE VPD.PlanYm = @iPlanYm
+							AND		VPD.REFYN = 'N'
+							AND		VPD.PROCESSNM LIKE '성훈출고%'
+							UNION ALL
+							SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(I.INQTY,0) WORKQTY
+							FROM	PDVPlanProcessDetail	VPD
+							--LEFT JOIN	PDOutsourceingIn	I	ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd LIKE VPD.PlanYm + '%'
+							LEFT JOIN	PDOutsourceingIn	I	ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd BETWEEN VPD.PlanYm + '00' AND VPD.PlanYm + '99'
+							WHERE	VPD.PlanYm = @iPlanYm
+							AND		VPD.REFYN = 'N'
+							AND		VPD.PROCESSNM LIKE '성훈출고%'
+							UNION ALL
+							SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(O.OUTQTY,0) WORKQTY
+							FROM	PDVPlanProcessDetail	VPD
+							--LEFT JOIN	PDOutsourcingOut	O	ON O.ItemNo = VPD.RefitemNo AND O.ProcessCd = VPD.RefProcessCD AND O.OutYmd LIKE VPD.PlanYm + '%'
+							LEFT JOIN	PDOutsourcingOut	O	ON O.ItemNo = VPD.RefitemNo AND O.ProcessCd = VPD.RefProcessCD AND O.OutYmd BETWEEN VPD.PlanYm + '00' AND VPD.PlanYm + '99'
+							WHERE	VPD.PlanYm = @iPlanYm
+							AND		VPD.REFYN = 'N'
+							AND		VPD.PROCESSNM LIKE '성훈출고%'
+							UNION ALL
+							SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(MI.inQty,0) WORKQTY
+							FROM	PDVPlanProcessDetail	VPD
+							--LEFT JOIN	PDMaterialInput	MI	ON MI.ItemNo = VPD.RefitemNo AND MI.ProcessCd = VPD.RefProcessCD AND MI.InYmd LIKE VPD.PlanYm + '%'
+							LEFT JOIN	PDMaterialInput	MI	ON MI.ItemNo = VPD.RefitemNo AND MI.ProcessCd = VPD.RefProcessCD AND MI.InYmd BETWEEN VPD.PlanYm + '00' AND VPD.PlanYm + '99'
+							WHERE	VPD.PlanYm = @iPlanYm
+							AND		VPD.REFYN = 'N'
+							AND		VPD.PROCESSNM LIKE '성훈출고%'
+					)	X
+					GROUP BY ITEMNO, PROCESSCD, PROCESSNM
+		) B ON B.ITEMNO = IM.ItemNo AND B.PROCESSCD = IP.ProcessCd
+		WHERE	IM.AcctGb = 'HP'
+		AND     IM.ItemGrpCd ='SP'
+		AND     ISNULL(IM.ItemInfo,'') <> 'DUZON'
+		AND		IM.ITEMNM LIKE '%' + '' + '%'
+		AND		IM.Spec LIKE  '%' + '' + '%'
+		AND EXISTS (	SELECT 1
+						FROM PDItemProcess X
+						WHERE X.ItemNo = IM.ItemNo
+						AND X.ProcessNm LIKE '%성훈%')
+		AND NOT EXISTS (	select 1
+						from PDBomRefItem Y
+						where Y.ItemNo = IP.ItemNo
+						AND Y.ProcessCd = IP.ProcessCd)
+		GROUP BY IM.ItemNo, IM.ItemNm
+
+		UNION
+
+		SELECT	GB
+			,	ITEMNO
+			,	ITEMNM
+			,	SPEC
+			,	SOYOQTY
+			,	SH_STOCK
+			,	HQ_STOCK
+			,	WORKQTY
+			, 0 - SOYOQTY + WORKQTY + SH_STOCK	AS BUJOK
+			-- +, - 서로 변경함 20180201 정재광(최광수과장 요청)
+			--, SOYOQTY - WORKQTY - SH_STOCK	AS BUJOK
+			,	SORTORDER
+		FROM	(SELECT	'CP'						AS GB
+					,	IM.ItemNo					AS ITEMNO
+					,	IM.ItemNm					AS ITEMNM
+					,	MAX(IM.Spec)				AS SPEC
+					,	MISPD.DBO.FN_Get_SOYOQty(@iPlanYm,IM.ItemNo,'CP')	AS SOYOQTY
+					,	ISNULL(MAX(R1.SH_STOCK),0)	AS SH_STOCK
+					,	ISNULL(MAX(R1.HQ_STOCK),0)	AS HQ_STOCK
+					,	ISNULL(MAX(B.WORKQTY),0)	AS WORKQTY
+					--,	MISPD.DBO.FN_Get_SOYOQty(@iPlanYm,IM.ItemNo,'CP')-ISNULL(MAX(B.WORKQTY),0)-ISNULL(MAX(R1.SH_STOCK),0)	AS BUJOK
+					,	MAX(IM.SORTORDER)			AS SORTORDER
+				FROM	PDItemMaster	IM
+				JOIN	PDItemProcess	IP	ON IP.ItemNo = IM.ItemNo
+				LEFT JOIN	(SELECT	ITEMNO
+								,	SUM(SH_STOCK)	SH_STOCK
+								,	SUM(HQ_STOCK)	HQ_STOCK
+							FROM	(SELECT	ITEMNO
+										-- 20171025 강윤철 반제품 그리드의 성훈재고 컬럼을 해당공정의 현재고에서 기초재고로 변경
+										,	CASE WHEN PROCESSNM LIKE '성훈출고%' THEN BASICQTY ELSE 0 END SH_STOCK
+										--,	CASE WHEN PROCESSNM LIKE '성훈출고%' THEN STOCKQTY ELSE 0 END SH_STOCK
+										,	CASE WHEN PROCESSNM LIKE '성훈입고%' THEN STOCKQTY ELSE 0 END HQ_STOCK
+									FROM	PDVPlanProcessDetail
+									WHERE	PROCESSNM LIKE '성훈%'
+									AND		PLANYM = @iPlanYm
+									AND		REFYN = 'N'
+							) RESULT
+							GROUP BY RESULT.ITEMNO
+				)	R1	ON R1.ITEMNO = IM.ItemNo
+				LEFT JOIN (SELECT	ITEMNO
+								,	PROCESSCD
+								,	PROCESSNM
+								,	SUM(WORKQTY)	WORKQTY
+							FROM	(SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(W.WORKQTY,0) WORKQTY
+									FROM	PDVPlanProcessDetail	VPD
+									LEFT JOIN	PDWork	W	ON W.ItemNo = VPD.RefitemNo AND W.ProcessCd = VPD.RefProcessCD AND W.PlanYm = VPD.PlanYm AND W.PlanGb = VPD.PlanGb
+									WHERE VPD.PlanYm = @iPlanYm
+									AND		VPD.REFYN = 'N'
+									AND		VPD.PROCESSNM LIKE '성훈출고%'
+									UNION ALL
+									SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(I.INQTY,0) WORKQTY
+									FROM	PDVPlanProcessDetail	VPD
+									--LEFT JOIN	PDOutsourceingIn	I	ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd LIKE VPD.PlanYm + '%'
+									LEFT JOIN	PDOutsourceingIn	I	ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd BETWEEN VPD.PlanYm + '00' AND VPD.PlanYm + '99'
+									WHERE	VPD.PlanYm = @iPlanYm
+									AND		VPD.REFYN = 'N'
+									AND		VPD.PROCESSNM LIKE '성훈출고%'
+									UNION ALL
+									SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(O.OUTQTY,0) WORKQTY
+									FROM	PDVPlanProcessDetail	VPD
+									--LEFT JOIN	PDOutsourcingOut	O	ON O.ItemNo = VPD.RefitemNo AND O.ProcessCd = VPD.RefProcessCD AND O.OutYmd LIKE VPD.PlanYm + '%'
+									LEFT JOIN	PDOutsourcingOut	O	ON O.ItemNo = VPD.RefitemNo AND O.ProcessCd = VPD.RefProcessCD AND O.OutYmd BETWEEN VPD.PlanYm + '00' AND VPD.PlanYm + '99'
+									WHERE	VPD.PlanYm = @iPlanYm
+									AND		VPD.REFYN = 'N'
+									AND		VPD.PROCESSNM LIKE '성훈출고%'
+									UNION ALL
+									SELECT	VPD.ITEMNO, VPD.PROCESSCD, VPD.PROCESSNM, ISNULL(MI.inQty,0) WORKQTY
+									FROM	PDVPlanProcessDetail	VPD
+									--LEFT JOIN	PDMaterialInput	MI	ON MI.ItemNo = VPD.RefitemNo AND MI.ProcessCd = VPD.RefProcessCD AND MI.InYmd LIKE VPD.PlanYm + '%'
+									LEFT JOIN	PDMaterialInput	MI	ON MI.ItemNo = VPD.RefitemNo AND MI.ProcessCd = VPD.RefProcessCD AND MI.InYmd BETWEEN VPD.PlanYm + '00' AND VPD.PlanYm + '99'
+									WHERE	VPD.PlanYm = @iPlanYm
+									AND		VPD.REFYN = 'N'
+									AND		VPD.PROCESSNM LIKE '성훈출고%'
+							)	X
+							GROUP BY ITEMNO, PROCESSCD, PROCESSNM
+				) B ON B.ITEMNO = IM.ItemNo AND B.PROCESSCD = IP.ProcessCd
+				WHERE	IM.AcctGb = 'CP'
+				AND		IM.ITEMNM = 'TEE'
+				AND     IM.ItemGrpCd ='SP'
+				AND     ISNULL(IM.ItemInfo,'') <> 'DUZON'
+				AND		IM.Spec LIKE  '%' + '' + '%'
+				-- 20171106 강윤철 TEE품목 조회대상 규격규칙 변경
+				--AND		SUBSTRING(IM.Spec,LEN(IM.Spec)-1,2) <> '13'
+				AND		((SUBSTRING(IM.Spec,1,2) < '30') OR (SUBSTRING(IM.Spec,1,2) >= '30' AND SUBSTRING(IM.Spec,LEN(IM.Spec)-1,2) <> '13'))
+				AND EXISTS (	SELECT 1
+								FROM PDItemProcess X
+								WHERE X.ItemNo = IM.ItemNo
+								AND X.ProcessNm LIKE '%성훈%')
+				AND NOT EXISTS (	select 1
+								from PDBomRefItem Y
+								where Y.ItemNo = IP.ItemNo
+								AND Y.ProcessCd = IP.ProcessCd)
+				GROUP BY IM.ItemNo, IM.ItemNm
+		) RESULT
+		ORDER BY SORTORDER
+
+	END
+END
+```
+
+<a id="mispd-str-pdplnc00100-s"></a>
+## `MISPD.dbo.str_PDPLNC00100_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPLNC00100_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPLNC00100_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 기초재고 생성 내역 조회
+프로그램 : 
+등 록 일 : 2016-04-12
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20230623	안진주		구매계정표기 요청건으로 select절에 항목 추가
+
+EXEC [str_PDPLNC00100_S] @iPlanYm ='201604'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPLNC00100_S]
+	@iPlanYm varchar(6) -- 계획년월
+	,@iItemNm varchar(50) = ''-- 품명
+	,@iSpec varchar(50) = ''-- 규격
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+	/*
+	SELECT 'S' AUD 
+		, @iPlanYm PLANYM,PD.PLANGB
+		,  IM.ITEMNO,IM.ITEMNM, IM.SPEC
+		,  IP.PROCESSSEQ,IP.PROCESSCD,IP.PROCESSNM
+		,  PD.ORDERFL,PD.ORDERQTYSUM
+		,  CONVERT(INT, ROUND(PD.BASICQTY / (CASE WHEN IM.UNIT = '本' THEN 6000.0 ELSE 1.0 END),1)) AS  BASICQTY 
+		,	PD.BASICQTY		AS BASICEXCQTY
+		,	PD.ADJUSTQTY
+		,  CONVERT(INT, ROUND(PD.STOCKQTY / (CASE WHEN IM.UNIT = '本' THEN 6000.0 ELSE 1.0 END),1)) AS  STOCKQTY 
+		,	PD.STOCKQTY		AS EXCQTY
+		,  0 UPDBASICQTY
+		 , ISNULL(Us.USEREMNM, PD.AddEmpNo)		USEREMNM
+		 , ISNULL(CONVERT(VARCHAR(16), PD.AddDt, 20), '미생성')	ADDDT
+		 , BR.REFYN
+		 , CASE WHEN EXISTS (SELECT 1 FROM PDBomAddItem X WHERE x.ItemNo = IP.ItemNo AND x.ProcessCd = IP.ProcessCd) THEN 'Y' ELSE 'N' END ADDYN
+	  FROM PDItemMaster IM 
+	  JOIN PDItemProcess IP ON IM.ItemNo = IP.ItemNo
+	  JOIN PDVBomRefItem BR ON BR.ITEMNO = IP.ItemNo AND BR.PROCESSCD = IP.ProcessCd
+	  LEFT JOIN PDPlanProcessDetail PD ON IP.ItemNo = PD.ItemNo AND IP.ProcessCd = PD.ProcessCd AND PD.PLANYM = @IPLANYM
+	  LEFT JOIN MISCM..CMUSER Us ON Us.USEREMPLNO = PD.AddEmpNo
+	 WHERE IM.ItemGrpCd = 'SP'
+	   AND IM.ItemNm LIKE '%' + @iItemNm + '%'
+	   AND IM.Spec LIKE '%' + @iSpec + '%'
+	   AND IM.ItemGrpCd ='SP'
+	   AND ISNULL(IM.ItemInfo,'') <> 'DUZON'
+	 ORDER BY IM.AcctGb, IM.SortOrder, IP.processSeq
+	 */
+
+
+	SELECT 'S' AUD,
+		   @iPlanYm	PLANYM, pd.PlanGb PLANGB,
+		   m.ItemNo ITEMNO, m.ItemNm ITEMNM, m.Spec SPEC,
+		   p.ProcessSeq PROCESSSEQ, p.ProcessCd PROCESSCD, p.ProcessNm PROCESSNM,
+		   pd.OrderFl ORDERFL, pd.OrderQtySum ORDERQTYSUM,
+		   CONVERT(int, ROUND(pd.BasicQty / (CASE WHEN m.Unit = '本' THEN 6000.0 ELSE 1.0 END), 1)) BASICQTY,
+		   pd.BasicQty BASICEXCQTY, pd.AdjustQty ADJUSTQTY,
+		   CONVERT(int, ROUND(pd.StockQty / (CASE WHEN m.Unit = '本' THEN 6000.0 ELSE 1.0 END), 1)) STOCKQTY,
+		   pd.StockQty EXCQTY,
+		   0 UPDBASICQTY,
+		   ISNULL(u.USEREMNM, ISNULL(h.AddEmpNo, pd.AddEmpNo)) USEREMNM,
+		   ISNULL(CONVERT(varchar(16), ISNULL(h.AddDt, pd.AddDt), 120), '미생성') ADDDT,
+		   CASE WHEN r.ItemNo IS NOT NULL THEN 'Y' ELSE 'N' END REFYN,
+		   CASE WHEN a.ItemNo IS NOT NULL THEN 'Y' ELSE 'N' END ADDYN,
+		   p.AcctGb						AS ACCTGB
+	FROM   PDItemMaster m
+	INNER JOIN PDItemProcess p ON p.ItemNo = m.ItemNo
+	LEFT JOIN PDBomRefItem r ON r.ItemNo = p.ItemNo AND r.ProcessCd = p.ProcessCd
+	LEFT JOIN PDBomAddItem a ON a.ItemNo = p.ItemNo AND a.ProcessCd = p.ProcessCd
+	LEFT JOIN PDPlanProcessDetail pd ON pd.ItemNo = p.ItemNo AND pd.ProcessCd = p.ProcessCd AND pd.PlanYm = @iPlanYm
+	LEFT JOIN PDPlanBasicHist h ON h.ItemNo = p.ItemNo AND h.ProcessCd = p.ProcessCd AND h.PlanYm = @iPlanYm
+							   AND h.Seq = (SELECT MAX(x.Seq)
+											FROM   PDPlanBasicHist x
+											WHERE  x.PlanYm = h.PlanYm
+											AND    x.ItemNo = h.ItemNo
+											AND    x.ProcessCd = h.ProcessCd)
+	LEFT JOIN MISCM.dbo.CMUSER u ON u.USEREMPLNO = ISNULL(h.AddEmpNo, pd.AddEmpNo)
+	WHERE  m.ItemGrpCd = 'SP'
+	AND    m.ItemNm LIKE '%' + @iItemNm + '%'
+	AND    m.Spec LIKE '%' + @iSpec + '%'
+	AND    ISNULL(m.ItemInfo, '') <> 'DUZON'
+	ORDER BY m.AcctGb, m.SortOrder, p.ProcessSeq
+
+
+
+
+
+
+
+END
+```
+
+<a id="mispd-str-pdplanprocessdetail-basicqty-u"></a>
+## `MISPD.dbo.str_PDPlanProcessDetail_BasicQty_U`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPlanProcessDetail_BasicQty_U.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPlanProcessDetail_BasicQty_U.sql
+
+```sql
+
+
+/********************************************************************************
+제    목 : 기초재고 수량 조정
+프로그램 : 
+등 록 일 : 2016-05-17
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPlanProcessDetail_BasicQty_U]
+		@iPlanYm varchar(6) -- 계획년월
+	  , @iItemNo varchar(4000) -- 품목코드
+	  , @iProcessCd varchar(50) -- 공정코드
+	  , @iBasicQty int -- 기초재고
+	  , @iUpdBasicQty int	--변경될 기초재고량
+	  , @iPgNo varchar(20) -- 프로그램번호
+	  , @iAddEmpNo varchar(10) -- 등록자
+AS
+
+DECLARE @wErrYN VARCHAR(1),
+		@wErrMsg VARCHAR(1000),
+		@wSeq smallint
+
+BEGIN
+
+	SET NOCOUNT ON;
+	/*
+	SET @wErrYN = 'N'
+	SET @wErrMsg = '정상 처리되었습니다.'
+	SET @wSeq = 1
+
+	SELECT @wSeq = ISNULL(MAX(Seq), 0) + 1
+	  FROM PDPlanBasicHist
+	 WHERE PlanYm = @iPlanYm
+	   AND ItemNo = @iItemNo
+	   AND ProcessCd = @iProcessCd
+
+	INSERT INTO PDPlanBasicHist(PlanYm,ItemNo,ProcessCd,Seq,BasicYmd,BasicQty,UpdBasicQty,Reason,PgNo,AddEmpNo,AddDt)
+	VALUES(@iPlanYm,@iItemNo,@iProcessCd,@wSeq,CONVERT(VARCHAR(8), GETDATE(), 112),@iBasicQty,@iUpdBasicQty,'',@iPgNo,@iAddEmpNo,GETDATE())
+
+	--가감항목이 있으면 기초재고는 변경하고 현재고는 가감공정쪽에 반영한다.
+	IF EXISTS (SELECT 1 FROM PDBomAddItem WHERE ItemNo = @iItemNo AND ProcessCd = @iProcessCd) BEGIN
+		--해당 공정의 기초재고를 변경해 준다.
+		UPDATE a
+		   SET BasicQty = @iUpdBasicQty 
+			,  PgNo = @iPgNo 
+			,  UpdEmpNo = @iAddEmpNo 
+			,  UpdDt = GETDATE()
+		  FROM PDPlanProcessDetail AS a
+		 WHERE PlanYm = @iPlanYm
+		   AND ItemNo = @iItemNo 
+		   AND ProcessCd = @iProcessCd
+		
+		IF @@ROWCOUNT <= 0 BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '해당 공정의 기초재고가 수정되지 않았습니다.'
+			GOTO ENDSTEP
+		END
+
+		--가감 공정쪽에 현재고를 변경해 준다.
+		UPDATE a
+		   SET a.StockQty = a.StockQty - (@iBasicQty - @iUpdBasicQty) 
+			,  a.PgNo = @iPgNo 
+			,  a.UpdEmpNo = @iAddEmpNo 
+			,  a.UpdDt = GETDATE()
+		  FROM PDBomAddItem  BA
+		  JOIN PDPlanProcessDetail AS a ON a.PlanYm = @iPlanYm 
+		   AND a.ItemNo = ISNULL(BA.AddItemNo, BA.ItemNo)
+		   AND a.ProcessCd = BA.AddProcessCd
+		 WHERE BA.ItemNo = @iItemNo 
+		   AND BA.ProcessCd = @iProcessCd
+		
+		IF @@ROWCOUNT <= 0 BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '가감공정의 현재고가 수정되지 않았습니다.'
+			GOTO ENDSTEP
+		END
+	END
+	ELSE BEGIN
+		UPDATE a
+		   SET a.BasicQty = @iUpdBasicQty  * (CASE WHEN M.Unit = '本' THEN 6000 ELSE 1 END)
+			,  a.StockQty = a.StockQty - (@iBasicQty - (@iUpdBasicQty * (CASE WHEN M.Unit = '本' THEN 6000 ELSE 1 END)))
+			,  a.PgNo = @iPgNo 
+			,  a.UpdEmpNo = @iAddEmpNo 
+			,  a.UpdDt = GETDATE()
+		  FROM PDPlanProcessDetail AS a
+		  JOIN PDItemMaster M ON a.ItemNo = M.ItemNo --AND M.ItemGrpCd ='SP' AND ISNULL(M.ItemInfo,'') <> 'DUZON'
+		 WHERE a.PlanYm = @iPlanYm
+		   AND a.ItemNo = @iItemNo 
+		   AND a.ProcessCd = @iProcessCd
+	
+		IF @@ROWCOUNT <= 0 BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = 'PDPlanProcessDetail 기초재고가 수정되지 않았습니다.'
+			GOTO ENDSTEP
+		END
+	END
+	--EXEC MISPD.dbo.str_PDPlanProcessDetail_BasicQty_U @iPLANYM = '201901', @iItemNo = 'ZM1GPFC1-4010065', @iProcessCd = 'ZM1GPFC1-4010065W', @iBasicQty = '0', @iUpdBasicQty = '50', @iPgNo = '000000920', @iAddEmpNo = 'ERP18'
+	*/
+
+	BEGIN TRAN
+
+	SET @wErrYN = 'N'
+	SET @wErrMsg = '정상 처리되었습니다.'
+	
+
+	IF EXISTS(SELECT 1 FROM PDPlanProcessDetail 
+			  WHERE PlanYm = @iPlanYm AND ItemNo = @iItemNo AND ProcessCd = @iProcessCd
+			  AND    BasicQty <> @iBasicQty)
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '기초재고가 맞지 않습니다. 다시 조회 후 입력하세요.'
+		GOTO ENDSTEP
+	END
+
+	
+	SET @wSeq = 1
+	SELECT @wSeq = ISNULL(MAX(Seq), 0) + 1
+	FROM   PDPlanBasicHist
+	WHERE  PlanYm = @iPlanYm
+	AND    ItemNo = @iItemNo
+	AND    ProcessCd = @iProcessCd
+
+
+	INSERT INTO PDPlanBasicHist ( PlanYm, ItemNo, ProcessCd, Seq, BasicYmd, BasicQty, UpdBasicQty, Reason, PgNo, AddEmpNo, AddDt )
+	VALUES ( @iPlanYm, @iItemNo, @iProcessCd, @wSeq, CONVERT(varchar(8), GETDATE(), 112), @iBasicQty, @iUpdBasicQty, '', @iPgNo, @iAddEmpNo, GETDATE() )
+
+	IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '기초재고 변경내역 저장 시 오류입니다.'
+		GOTO ENDSTEP
+	END
+
+
+	--가감항목이 있으면 기초재고는 변경하고 현재고는 가감공정쪽에 반영한다.
+	IF EXISTS(SELECT 1 FROM PDBomAddItem WHERE ItemNo = @iItemNo AND ProcessCd = @iProcessCd)
+	BEGIN
+		--해당 공정의 기초재고를 변경해 준다.
+		UPDATE PDPlanProcessDetail
+		SET    BasicQty = @iUpdBasicQty,
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		WHERE  PlanYm = @iPlanYm
+		AND    ItemNo = @iItemNo
+		AND    ProcessCd = @iProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '해당 공정의 기초재고가 수정되지 않았습니다.'
+			GOTO ENDSTEP
+		END
+
+		UPDATE pd
+		SET    pd.StockQty = (pd.StockQty - @iBasicQty) + @iUpdBasicQty,
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		FROM   PDBomAddItem a
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END
+										 AND pd.ProcessCd = a.AddProcessCd
+										 AND pd.PlanYm = @iPlanYm
+		WHERE  a.ItemNo = @iItemNo
+		AND    a.ProcessCd = @iProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '가감공정의 현재고가 수정되지 않았습니다.'
+			GOTO ENDSTEP
+		END
+	END
+	ELSE
+	BEGIN
+		UPDATE pd
+		SET    pd.BasicQty = @iUpdBasicQty * CASE WHEN m.Unit = '本' THEN 6000 ELSE 1 END,
+			   pd.StockQty = (pd.StockQty - @iBasicQty) + (@iUpdBasicQty * CASE WHEN m.Unit = '本' THEN 6000 ELSE 1 END),
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		FROM   PDPlanProcessDetail pd
+		INNER JOIN PDItemMaster m ON m.ItemNo = pd.ItemNo
+		WHERE  pd.PlanYm = @iPlanYm
+		AND    pd.ItemNo = @iItemNo
+		AND    pd.ProcessCd = @iProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '기초재고가 수정되지 않았습니다.'
+			GOTO ENDSTEP
+		END
+	END
+
+
+
+	--성공했다고 치고
+	GOTO ENDSTEP
+
+END
+
+/****************/
+ENDSTEP:
+/****************/
+	IF @wErrYN = 'N'
+		COMMIT TRAN
+	ELSE
+		ROLLBACK TRAN
+
+	SELECT @wErrYN ERRYN, @wErrMsg ERRMSG
+
+
+RETURN
+```
+
+<a id="mispd-str-pdmaterialinput-iu"></a>
+## `MISPD.dbo.str_PDMaterialInput_IU`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDMaterialInput_IU.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDMaterialInput_IU.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 원부자재 입고등록
+프로그램 : 
+등 록 일 : 2015-11-04
+등 록 자 : 추현선
+수정일		수정자		내용
+-----------------------------------------------------------------------
+EXEC MISPD.dbo.str_PDMaterialInput_IU @iInYmd = '20160425', @iInSeq = '', @iCustCd = 'AA007', @iItemNo = '1WP025', @iInQty = '200', @iUnit = 'MM', @iPrice = '0', @iSupplyAmt = '0', @iVat = '0', @iAmt = '0', @iPgNo = '000000761', @iAddEmpNo = 'ERP18'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDMaterialInput_IU]
+	 @iInYmd varchar(8) -- 입고일자
+	,@iInSeq varchar(3) -- 입고순번
+	,@iItemNo varchar(50) -- 품목코드
+	,@iProcessCd varchar(50)
+	,@iProcessSeq varchar(2)
+	,@iCustCd varchar(5) -- 거래처
+	,@iInYy varchar(4) -- 입고년
+	,@iInMm varchar(2) -- 입고월
+	,@iInDd varchar(2) -- 입고일
+	,@iUnit varchar(3) -- 단위
+	,@iInQty int -- 수량
+	,@iPrice money -- 단가
+	,@iSupplyAmt money -- 공급가액
+	,@iVat money -- 부가세
+	,@iAmt money -- 금액
+	,@iLotNo varchar(50) -- 파이프 Lotno번호
+	,@iPgNo varchar(20) -- 프로그램번호
+	,@iAddEmpNo varchar(10) -- 등록자
+AS
+DECLARE @wErrYN VARCHAR(1),
+		@wErrMsg VARCHAR(1000),
+		@wInSeq VARCHAR(3),
+		@wYymm varchar(6),
+		@wRefItemNo VARCHAR(50),
+		@wRefProcessCd VARCHAR(50),
+		@wPlan VARCHAR(6),	--가장 최신 계획년월 만들어진 기초재고에 넣는다.
+		@wReturn int = 0
+BEGIN
+
+	SET NOCOUNT ON;
+	/*
+	SET @wErrYN = 'N'
+	SET @wErrMsg = '정상 처리되었습니다.'
+	SET @wInSeq = @iInSeq
+	SET @wYymm = ''
+	SET @wPlan = LEFT(@iInYmd,6)
+	SET @wRefItemNo = @iItemNo
+	SET @wRefProcessCd = @iProcessCd
+
+	BEGIN TRAN
+
+	--해당공정이 참조공정을 가지고 있으면 참조공정에 입고시킨다.
+	SELECT @wRefItemNo = REFITEMNO, @wRefProcessCd = REFPROCESSCD
+	  FROM PDVPlanProcessDetail
+	 WHERE ITEMNO = @iItemNo
+	   AND ProcessCD = @iProcessCd
+	
+	SELECT @wPlan = MAX(PlanYm)
+	  FROM PDPlanProcessDetail
+	--20190304 참조공정의 재고만 변경하는 것이 아니므로 어떤 코드이든 다음 월의 자료가 존재하면 체크되도록 함
+	 --WHERE ItemNo = @wRefItemNo
+	 --  AND ProcessCd = @wRefProcessCd
+
+	IF LEFT(@iInYmd,6) != @wPlan BEGIN		
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = @wPlan + '월 기초재고가 생성되었습니다. ' + LEFT(@iInYmd,6)  +  '월 재고를 수정할 수 없습니다.'
+		GOTO ENDSTEP
+	END
+
+	  IF @wInSeq !='' BEGIN
+
+		--작업순번이 있으면 기존 작업보고 삭제 후 처리
+		DECLARE @wReturn INT = 0
+
+		EXEC @wReturn = MISPD.dbo.str_PDMaterialInput_D @iInYmd = @iInYmd, @iInSeq = @wInSeq, @iItemNo = @wRefItemNo,@iProcessCd=@wRefProcessCd, @iProcessSeq = @iProcessSeq
+
+		IF @wReturn = 0 BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '원부자재 입고 수정전 기존 내역 삭제중 오류'
+			GOTO ENDSTEP
+		END		
+		--삭제 로직 구현
+	END 
+	ELSE BEGIN
+		SELECT @wInSeq = REPLICATE('0', 3 - LEN(InSeq)) + InSeq
+		  FROM (
+				SELECT CONVERT(VARCHAR, ISNULL(MAX(CONVERT(INT, InSeq)),0) + 1) AS InSeq
+				  FROM PDMaterialInput
+				 WHERE InYmd = @iInYmd
+				) a
+	END
+	
+	INSERT INTO PDMaterialInput (InYmd,InSeq,ItemNo,ProcessCd,CustCd,InYy,InMm,InDd,Unit,InQty,Price,SupplyAmt,Vat,Amt,LotNo
+	,PgNo,AddEmpNo,AddDt,UpdEmpNo,UpdDt) 
+	VALUES(@iInYmd,@wInSeq,@wRefItemNo,@wRefProcessCd,@iCustCd,@iInYy,@iInMm,@iInDd,@iUnit,@iInQty,@iPrice,@iSupplyAmt,@iVat,@iAmt,@iLotNo
+	,@iPgNo,@iAddEmpNo,GETDATE(),@iAddEmpNo,GETDATE())
+	
+	IF @@ROWCOUNT <= 0 BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = 'PDMaterialInput 테이블 저장중 오류'
+		GOTO ENDSTEP
+	END
+
+	--그외 전공정코드에서 차감해 준다.
+	UPDATE PD 
+	   SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(a.BefStdQty,1))
+		,  PD.UpdDt = GETDATE()
+		,  PD.UpdEmpNo = @iAddEmpNo
+		,  PD.PgNo = @iPgNo
+	  FROM PDItemProcess a
+	  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm --AND PD.PlanGb = @iPlanGb 
+	   AND PD.ItemNo = CASE WHEN ISNULL(a.BEFITEMNO,'') = '' THEN  a.ITEMNO ELSE a.BEFITEMNO END AND PD.ProcessCd = a.BEFPROCESSCD
+	 WHERE a.ItemNo = @wRefItemNo
+	   AND a.ProcessCd = @wRefProcessCd
+
+	--차감코드가 있으면 차감
+	UPDATE PD 
+	   SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(a.DedQty,1))
+		,   PD.UpdDt = GETDATE()
+		,   PD.UpdEmpNo = @iAddEmpNo
+		,   PD.PgNo = @iPgNo
+	  FROM PDBomDedItem a
+	  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm
+	   AND PD.ItemNo = CASE WHEN ISNULL(a.DedItemNo,'') = '' THEN  a.ITEMNO ELSE a.DedItemNo END AND PD.ProcessCd = a.DedProceddCd
+	 WHERE a.ItemNo = @wRefItemNo
+	   AND a.ProcessCd = @wRefProcessCd
+
+	-- 가감코드가 있으면 가감쪽에 플러스하고 현재고는 그대로
+	IF EXISTS (SELECT 1 FROM PDBomAddItem a WHERE a.ItemNo = @wRefItemNo AND a.ProcessCd = @wRefProcessCd) BEGIN		
+		UPDATE PD 
+		   SET PD.StockQty = PD.StockQty + (@iInQty * ISNULL(a.AddQty,1))
+		   ,   PD.UpdDt = GETDATE()
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.PgNo = @iPgNo
+		  FROM PDBomAddItem a
+		  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm
+		   AND PD.ItemNo = CASE WHEN ISNULL(a.AddItemNo,'') = '' THEN  a.ITEMNO ELSE a.AddItemNo END AND PD.ProcessCd = a.AddProcessCd
+		 WHERE a.ItemNo = @wRefItemNo
+		   AND a.ProcessCd = @wRefProcessCd
+	END
+	ELSE BEGIN
+		UPDATE PD
+		   SET PD.StockQty = PD.StockQty + (@iInQty * (CASE WHEN M.Unit = '本' THEN 6000 ELSE 1 END))
+		   ,   PD.UpdDt = GETDATE()
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.PgNo = @iPgNo
+		  FROM PDPlanProcessDetail PD 
+		  JOIN PDItemMaster M ON PD.ItemNo = M.ItemNo AND M.ItemGrpCd ='SP' AND ISNULL(M.ItemInfo,'') <> 'DUZON'
+		 WHERE PD.PlanYm = @iInYy + @iInMm 
+		   AND PD.ItemNo = @wRefItemNo
+		   AND PD.ProcessCd = @wRefProcessCd
+	END
+	*/
+
+
+	SET @wErrYN = 'N'
+	SET @wErrMsg = '정상 처리되었습니다.'
+	SET @wInSeq = @iInSeq
+	SET @wYymm = ''
+	SET @wPlan = ''
+
+
+	BEGIN TRAN
+
+	
+	IF EXISTS(SELECT 1 FROM PDBomRefItem WHERE ItemNo = @iItemNo AND ProcessCd = @iProcessCd)
+	BEGIN
+		--해당공정이 참조공정을 가지고 있으면 참조공정에 입고시킨다.
+		SELECT @wRefItemNo = ISNULL(RefItemNo, ItemNo), @wRefProcessCd = RefProcessCd
+		FROM   PDBomRefItem
+		WHERE  ItemNo = @iItemNo
+		AND    ProcessCd = @iProcessCd
+	END
+	ELSE
+	BEGIN
+		SELECT @wRefItemNo = @iItemNo, @wRefProcessCd = @iProcessCd
+	END
+
+	SELECT @wPlan = MAX(PlanYm)
+	FROM   PDPlanProcessDetail
+
+	IF LEFT(@iInYmd, 6) <> @wPlan
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = @wPlan + '월 기초재고가 생성되었습니다. ' + LEFT(@iInYmd,6)  +  '월 재고를 수정할 수 없습니다.'
+		GOTO ENDSTEP
+	END
+
+	IF @wInSeq = ''
+	BEGIN
+		SELECT @wInSeq = REPLICATE('0', 3 - LEN(InSeq)) + InSeq
+		FROM  (SELECT CONVERT(varchar, ISNULL(MAX(CONVERT(int, InSeq)), 0) + 1) InSeq
+			   FROM   PDMaterialInput
+			   WHERE  InYmd = @iInYmd) tb
+	END
+	ELSE
+	BEGIN
+		EXEC @wReturn = MISPD.dbo.str_PDMaterialInput_D @iInYmd = @iInYmd, @iInSeq = @wInSeq, @iItemNo = @wRefItemNo,@iProcessCd=@wRefProcessCd, @iProcessSeq = @iProcessSeq
+
+		IF @wReturn = 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '원부자재 입고 수정 중 기존 내역 삭제 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+
+
+	INSERT INTO PDMaterialInput ( InYmd, InSeq, ItemNo, ProcessCd, CustCd, InYy, InMm, InDd,
+								  Unit, InQty, Price, SupplyAmt, Vat, Amt, LotNo,
+								  PgNo, AddEmpNo, AddDt, UpdEmpNo, UpdDt )
+	VALUES ( @iInYmd, @wInSeq, @wRefItemNo, @wRefProcessCd, @iCustCd, @iInYy, @iInMm, @iInDd,
+			 @iUnit, @iInQty, @iPrice, @iSupplyAmt, @iVat, @iAmt, @iLotNo,
+			 @iPgNo, @iAddEmpNo, GETDATE(), @iAddEmpNo, GETDATE() )
+
+	IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = 'PDMaterialInput 테이블 저장중 오류'
+		GOTO ENDSTEP
+	END
+	
+
+	UPDATE pd
+	SET    pd.StockQty = pd.StockQty - (@iInQty * ISNULL(p.BefStdQty, 1)),
+		   pd.PgNo = @iPgNo,
+		   pd.UpdEmpNo = @iAddEmpNo,
+		   pd.UpdDt = GETDATE()
+	FROM   PDItemProcess p
+	INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(p.BefItemNo, '') = '' THEN p.ItemNo ELSE p.BefItemNo END
+									 AND pd.ProcessCd = p.BefProcessCd
+									 AND pd.PlanYm = LEFT(@iInYmd, 6)
+	WHERE  p.ItemNo = @wRefItemNo
+	AND    p.ProcessCd = @wRefProcessCd
+
+	IF @@ERROR <> 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '전공정 재고 변경 시 오류'
+		GOTO ENDSTEP
+	END
+
+
+	UPDATE pd
+	SET    pd.StockQty = pd.StockQty - (@iInQty * ISNULL(d.DedQty, 1)),
+		   pd.PgNo = @iPgNo,
+		   pd.UpdEmpNo = @iAddEmpNo,
+		   pd.UpdDt = GETDATE()
+	FROM   PDBomDedItem d
+	INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(d.DedItemNo, '') = '' THEN d.ItemNo ELSE d.DedItemNo END
+									 AND pd.ProcessCd = d.DedProceddCd
+									 AND pd.PlanYm = LEFT(@iInYmd, 6)
+	WHERE  d.ItemNo = @wRefItemNo
+	AND    d.ProcessCd = @wRefProcessCd
+
+	IF @@ERROR <> 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '차감코드 재고 변경 시 오류'
+		GOTO ENDSTEP
+	END
+
+
+	IF EXISTS(SELECT 1 FROM PDBomAddItem WHERE ItemNo = @wRefItemNo AND ProcessCd = @wRefProcessCd)
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty + (@iInQty * ISNULL(a.AddQty, 1)),
+			   pd.PgNo = @iPgNo,
+			   pd.UpdEmpNo = @iAddEmpNo,
+			   pd.UpdDt = GETDATE()
+		FROM   PDBomAddItem a
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END
+										 AND pd.ProcessCd = a.AddProcessCd
+										 AND pd.PlanYm = LEFT(@iInYmd, 6)
+		WHERE  a.ItemNo = @wRefItemNo
+		AND    a.ProcessCd = @wRefProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '가감코드 재고 변경 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+	ELSE
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty + (@iInQty * CASE WHEN m.Unit = '本' THEN 6000 ELSE 1 END),
+			   pd.PgNo = @iPgNo,
+			   pd.UpdEmpNo = @iAddEmpNo,
+			   pd.UpdDt = GETDATE()
+		FROM   PDPlanProcessDetail pd
+		INNER JOIN PDItemMaster m ON m.ItemNo = pd.ItemNo AND ISNULL(m.ItemInfo, '') <> 'DUZON' AND m.ItemGrpCd = 'SP'
+		WHERE  pd.ItemNo = @wRefItemNo
+		AND    pd.ProcessCd = @wRefProcessCd
+		AND    pd.PlanYm = LEFT(@iInYmd, 6)
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '재고 변경 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+
+
+	--성공했다고 치고
+	GOTO ENDSTEP
+
+END
+
+/****************/
+ENDSTEP:
+/****************/
+	IF @wErrYN = 'N'
+		COMMIT TRAN
+	ELSE
+		ROLLBACK TRAN
+
+	SELECT	@wErrYN ERRYN, @wErrMsg ERRMSG, @wInSeq AS INSEQ
+
+
+
+RETURN
+```
+
+<a id="mispd-str-pdmaterialinput-s"></a>
+## `MISPD.dbo.str_PDMaterialInput_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDMaterialInput_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDMaterialInput_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 원부자재 입고수량
+프로그램 : 
+등 록 일 : 2016-06-03
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+EXEC MISPD.dbo.str_PDMaterialInput_S @iPlanYm = '201511', @iPlanGb = '03', @iItemNo = 'A01-025', @iProcessCD = 'E025WTH'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDMaterialInput_S]
+	@iPlanYm varchar(6) -- 계획년월
+	,@iPlanGb VARCHAR(3)
+	,@iItemNo VARCHAR(50)
+	,@iProcessCD VARCHAR(20)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '01' THEN InQty ELSE 0 END),0) DAY01
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '02' THEN InQty ELSE 0 END),0) DAY02
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '03' THEN InQty ELSE 0 END),0) DAY03
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '04' THEN InQty ELSE 0 END),0) DAY04
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '05' THEN InQty ELSE 0 END),0) DAY05
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '06' THEN InQty ELSE 0 END),0) DAY06
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '07' THEN InQty ELSE 0 END),0) DAY07
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '08' THEN InQty ELSE 0 END),0) DAY08
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '09' THEN InQty ELSE 0 END),0) DAY09
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '10' THEN InQty ELSE 0 END),0) DAY10
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '11' THEN InQty ELSE 0 END),0) DAY11
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '12' THEN InQty ELSE 0 END),0) DAY12
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '13' THEN InQty ELSE 0 END),0) DAY13
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '14' THEN InQty ELSE 0 END),0) DAY14
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '15' THEN InQty ELSE 0 END),0) DAY15
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '16' THEN InQty ELSE 0 END),0) DAY16
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '17' THEN InQty ELSE 0 END),0) DAY17
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '18' THEN InQty ELSE 0 END),0) DAY18
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '19' THEN InQty ELSE 0 END),0) DAY19
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '20' THEN InQty ELSE 0 END),0) DAY20
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '21' THEN InQty ELSE 0 END),0) DAY21
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '22' THEN InQty ELSE 0 END),0) DAY22
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '23' THEN InQty ELSE 0 END),0) DAY23
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '24' THEN InQty ELSE 0 END),0) DAY24
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '25' THEN InQty ELSE 0 END),0) DAY25
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '26' THEN InQty ELSE 0 END),0) DAY26
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '27' THEN InQty ELSE 0 END),0) DAY27
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '28' THEN InQty ELSE 0 END),0) DAY28
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '29' THEN InQty ELSE 0 END),0) DAY29
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '30' THEN InQty ELSE 0 END),0) DAY30
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '31' THEN InQty ELSE 0 END),0) DAY31
+	  FROM PDVPlanProcessDetail PD
+	  LEFT JOIN PDMaterialInput a ON a.ItemNo = PD.refitemno AND a.ProcessCd = PD.REFProcessCD AND A.INYMD LIKE @IPLANYM+'%'
+	 WHERE PD.ItemNo = @iItemNo 
+	   AND PD.ProcessCD = @iProcessCD
+	   AND PD.PlanYM = @IPLANYM
+	 GROUP BY PD.ItemNo, PD.ProcessCD
+
+	SELECT MISCM.DBO.fn_gfnDateTypeTrans(INYMD, '-') INYMD, INSEQ,a.CUSTCD,C.CUSTNM, INQTY, PRICE, SUPPLYAMT, VAT, AMT,LOTNO, 'S' AUD
+		, INYY,INMM,INDD,UNIT
+	  FROM PDVPlanProcessDetail PD
+	  JOIN PDMaterialInput a ON a.ItemNo = PD.refitemno AND a.ProcessCd = PD.REFProcessCD AND A.INYMD LIKE @IPLANYM+'%'
+	  LEFT JOIN MISSA..SACust C ON C.DuzCustCd = a.CustCd
+	 WHERE PD.ItemNo = @iItemNo 
+	   AND PD.ProcessCD = @iProcessCD
+	   AND PD.PlanYM = @IPLANYM
+	 ORDER BY INYMD, CONVERT(INT, INSEQ)
+END
+```
+
+<a id="mispd-str-pdprga00101-s"></a>
+## `MISPD.dbo.str_PDPRGA00101_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPRGA00101_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPRGA00101_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 원부자재 아이템별 공정진행 현황
+프로그램 : 
+등 록 일 : 2016-06-03
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+
+
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPRGA00101_S]
+	@iPlanYm varchar(6) -- 계획년월
+	,@iPlanGb VARCHAR(3)
+	,@iItemNo VARCHAR(50)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+/*
+	SELECT PD.PROCESSSEQ
+		,  MAX(PD.PROCESSCD)	AS PROCESSCD
+		,  MAX(PD.PROCESSNM)	AS PROCESSNM
+		,  MAX(PD.BASICQTY)		AS BASICQTY
+		,  MAX(PD.ADJUSTQTY)	AS ADJUSTQTY
+		--,  MAX(PD.STOCKQTY)		AS STOCKQTY
+		,  CONVERT(INT, ROUND(MAX(PD.STOCKQTY) / (CASE WHEN MAX(M.UNIT) = '本' THEN 6000.0 ELSE 1.0 END),0))	AS STOCKQTY
+		,  MAX(PD.STOCKQTY)		AS EXCQTY
+		,  SUM(I.INQTY)			AS INQTY
+		,  0 PLANQTY
+		,  0 BUJOK
+		,  0 DALSUNG
+		,  MAX(PD.CUSTCD)	CUSTCD
+		,  MAX(C.CUSTNM)	CUSTNM
+		--,  SUM(PP.PLANQTY)		AS PLANQTY
+		--,  ISNULL(SUM(PP.PLANQTY),0) - ISNULL(SUM(I.INQTY),0)	AS BUJOK
+		--,  CASE WHEN SUM(PP.PLANQTY) != 0 THEN SUM(I.INQTY)	 / SUM(PP.PLANQTY) ELSE '0' END DALSUNG
+		,  MAX(REFYN)	REFYN
+	  FROm PDVPlanProcessDetail PD
+	  JOIN PDITEMMASTER M ON M.ITEMNO = PD.ITEMNO AND M.ItemGrpCd ='SP' AND ISNULL(M.ItemInfo,'') <> 'DUZON'	
+	  LEFT JOIN MISSA..SACust C ON C.DuzCustCd = CASE WHEN PD.CUSTCD = '' THEN 'XXX' ELSE PD.CUSTCD END
+	  LEFT JOIN PDMaterialInput I ON I.ItemNo = PD.REFItemNo AND I.ProcessCd = PD.REFProcessCd AND I.INYMD LIKE @IPLANYM + '%'
+	  --LEFT JOIN PDPlanMaster PM ON PM.PlanYm = @IPLANYM AND PM.ItemNo = PD.REFITEMNO AND PM.PlanGb = '03' AND PM.ConfirmFl = 'Y'
+	  --LEFT JOIN PDPlanProcess PP ON PP.PlanYm = PM.PlanYm AND PP.ItemNo = PM.itemno AND PP.PlanGb = PM.PlanGb AND PP.ProcessCd = PD.REFPROCESSCD
+	 WHERE PD.planym = @iPlanYm
+	   AND PD.itemno = @iItemNo
+	   AND PD.PROCESSGB = '06'
+	   AND PD.ProcessNm LIKE '%입고%'
+	 GROUP BY PD.PROCESSSEQ
+*/
+
+	SELECT R.PROCESSSEQ			PROCESSSEQ
+		 , R.PROCESSCD			PROCESSCD
+		 , MAX(R.PROCESSNM)		PROCESSNM
+		 , MAX(PD.BASICQTY)		BASICQTY
+		 , MAX(PD.ADJUSTQTY)	ADJUSTQTY
+		 , MAX(ROUND((PD.STOCKQTY / CASE WHEN M.Unit = '本' THEN 6000.0 ELSE 1.0 END), 0))		STOCKQTY
+		 , MAX(PD.STOCKQTY)		EXCQTY
+		 , ISNULL(SUM(I.InQty), 0)	INQTY
+		 , 0					PLANQTY
+		 , 0					BUJOK
+		 , 0					DALSUNG
+		 , MAX(R.CUSTCD)		CUSTCD
+		 , MAX(C.CustNm)		CUSTNM
+		 , MAX(R.REFYN)		REFYN
+	FROM   PDVBomRefItem R
+	INNER JOIN PDItemMaster M ON M.ItemNo = R.ITEMNO
+	INNER JOIN PDPlanProcessDetail PD ON PD.ItemNo = R.REFITEMNO AND PD.ProcessCd = R.REFPROCESSCD
+	LEFT JOIN MISSA.dbo.SACust C ON C.DuzCustCd = CASE WHEN R.CUSTCD = '' THEN 'XXX' ELSE R.CUSTCD END
+	LEFT JOIN PDMaterialInput I ON I.ItemNo = R.REFITEMNO AND I.ProcessCd = R.REFPROCESSCD AND I.InYmd BETWEEN @iPlanYm + '01' AND @iPlanYm + '31'
+	WHERE  R.ItemNo = @iItemNo
+	AND    R.PROCESSGB = '06'
+	AND    R.PROCESSNM LIKE '%입고%'
+	AND    PD.PLANYM = @iPlanYm
+	GROUP BY R.ProcessSeq, R.ProcessCd
+
+
+END
+```
+
+<a id="mispd-str-pdoutsourceingin-iu"></a>
+## `MISPD.dbo.str_PDOutsourceingIn_IU`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDOutsourceingIn_IU.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDOutsourceingIn_IU.sql
+
+```sql
+/********************************************************************************
+제    목 : 외주가공 입고등록 저장
+프로그램 : 
+등 록 일 : 2016-01-07  PDOutsourceingIn PDOUTSOURCINGSTOCK
+등 록 자 : 김재환
+수정일		수정자		내용
+
+
+-----------------------------------------------------------------------
+
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDOutsourceingIn_IU]
+	 @iInYmd varchar(8) -- 입고일자
+	,@iInSeq varchar(3) -- 입고순번
+	,@iItemNo varchar(50) -- 품목코드
+	,@iProcessSeq varchar(2) -- 공정순번
+	,@iProcessCd varchar(50) -- 공정코드
+	,@iCustCd varchar(5) -- 거래처
+	,@iInYy varchar(4) -- 입고년
+	,@iInMm varchar(2) -- 입고월
+	,@iInDd varchar(2) -- 입고일
+	,@iUnit varchar(3) -- 단위
+	,@iInQty int -- 입고수량
+	,@iPrice money -- 단가
+	,@iSupplyAmt money -- 공급가액
+	,@iVat money -- 부가세
+	,@iAmt money -- 금액
+	,@iPgNo varchar(20) -- 프로그램번호
+	,@iAddEmpNo varchar(10) -- 등록자
+	,@iLotNo varchar(50) = '' -- LOT번호 (20260612 화면설계서 QA)
+AS
+
+DECLARE @wErrYN VARCHAR(1),
+		@wErrMsg VARCHAR(1000),
+		@wInSeq VARCHAR(3),
+		@wYymm varchar(6),
+		@wRefItemNo VARCHAR(50),
+		@wRefProcessCd VARCHAR(50),
+		@wPlan VARCHAR(6),	--가장 최신 계획년월 만들어진 기초재고에 넣는다.
+		@wCnt  int,
+		@wReturn int = 0
+BEGIN
+
+	SET NOCOUNT ON;
+	/*
+	SET @wErrYN = 'N'
+	SET @wErrMsg = '정상 처리되었습니다.'
+	SET @wInSeq = @iInSeq
+	SET @wYymm = ''
+	SET @wPlan = LEFT(@iInYmd,6)
+	SET @wRefItemNo = @iItemNo
+	SET @wRefProcessCd = @iProcessCd
+
+	BEGIN TRAN
+
+
+	--해당공정이 참조공정을 가지고 있으면 참조공정에 입고시킨다.
+	SELECT @wRefItemNo = REFITEMNO, @wRefProcessCd = REFPROCESSCD
+	  FROM PDVPlanProcessDetail
+	 WHERE ITEMNO = @iItemNo
+	   AND ProcessCD = @iProcessCd
+	   AND PLANYM = @wPlan
+	
+	SELECT @wPlan = MAX(PlanYm)
+	  FROM PDPlanProcessDetail
+	--20190304 참조공정의 재고만 변경하는 것이 아니므로 어떤 코드이든 다음 월의 자료가 존재하면 체크되도록 함
+	 --WHERE ItemNo = @wRefItemNo
+	 --  AND ProcessCd = @wRefProcessCd
+
+	IF LEFT(@iInYmd,6) != @wPlan BEGIN		
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = @wPlan + '월 기초재고가 생성되었습니다. ' + LEFT(@iInYmd,6)  +  '월 재고를 수정할 수 없습니다.'
+		GOTO ENDSTEP
+	END
+
+	  IF @wInSeq !='' BEGIN
+
+		--작업순번이 있으면 기존 작업보고 삭제 후 처리
+		DECLARE @wReturn INT = 0
+
+		EXEC @wReturn = MISPD.dbo.str_PDOutsourceingIn_D @iInYmd = @iInYmd, @iInSeq = @wInSeq, @iItemNo = @wRefItemNo,@iProcessCd=@wRefProcessCd, @iProcessSeq = @iProcessSeq
+
+		IF @wReturn = 0 BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '외주 입고중 수정전 기존 내역 삭제중 오류'
+			GOTO ENDSTEP
+		END		
+		--삭제 로직 구현
+	END 
+	ELSE BEGIN
+		SELECT @wInSeq = REPLICATE('0', 3 - LEN(InSeq)) + InSeq
+		  FROM (
+				SELECT CONVERT(VARCHAR, ISNULL(MAX(CONVERT(INT, InSeq)),0) + 1) AS InSeq
+				  FROM PDOutsourceingIn
+				 WHERE InYmd = @iInYmd
+				) a
+	END
+	
+	INSERT INTO PDOutsourceingIn (InYmd,InSeq,ItemNo,ProcessCd, CUSTCD,InYy,InMm,InDd,Unit,InQty,Price,SupplyAmt,Vat,Amt,LotNo
+								,PgNo,AddEmpNo,AddDt,UpdEmpNo,UpdDt) 
+	VALUES(@iInYmd,@wInSeq,@wRefItemNo,@wRefProcessCd
+		,(SELECT CUSTCD FROM PDITEMPROCESS WHERE ITEMNO=@iItemNo AND ProcessCd=@iProcessCd)
+		,@iInYy,@iInMm,@iInDd,@iUnit,@iInQty,@iPrice,@iSupplyAmt,@iVat,@iAmt,@iLotNo,@iPgNo,@iAddEmpNo,GETDATE(),@iAddEmpNo,GETDATE())
+	
+	IF @@ROWCOUNT <= 0 BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = 'PDOutsourceingIn 테이블 저장중 오류'
+		GOTO ENDSTEP
+	END
+
+--20161202 강윤철 전공정이 참조공정일 경우에 대한 처리 추가
+	DECLARE @wBefItemNo VARCHAR(50),
+			@wBefProcessCd VARCHAR(50)
+
+	-- 전공정이 참조공정일 경우 원공정을 찾음
+	SELECT	@wBefItemNo = ISNULL(BR.RefItemNo,'X')
+		,	@wBefProcessCd = ISNULL(BR.RefProcessCd,'X')
+	FROM	PDItemProcess	A
+	LEFT JOIN PDBomRefItem	BR	ON BR.ItemNo = A.ItemNo AND BR.ProcessCd = A.BefProcessCd
+	--20161202 강윤철 외주입고의 경우는 외주용접여부에 대한 처리가 필요없어 수정
+	--LEFT JOIN PDBomRefItem	BR	ON BR.ItemNo = A.ItemNo AND BR.ProcessCd = CASE WHEN A.OUTWELDFL = 'Y' THEN A.BefProcessCd1 ELSE A.BefProcessCd END
+	WHERE A.ItemNo = @wRefItemNo
+	AND A.ProcessCd = @wRefProcessCd
+
+	-- 전공정이 참조공정이 아닌 경우
+	IF @wBefItemNo = 'X' BEGIN
+		--그외 전공정코드에서 차감해 준다.
+		UPDATE PD 
+		   SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(A.BefStdQty,1))
+		   --20161202 강윤철 외주입고의 경우는 외주용접여부에 대한 처리가 필요없어 수정
+		   --SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(CASE WHEN A.OutWeldFl = 'Y' THEN A.BefStdQty1 ELSE A.BefStdQty END,1))
+		   ,   PD.UpdDt = GETDATE()
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.PgNo = @iPgNo
+		  FROM PDItemProcess A
+		  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm
+		   AND PD.ItemNo = CASE WHEN ISNULL(a.BEFITEMNO,'') = '' THEN  a.ITEMNO ELSE a.BEFITEMNO END AND PD.ProcessCd = a.BEFPROCESSCD
+		   --20161202 강윤철 외주입고의 경우는 외주용접여부에 대한 처리가 필요없어 수정
+		   --AND PD.ItemNo = CASE WHEN ISNULL(CASE WHEN A.OutWeldFl = 'Y' THEN A.BefItemNo1 ELSE A.BefItemNo END,'') = '' THEN  a.ITEMNO ELSE (CASE WHEN A.OutWeldFl = 'Y' THEN A.BefItemNo1 ELSE A.BefItemNo END) END
+		   --AND PD.ProcessCd = CASE WHEN A.OutWeldFl = 'Y' THEN A.BefProcessCd1 ELSE A.BefProcessCd END
+		 WHERE a.ItemNo = @wRefItemNo
+		   AND a.ProcessCd = @wRefProcessCd
+		   /* 20190128 김은기 주석처리 
+		UPDATE PD 
+		   SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(A.BefStdQty,1))
+		   --20161202 강윤철 외주입고의 경우는 외주용접여부에 대한 처리가 필요없어 수정
+		   --SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(CASE WHEN A.OutWeldFl = 'Y' THEN A.BefStdQty1 ELSE A.BefStdQty END,1))
+		   ,   PD.UpdDt = GETDATE()
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.PgNo = @iPgNo
+		  FROM PDItemProcess A
+		  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm
+		   AND PD.ItemNo = CASE WHEN ISNULL(a.BEFITEMNO,'') = '' THEN  a.ITEMNO ELSE a.BEFITEMNO END 
+		   AND PD.ProcessCd = CASE WHEN ISNULL(a.BEFPROCESSCD,'') = '' THEN  a.ProcessCd ELSE a.BEFPROCESSCD END  --20190125 서도종수정 
+		   --AND PD.ProcessCd = a.BEFPROCESSCD --20190125 서도종막음
+		   --20161202 강윤철 외주입고의 경우는 외주용접여부에 대한 처리가 필요없어 수정
+		   --AND PD.ItemNo = CASE WHEN ISNULL(CASE WHEN A.OutWeldFl = 'Y' THEN A.BefItemNo1 ELSE A.BefItemNo END,'') = '' THEN  a.ITEMNO ELSE (CASE WHEN A.OutWeldFl = 'Y' THEN A.BefItemNo1 ELSE A.BefItemNo END) END
+		   --AND PD.ProcessCd = CASE WHEN A.OutWeldFl = 'Y' THEN A.BefProcessCd1 ELSE A.BefProcessCd END
+		 WHERE a.ItemNo = @wRefItemNo
+		   AND a.ProcessCd = @wRefProcessCd
+		   */
+	END
+	-- 전공정이 참조공정인 경우
+	ELSE BEGIN
+	
+		DECLARE @wBefStdQty INT
+		-- 처리대상 공정의 전공정기준수량을 가져온다
+		SELECT	@wBefStdQty = ISNULL(BefStdQty,1)
+		--20161202 강윤철 외주입고의 경우는 외주용접여부에 대한 처리가 필요없어 수정
+		--SELECT	@wBefStdQty = ISNULL(CASE WHEN OutWeldFl = 'Y' THEN BefStdQty1 ELSE BefStdQty END,1)
+		FROM	PDItemProcess
+		WHERE	ItemNo = @wRefItemNo
+		AND		ProcessCd = @wRefProcessCd
+
+		--원공정코드에서 차감해 준다.
+		UPDATE A
+		   SET StockQty = StockQty - (@iInQty * @wBefStdQty)
+		    ,  PgNo = @iPgNo
+			,  UpdEmpNo = @iAddEmpNo
+			,  UpdDt = getdate()
+		  FROM PDPlanProcessDetail AS A
+		 WHERE PlanYm = @iInYy + @iInMm 
+		   AND ItemNo = @wBefItemNo 
+		   AND ProcessCd = @wBefProcessCd
+	END
+
+	--20161202 강윤철 기존소스 주석처리
+	--그외 전공정코드에서 차감해 준다.
+	--UPDATE PD 
+	--   SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(a.BefStdQty,1))
+	--	,  PD.UpdDt = GETDATE()
+	--	,  PD.UpdEmpNo = @iAddEmpNo
+	--	,  PD.PgNo = @iPgNo
+	--  FROM PDItemProcess a
+	--  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm --AND PD.PlanGb = @iPlanGb 
+	--   AND PD.ItemNo = CASE WHEN ISNULL(a.BEFITEMNO,'') = '' THEN  a.ITEMNO ELSE a.BEFITEMNO END AND PD.ProcessCd = a.BEFPROCESSCD
+	-- WHERE a.ItemNo = @wRefItemNo
+	--   AND a.ProcessCd = @wRefProcessCd
+
+	--차감코드가 있으면 차감
+	UPDATE PD 
+	   SET PD.StockQty = PD.StockQty - (@iInQty * ISNULL(a.DedQty,1))
+		,   PD.UpdDt = GETDATE()
+		,   PD.UpdEmpNo = @iAddEmpNo
+		,   PD.PgNo = @iPgNo
+	  FROM PDBomDedItem a
+	  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm --AND PD.PlanGb = @iPlanGb 
+	   AND PD.ItemNo = CASE WHEN ISNULL(a.DedItemNo,'') = '' THEN  a.ITEMNO ELSE a.DedItemNo END AND PD.ProcessCd = a.DedProceddCd
+	 WHERE a.ItemNo = @wRefItemNo
+	   AND a.ProcessCd = @wRefProcessCd
+
+	-- 가감코드가 있으면 가감쪽에 플러스하고 현재고는 그대로	
+	IF EXISTS (SELECT 1 FROM PDBomAddItem a WHERE a.ItemNo = @wRefItemNo AND a.ProcessCd = @wRefProcessCd) BEGIN		
+		UPDATE PD 
+		   SET PD.StockQty = PD.StockQty + (@iInQty * ISNULL(a.AddQty,1))
+		   ,   PD.UpdDt = GETDATE()
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.PgNo = @iPgNo
+		  FROM PDBomAddItem a
+		  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @iInYy + @iInMm --AND PD.PlanGb = @iPlanGb 
+		   AND PD.ItemNo = a.AddItemNo AND PD.ProcessCd = a.AddProcessCd
+		   --AND PD.ItemNo = CASE WHEN ISNULL(a.AddItemNo,'') = '' THEN  a.ITEMNO ELSE a.AddItemNo END AND PD.ProcessCd = a.AddProcessCd		 
+		 WHERE a.ItemNo = @wRefItemNo
+		   AND a.ProcessCd = @wRefProcessCd
+	END
+	ELSE BEGIN
+		UPDATE PD
+		   SET PD.StockQty = PD.StockQty + (CONVERT(INT,@iInQty) * (CASE WHEN M.Unit = '本' THEN 6000 ELSE 1 END))
+		   ,   PD.UpdDt = GETDATE()
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.PgNo = @iPgNo
+		  FROM PDPlanProcessDetail PD 
+		  JOIN PDItemMaster M ON PD.ItemNo = M.ItemNo 
+		 WHERE PD.PlanYm = @iInYy +''+ @iInMm 
+		   --AND PD.PlanGb = @iPlanGb 
+		   AND PD.ItemNo = @wRefItemNo
+		   AND PD.ProcessCd = @wRefProcessCd
+		   
+			
+	END
+	*/
+
+
+	SET @wErrYN = 'N'
+	SET @wErrMsg = '정상 처리되었습니다.'
+	SET @wInSeq = @iInSeq
+	SET @wYymm = ''
+	SET @wPlan = ''
+
+	BEGIN TRAN
+
+
+	--해당공정이 참조공정을 가지고 있으면 참조공정에 입고시킨다.
+	IF EXISTS(SELECT 1 FROM PDBomRefItem WHERE ItemNo = @iItemNo AND ProcessCd = @iProcessCd)
+	BEGIN
+		SELECT @wRefItemNo = ISNULL(RefItemNo, ItemNo), @wRefProcessCd = RefProcessCd
+		FROM   PDBomRefItem
+		WHERE  ITEMNO = @iItemNo
+		AND    PROCESSCD = @iProcessCd
+	END
+	ELSE
+	BEGIN
+		SELECT @wRefItemNo = @iItemNo, @wRefProcessCd = @iProcessCd
+	END
+
+	SELECT @wPlan = MAX(PlanYm)
+	FROM   PDPlanProcessDetail
+	--20190304 참조공정의 재고만 변경하는 것이 아니므로 어떤 코드이든 다음 월의 자료가 존재하면 체크되도록 함
+	 --WHERE ItemNo = @wRefItemNo
+	 --  AND ProcessCd = @wRefProcessCd
+
+	IF LEFT(@iInYmd,6) != @wPlan 
+	BEGIN		
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = @wPlan + '월 기초재고가 생성되었습니다. ' + LEFT(@iInYmd,6)  +  '월 재고를 수정할 수 없습니다.'
+		GOTO ENDSTEP
+	END
+
+	IF @wInSeq = ''
+	BEGIN
+		SELECT @wInSeq = REPLICATE('0', 3 - LEN(InSeq)) + InSeq
+		FROM   (SELECT CONVERT(varchar, ISNULL(MAX(CONVERT(int, InSeq)), 0) + 1) InSeq
+				FROM   PDOutsourceingIn
+				WHERE  InYmd = @iInYmd) tb
+	END
+	ELSE
+	BEGIN
+		EXEC @wReturn = MISPD.dbo.str_PDOutsourceingIn_D @iInYmd = @iInYmd, @iInSeq = @wInSeq, @iItemNo = @wRefItemNo, @iProcessCd = @wRefProcessCd, @iProcessSeq = @iProcessSeq
+
+		IF @wreturn = 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '외주입고 수정 중 기존 내역 삭제 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+
+
+	INSERT INTO PDOutsourceingIn ( InYmd, InSeq, ItemNo, ProcessCd, CustCd, InYy, InMm, InDd, 
+								   Unit, InQty, Price, SupplyAmt, Vat, Amt, PgNo, AddEmpNo, AddDt, UpdEmpNo, UpdDt )
+	VALUES ( @iInYmd, @wInSeq, @wRefItemNo, @wRefProcessCd, (SELECT CustCd FROM PDItemProcess WHERE ItemNo = @iItemNo AND ProcessCd = @iProcessCd),
+			 @iInYy, @iInMm, @iInDd, @iUnit, @iInQty, @iPrice, @iSupplyAmt, @iVat, @iAmt, @iPgNo, @iAddEmpNo, GETDATE(), @iAddEmpNo, GETDATE() )
+
+	IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = 'PDOutsourceingIn 테이블 저장중 오류'
+		GOTO ENDSTEP
+	END
+
+
+	--전공정 처리
+	IF EXISTS(SELECT 1 FROM PDItemProcess p
+			  INNER JOIN PDBomRefItem r ON r.ItemNo = CASE WHEN ISNULL(p.BefItemNo, '') = '' THEN p.ItemNo ELSE p.BefItemNo END
+									   AND r.ProcessCd = p.BefProcessCd
+			  WHERE  p.ItemNo = @wRefItemNo AND p.ProcessCd = @wRefProcessCd)
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty - (@iInQty * ISNULL(p.BefStdQty, 1)),
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		FROM   PDItemProcess p
+		INNER JOIN PDBomRefItem r ON r.ItemNo = CASE WHEN ISNULL(p.BefItemNo, '') = '' THEN p.ItemNo ELSE p.BefItemNo END
+									   AND r.ProcessCd = p.BefProcessCd
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = r.RefItemNo AND pd.ProcessCd = r.RefProcessCd
+										 AND pd.PlanYm = LEFT(@iInYmd, 6)
+		WHERE  p.ItemNo = @wRefItemNo
+		AND    p.ProcessCd = @wRefProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '전공정 참조코드 재고 변경 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+	ELSE
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty - (@iInQty * ISNULL(p.BefStdQty, 1)),
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		FROM   PDItemProcess p
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(p.BefItemNo, '') = '' THEN p.ItemNo ELSE p.BefItemNo END
+										 AND pd.ProcessCd = p.BefProcessCd
+										 AND pd.PlanYm = LEFT(@iInYmd, 6)
+		WHERE  p.ItemNo = @wRefItemNo
+		AND    p.ProcessCd = @wRefProcessCd
+		
+		IF @@ERROR <> 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '전공정 재고 변경 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+
+
+	UPDATE pd
+	SET    pd.StockQty = pd.StockQty - (@iInQty * ISNULL(d.DedQty, 1)),
+		   PgNo = @iPgNo,
+		   UpdEmpNo = @iAddEmpNo,
+		   UpdDt = GETDATE()
+	FROM   PDBomDedItem d
+	INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(d.DedItemNo, '') = '' THEN d.ItemNo ELSE d.DedItemNo END
+									 AND pd.ProcessCd = d.DedProceddCd
+									 AND PlanYm = LEFT(@iInYmd, 6)
+	WHERE  d.ItemNo = @wRefItemNo
+	AND    d.ProcessCd = @wRefProcessCd
+
+	IF @@ERROR <> 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '차감코드 재고 변경 시 오류'
+		GOTO ENDSTEP
+	END
+
+
+	IF EXISTS(SELECT 1 FROM PDBomAddItem WHERE ItemNo = @wRefItemNo AND ProcessCd = @wRefProcessCd)
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty + (@iInQty * ISNULL(a.AddQty, 1)),
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		FROM   PDBomAddItem a
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END
+										 AND pd.ProcessCd = a.AddProcessCd
+										 AND pd.PlanYm = LEFT(@iInYmd, 6)
+		WHERE  a.ItemNo = @wRefItemNo
+		AND    a.ProcessCd = @wRefProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '가감코드 재고 변경 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+	ELSE
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty + (@iInQty * CASE WHEN m.Unit = '本' THEN 6000 ELSE 1 END),
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		FROM   PDPlanProcessDetail pd
+		INNER JOIN PDItemMaster m ON m.ItemNo = pd.ItemNo
+		WHERE  pd.ItemNo = @wRefItemNo
+		AND    pd.ProcessCd = @wRefProcessCd
+		AND    pd.PlanYm = LEFT(@iInYmd, 6)
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '재고 변경 시 오류'
+			GOTO ENDSTEP
+		END
+	END
+
+	
+	--성공했다고 치고
+	GOTO ENDSTEP
+
+END
+
+/****************/
+ENDSTEP:
+/****************/
+	IF @wErrYN = 'N'
+		COMMIT TRAN
+	ELSE
+		ROLLBACK TRAN
+
+	SELECT @wErrYN ERRYN, @wErrMsg ERRMSG, @wInSeq AS INSEQ
+
+RETURN
+```
+
+<a id="mispd-str-pdoutsourceingin-s"></a>
+## `MISPD.dbo.str_PDOutsourceingIn_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDOutsourceingIn_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDOutsourceingIn_S.sql
+
+```sql
+/********************************************************************************
+제    목 : 외주가공 입고수량
+프로그램 : 
+등 록 일 : 2016-01-07 PDOutsourceingIn
+등 록 자 : 김재환
+수정일		수정자		내용
+-----------------------------------------------------------------------
+EXEC MISPD.dbo.str_PDOutsourceingIn_S @iPlanYm = '201511', @iPlanGb = '03', @iItemNo = 'A01-025', @iProcessCD = 'E025WTH'
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDOutsourceingIn_S]
+	@iPlanYm varchar(6) -- 계획년월
+	,@iPlanGb VARCHAR(3)
+	,@iItemNo VARCHAR(50)
+	,@iProcessCD VARCHAR(20)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '01' THEN InQty ELSE 0 END),0) DAY01
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '02' THEN InQty ELSE 0 END),0) DAY02
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '03' THEN InQty ELSE 0 END),0) DAY03
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '04' THEN InQty ELSE 0 END),0) DAY04
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '05' THEN InQty ELSE 0 END),0) DAY05
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '06' THEN InQty ELSE 0 END),0) DAY06
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '07' THEN InQty ELSE 0 END),0) DAY07
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '08' THEN InQty ELSE 0 END),0) DAY08
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '09' THEN InQty ELSE 0 END),0) DAY09
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '10' THEN InQty ELSE 0 END),0) DAY10
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '11' THEN InQty ELSE 0 END),0) DAY11
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '12' THEN InQty ELSE 0 END),0) DAY12
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '13' THEN InQty ELSE 0 END),0) DAY13
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '14' THEN InQty ELSE 0 END),0) DAY14
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '15' THEN InQty ELSE 0 END),0) DAY15
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '16' THEN InQty ELSE 0 END),0) DAY16
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '17' THEN InQty ELSE 0 END),0) DAY17
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '18' THEN InQty ELSE 0 END),0) DAY18
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '19' THEN InQty ELSE 0 END),0) DAY19
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '20' THEN InQty ELSE 0 END),0) DAY20
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '22' THEN InQty ELSE 0 END),0) DAY22
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '23' THEN InQty ELSE 0 END),0) DAY23
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '24' THEN InQty ELSE 0 END),0) DAY24
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '25' THEN InQty ELSE 0 END),0) DAY25
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '26' THEN InQty ELSE 0 END),0) DAY26
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '27' THEN InQty ELSE 0 END),0) DAY27
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '28' THEN InQty ELSE 0 END),0) DAY28
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '29' THEN InQty ELSE 0 END),0) DAY29
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '30' THEN InQty ELSE 0 END),0) DAY30
+		,  ISNULL(SUM(CASE WHEN RIGHT(InYmd,2) = '31' THEN InQty ELSE 0 END),0) DAY31
+	  FROM PDVPlanProcessDetail PD
+	  LEFT JOIN PDOutsourceingIn a ON a.ItemNo = PD.refitemno AND a.ProcessCd = PD.REFProcessCD AND A.INYMD LIKE @IPLANYM+'%'
+	 WHERE PD.ItemNo = @iItemNo 
+	   AND PD.ProcessCD = @iProcessCD
+	   AND PD.PlanYM = @IPLANYM
+	 GROUP BY PD.ItemNo, PD.ProcessCD
+
+	SELECT MISCM.DBO.fn_gfnDateTypeTrans(INYMD, '-') INYMD, INSEQ, A.CUSTCD, ISNULL(C.CUSTNM, A.CUSTCD) CUSTNM, A.LOTNO, INQTY, PRICE, SUPPLYAMT, VAT, AMT, 'S' AUD
+	  FROM PDVPlanProcessDetail PD
+	  JOIN PDOutsourceingIn a ON a.ItemNo = PD.refitemno AND a.ProcessCd = PD.REFProcessCD AND A.INYMD LIKE @IPLANYM+'%'
+	  LEFT JOIN MISSA..SACust C ON A.CustCd != '' AND C.DuzCustCd = A.CustCd
+	 WHERE PD.ItemNo = @iItemNo 
+	   AND PD.ProcessCD = @iProcessCD
+	   AND PD.PlanYM = @IPLANYM
+	 ORDER BY INYMD, CONVERT(INT, INSEQ)
+END
+```
+
+<a id="mispd-str-pdplnb00400p-s"></a>
+## `MISPD.dbo.str_PDPLNB00400P_S`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDPLNB00400P_S.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDPLNB00400P_S.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 아이템별 공정진행 현황 팝업(수량조정)
+프로그램 : 
+등 록 일 : 2016-04-15
+등 록 자 : 김재환
+수정일		수정자		내용
+-----------------------------------------------------------------------
+
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDPLNB00400P_S]
+	@iPlanYm varchar(6) -- 계획년월
+	,@iPlanGb VARCHAR(3)
+	,@iItemNo VARCHAR(50)
+AS
+
+BEGIN
+	SET NOCOUNT ON;
+
+	SELECT a.PROCESSSEQ	--공정순번
+		,  a.PROCESSCD		--공정코드
+		,  MAX(PROCESSNM)	PROCESSNM		--공정명
+		,  MAX(BASICQTY)	BASICQTY		--기초재고
+		,  MAX(ADJUSTQTY)	ADJUSTQTY		--수량조정
+		,  CONVERT(INT, ROUND(MAX(a.STOCKQTY) / (CASE WHEN MAX(M.UNIT) = '本' THEN 6000.0 ELSE 1.0 END),0))	AS STOCKQTY		--현재고
+		,  MAX(STOCKQTY)	EXCQTY		--현재고(환산)
+		,  MAX(REFYN)		REFYN
+		,  0	AS ADDQTY --조정 할 수량
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '01' THEN WORKQTY ELSE 0 END) DAY01
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '02' THEN WORKQTY ELSE 0 END) DAY02
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '03' THEN WORKQTY ELSE 0 END) DAY03
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '04' THEN WORKQTY ELSE 0 END) DAY04
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '05' THEN WORKQTY ELSE 0 END) DAY05
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '06' THEN WORKQTY ELSE 0 END) DAY06
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '07' THEN WORKQTY ELSE 0 END) DAY07
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '08' THEN WORKQTY ELSE 0 END) DAY08
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '09' THEN WORKQTY ELSE 0 END) DAY09
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '10' THEN WORKQTY ELSE 0 END) DAY10
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '11' THEN WORKQTY ELSE 0 END) DAY11
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '12' THEN WORKQTY ELSE 0 END) DAY12
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '13' THEN WORKQTY ELSE 0 END) DAY13
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '14' THEN WORKQTY ELSE 0 END) DAY14
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '15' THEN WORKQTY ELSE 0 END) DAY15
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '16' THEN WORKQTY ELSE 0 END) DAY16
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '17' THEN WORKQTY ELSE 0 END) DAY17
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '18' THEN WORKQTY ELSE 0 END) DAY18
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '19' THEN WORKQTY ELSE 0 END) DAY19
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '20' THEN WORKQTY ELSE 0 END) DAY20
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '21' THEN WORKQTY ELSE 0 END) DAY21
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '22' THEN WORKQTY ELSE 0 END) DAY22
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '23' THEN WORKQTY ELSE 0 END) DAY23
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '24' THEN WORKQTY ELSE 0 END) DAY24
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '25' THEN WORKQTY ELSE 0 END) DAY25
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '26' THEN WORKQTY ELSE 0 END) DAY26
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '27' THEN WORKQTY ELSE 0 END) DAY27
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '28' THEN WORKQTY ELSE 0 END) DAY28
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '29' THEN WORKQTY ELSE 0 END) DAY29
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '30' THEN WORKQTY ELSE 0 END) DAY30
+		,  SUM(CASE WHEN RIGHT(Workymd,2) = '31' THEN WORKQTY ELSE 0 END) DAY31
+		,  'S'	AS AUD
+		,  ''	AS ADJUSTREASON
+	  FROM  (	SELECT VPD.ItemNo,VPD.PROCESSSEQ,VPD.ProcessCd,VPD.PROCESSNM,VPD.BASICQTY,VPD.ADJUSTQTY,VPD.STOCKQTY,VPD.REFYN,W.WorkYmd,W.WorkQty
+				  FROM PDVPlanProcessDetail VPD
+				  LEFT JOIN PDWork W 
+				    ON W.ItemNo = VPD.RefitemNo AND W.ProcessCd = VPD.RefProcessCD AND W.PlanYm = VPD.PlanYm 
+				   AND W.PlanGb = VPD.PlanGb
+				 WHERE VPD.ItemNo = @iItemNo
+				   AND VPD.PlanYm = @iPlanYm
+				 UNION ALL
+				SELECT VPD.ItemNo,VPD.PROCESSSEQ,VPD.ProcessCd,VPD.PROCESSNM,VPD.BASICQTY,VPD.ADJUSTQTY,VPD.STOCKQTY,VPD.REFYN,I.InYmd,I.INQTY
+				  FROM PDVPlanProcessDetail VPD
+				  JOIN PDOutsourceingIn I
+				    ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd LIKE VPD.PlanYm + '%'
+				 WHERE VPD.ItemNo = @iItemNo
+				   AND VPD.PlanYm = @iPlanYm
+				 UNION ALL
+				SELECT VPD.ItemNo,VPD.PROCESSSEQ,VPD.ProcessCd,VPD.PROCESSNM,VPD.BASICQTY,VPD.ADJUSTQTY,VPD.STOCKQTY,VPD.REFYN,O.OutYmd,O.OutQty
+				  FROM PDVPlanProcessDetail VPD
+				  JOIN PDOutsourcingOut O
+				    ON O.ItemNo = VPD.RefitemNo AND O.ProcessCd = VPD.RefProcessCD AND O.OutYmd LIKE VPD.PlanYm + '%'
+				 WHERE VPD.ItemNo = @iItemNo
+				   AND VPD.PlanYm = @iPlanYm
+				--20160905 강윤철 원부자재입고내역 누락으로 추가(str_PDWork_Month_S와 맞춤)
+				 UNION ALL
+				SELECT VPD.ItemNo,VPD.PROCESSSEQ,VPD.ProcessCd,VPD.PROCESSNM,VPD.BASICQTY,VPD.ADJUSTQTY,VPD.STOCKQTY,VPD.REFYN,I.InYmd,I.InQty
+				  FROM PDVPlanProcessDetail VPD
+				  JOIN PDMaterialInput I
+				    ON I.ItemNo = VPD.RefitemNo AND I.ProcessCd = VPD.RefProcessCD AND I.InYmd LIKE VPD.PlanYm + '%'
+				 WHERE VPD.ItemNo = @iItemNo
+				   AND VPD.PlanYm = @iPlanYm
+				) a
+		JOIN PDITEMMASTER M ON M.ITEMNO = a.ITEMNO --AND M.ItemGrpCd ='SP' AND ISNULL(M.ItemInfo,'') <> 'DUZON'
+	 GROUP BY a.ITEMNO, a.PROCESSSEQ, a.PROCESSCD
+	 ORDER BY a.PROCESSSEQ
+
+	--SELECT IP.PROCESSSEQ	--공정순번
+	--	,  IP.PROCESSCD		--공정코드
+	--	,  MAX(IP.PROCESSNM) PROCESSNM		--공정명
+	--	,  MAX(CASE WHEN BR.ItemNo IS NOT NULL THEN RPD.BasicQty ELSE PD.BASICQTY END) BASICQTY		--기초재고
+	--	,  MAX(CASE WHEN BR.ItemNo IS NOT NULL THEN RPD.ADJUSTQTY ELSE PD.ADJUSTQTY END) ADJUSTQTY		--수량조정
+	--	,  MAX(CASE WHEN BR.ItemNo IS NOT NULL THEN RPD.STOCKQTY ELSE PD.STOCKQTY END) STOCKQTY		--현재고
+	--	,  MAX(CASE WHEN BR.ItemNo IS NOT NULL THEN 'Y' ELSE 'N' END) RefYN
+	--	, 0 AS ADDQTY --조정 할 수량
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '01' THEN WORKQTY ELSE 0 END) DAY01
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '02' THEN WORKQTY ELSE 0 END) DAY02
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '03' THEN WORKQTY ELSE 0 END) DAY03
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '04' THEN WORKQTY ELSE 0 END) DAY04
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '05' THEN WORKQTY ELSE 0 END) DAY05
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '06' THEN WORKQTY ELSE 0 END) DAY06
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '07' THEN WORKQTY ELSE 0 END) DAY07
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '08' THEN WORKQTY ELSE 0 END) DAY08
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '09' THEN WORKQTY ELSE 0 END) DAY09
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '10' THEN WORKQTY ELSE 0 END) DAY10
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '11' THEN WORKQTY ELSE 0 END) DAY11
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '12' THEN WORKQTY ELSE 0 END) DAY12
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '13' THEN WORKQTY ELSE 0 END) DAY13
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '14' THEN WORKQTY ELSE 0 END) DAY14
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '15' THEN WORKQTY ELSE 0 END) DAY15
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '16' THEN WORKQTY ELSE 0 END) DAY16
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '17' THEN WORKQTY ELSE 0 END) DAY17
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '18' THEN WORKQTY ELSE 0 END) DAY18
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '19' THEN WORKQTY ELSE 0 END) DAY19
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '20' THEN WORKQTY ELSE 0 END) DAY20
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '21' THEN WORKQTY ELSE 0 END) DAY21
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '22' THEN WORKQTY ELSE 0 END) DAY22
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '23' THEN WORKQTY ELSE 0 END) DAY23
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '24' THEN WORKQTY ELSE 0 END) DAY24
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '25' THEN WORKQTY ELSE 0 END) DAY25
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '26' THEN WORKQTY ELSE 0 END) DAY26
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '27' THEN WORKQTY ELSE 0 END) DAY27
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '28' THEN WORKQTY ELSE 0 END) DAY28
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '29' THEN WORKQTY ELSE 0 END) DAY29
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '30' THEN WORKQTY ELSE 0 END) DAY30
+	--	,  SUM(CASE WHEN RIGHT(Workymd,2) = '31' THEN WORKQTY ELSE 0 END) DAY31
+	--	, 'S' AUD
+	--  FROM PDItemProcess IP
+	--  JOIN PDPlanProcessDetail PD ON PD.ItemNo = IP.ItemNo AND PD.ProcessCd = IP.ProcessCd AND PD.PlanYm = @iPlanYm
+	--  LEFT JOIN PDBomRefItem BR ON BR.itemno = IP.ItemNo AND Br.processCD = IP.ProcessCd
+	--  LEFT JOIN PDPlanProcessDetail RPD ON RPD.PlanYm = PD.PlanYm AND RPD.itemno = ISNULL(BR.RefItemNo, BR.ItemNo) AND RPD.ProcessCd = BR.RefProcessCd
+	--  LEFT JOIN (SELECT WorkYmd, ItemNo, ProcessCd, WorkQty
+	--				  FROM PDWork W
+	--				 WHERE W.ItemNo = @iItemNo
+
+	--				 UNION ALL
+	--				SELECT InYmd, ItemNo, ProcessCd, INQTY
+	--				  FROM PDOutsourceingIn I
+	--				 WHERE I.ItemNo = @iItemNo
+
+	--				 UNION ALL
+	--				SELECT OutYmd, ItemNo, ProcessCd, OutQty
+	--				  FROM PDOutsourcingOut O
+	--				 WHERE O.ItemNo = @iItemNo) W ON W.ItemNo = PD.ItemNo AND w.ProcessCd = PD.ProcessCd AND W.WorkYmd LIKE @iPlanYm+'%'
+	-- WHERE IP.ItemNo = @iItemNo	 	   
+	-- GROUP BY IP.ItemNo, IP.PROCESSSEQ, IP.PROCESSCD
+	-- ORDER BY IP.PROCESSSEQ
+
+	 
+	--SELECT PROCESSSEQ
+	--	,  PROCESSCD
+	--	,  PROCESSNM
+	--	,  BASICQTY
+	--	,  ADJUSTQTY
+	--	,  STOCKQTY
+	--  FROM PDPlanProcessDetail a
+	-- WHERE A.PLANYM = @IPLANYM
+	--   --AND A.PLANGB = @iPlanGb
+	--   AND A.ItemNo = @iItemNo
+END
+```
+
+<a id="mispd-str-pdwork-d"></a>
+## `MISPD.dbo.str_PDWork_D`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **be_anasa develop 원문**
+원본 경로: `/Users/cigro/Desktop/anasa/dst-onsite/be-repo/db/procedures/MISPD/str_PDWork_D.sql`
+원격 원문: https://github.com/litmers-dev/be_anasa/blob/e3cb724616e872435f487d66c4703707d1ebb662/db/procedures/MISPD/str_PDWork_D.sql
+
+```sql
+
+/********************************************************************************
+제    목 : 작업보고 삭제 
+프로그램 : PDWork
+등 록 일 : 2016-03-30
+등 록 자 : 정재광
+수정일		수정자		내용
+-----------------------------------------------------------------------
+20161229	강윤철		재열처리 관련 수정
+
+EXEC MISPD.dbo.str_PDWork_D @iPlanYm = '201512', @iPlanGb = '01', @iItemNo = 'A06-03013', @iProcessSeq = '01', @iOrderSeq = '01', @iWorkSeq = '01', 
+*********************************************************************************/
+CREATE PROCEDURE [dbo].[str_PDWork_D]
+	 @iPlanYm		varchar(6) -- 계획년월
+	,@iPlanGb		varchar(3) -- 계획구분
+	,@iItemNo		varchar(50) -- 품목코드
+	,@iProcessSeq	varchar(2) -- 공정순번
+	,@iProcessCd	varchar(50) -- 공정코드
+	,@iOrderSeq		varchar(2)
+	,@iWorkSeq		varchar(2) -- 보고순번
+	,@iPgNo			varchar(20) = '' -- 프로그램번호
+	,@iAddEmpNo		varchar(10) = '' -- 등록자
+
+AS
+DECLARE @wErrYN VARCHAR(1),
+		@wErrMsg VARCHAR(1000),
+		@wPlan VARCHAR(6),	--가장 최신 계획년월 만들어진 기초재고에 넣는다.		
+		@wRefItemNo VARCHAR(50),
+		@wRefProcessCd VARCHAR(50),
+		--20161229 강윤철 재열처리 관련 추가
+		@wTemperingProcessCd varchar(20) -- 재열처리공정코드
+
+BEGIN
+
+	SET NOCOUNT ON;
+
+	SET @wErrYN = 'N'
+	SET @wErrMsg = '정상 처리되었습니다.'
+	/*
+	SET @wRefItemNO = @iItemNo
+	SET @wRefProcessCd = @iProcessCd
+
+	--해당공정이 참조공정을 가지고 있으면 참조공정에 입고시킨다.
+	SELECT @wRefItemNo = REFITEMNO, @wRefProcessCd = REFPROCESSCD
+	  FROM PDVPlanProcessDetail
+	 WHERE ITEMNO = @iItemNo
+	   AND ProcessCD = @iProcessCd
+	
+	--해당공정의 최근 계획년월을 가져온다.
+	SELECT @wPlan = MAX(PlanYm)
+	  FROM PDPlanProcessDetail
+	 WHERE PlanGb = @iPlanGb
+	--20190304 해당 공정의 재고만 변경하는 것이 아니므로 어떤 코드이든 다음 월의 자료가 존재하면 체크되도록 함
+	   --AND ItemNo = @iItemNo
+	   --AND ProcessCd = @iProcessCd
+
+	--20161229 강윤철 재열처리 관련 추가
+	--해당품목의 재열처리 공정코드를 가져온다.
+	SELECT	@wTemperingProcessCd = ProcessCd
+	  FROM	PDPlanProcessDetail
+	 WHERE	PlanYm = @iPlanYm
+	   AND	PlanGb = @iPlanGb
+	   AND	ItemNo = @iItemNo
+	   AND	ProcessNm LIKE '재열처리%'
+
+	--20161229 강윤철 작업보고테이블에서 관련 수량 확인위해
+	DECLARE @wWorkQty		INT,
+			@wBadQty		INT,
+			@wTemperingQty	INT,
+			@wOutWeldFl		VARCHAR(1) = 'N',
+			@wPipCutSize	DECIMAL(10,2)
+
+	-- 20161229 강윤철 현진행중인 작업보고의 작업수량, 불량수량, 재열처리수량, 외주용접여부를 가져온다.
+	SELECT	@wWorkQty		= ISNULL(WorkQty,0)
+		,	@wBadQty		= ISNULL(BadQty,0)
+		,	@wTemperingQty	= ISNULL(TemperingQty,0)
+		,	@wOutWeldFl		= ISNULL(OutWeldFl,'N')
+		,   @wPipCutSize    = ISNULL(PipCutSize, 0)
+	  FROM	PDWork
+	 WHERE	PlanYm = @iPlanYm
+	   AND	PlanGb = @iPlanGb
+	   AND	ItemNo = @iItemNo
+	   AND	ProcessCd = @iProcessCd
+	   AND	OrderSeq = @iOrderSeq
+	   AND	WorkSeq = @iWorkSeq
+
+	BEGIN TRAN
+
+	IF EXISTS(	SELECT *
+				  FROM MISTW..tbLogProductIn x
+				 WHERE  x.PlanYm = @iPlanYm
+				   AND	x.PlanGb = @iPlanGb
+				   AND	x.ItemNo = @iItemNo
+				   AND	x.ProcessCd = @iProcessCd
+				   AND	x.OrderSeq = @iOrderSeq
+				   AND	x.WorkSeq = @iWorkSeq	)	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '이미 생산입고되어 삭제할 수 없습니다!'
+		GOTO ENDSTEP
+	END
+
+	IF @iPlanYm != @wPlan BEGIN		
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = @wPlan + '월 기초재고가 생성되었습니다. ' + @iPlanYm +  '월 작업보고는 삭제할 수 없습니다.'
+		GOTO ENDSTEP
+	END
+
+	--20161202 강윤철 전공정이 참조공정일 경우에 대한 처리 추가
+	DECLARE @wBefItemNo		VARCHAR(50),
+			@wBefProcessCd	VARCHAR(50)
+			
+	-- 전공정이 참조공정일 경우 원공정을 찾음
+	SELECT	@wBefItemNo = ISNULL(BR.RefItemNo,'X')
+		,	@wBefProcessCd = ISNULL(BR.RefProcessCd,'X')
+	FROM	PDItemProcess	A
+	LEFT JOIN PDBomRefItem	BR	ON BR.ItemNo = A.ItemNo AND BR.ProcessCd = CASE WHEN @wOutWeldFl = 'Y' THEN A.BefProcessCd1 ELSE A.BefProcessCd END
+	WHERE A.ItemNo = @iItemNo
+	AND A.ProcessCd = @iProcessCd
+
+	-- 전공정이 참조공정이 아닌 경우
+	IF @wBefItemNo = 'X' BEGIN
+		--공압시 외주용접에 체크하면 전공정이 외주용접쪽에 데이터 차감했던 내역을 역으로 더해준다.
+		IF @wOutWeldFl = 'Y' BEGIN
+			UPDATE PD 
+			   SET PD.StockQty = PD.StockQty + ((@wWorkQty + @wBadQty + @wTemperingQty) * ISNULL(a.BefStdQty1,1))
+			   ,   PD.PgNo = @iPgNo
+			   ,   PD.UpdEmpNo = @iAddEmpNo
+			   ,   PD.UpdDt = GETDATE()
+			  FROM PDItemProcess a
+			  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @wPlan
+			   AND PD.ItemNo = CASE WHEN ISNULL(a.BefItemNo1,'') = '' THEN  a.ITEMNO ELSE a.BefItemNo1 END AND PD.ProcessCd = a.BefProcessCd1
+			 WHERE a.ItemNo = @iItemNo
+			   AND a.ProcessCd = @iProcessCd
+
+			
+		END
+		ELSE BEGIN
+			--그외 전공정코드에서 차감했던 내역을 역으로 더해준다.
+			--전공전 확인해서 차감했던 내역을 역으로 더해준다.
+			UPDATE PD 
+			   SET PD.StockQty = PD.StockQty + ((@wWorkQty + @wBadQty + @wTemperingQty) * ISNULL(a.BefStdQty,1))
+			   ,   PD.PgNo = @iPgNo
+			   ,   PD.UpdEmpNo = @iAddEmpNo
+			   ,   PD.UpdDt = GETDATE()
+			  FROM PDItemProcess a
+			  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @wPlan
+			   AND PD.ItemNo = CASE WHEN ISNULL(a.BEFITEMNO,'') = '' THEN  a.ITEMNO ELSE a.BEFITEMNO END AND PD.ProcessCd = a.BEFPROCESSCD
+			 WHERE a.ItemNo = @iItemNo
+			   AND a.ProcessCd = @iProcessCd
+		END
+	END
+	-- 전공정이 참조공정인 경우
+	ELSE BEGIN
+		-- 관련 변수 선언
+		DECLARE @wBefStdQty INT
+
+		-- 처리대상 공정의 전공정기준수량을 가져온다
+		SELECT	@wBefStdQty = ISNULL(CASE WHEN @wOutWeldFl = 'Y' THEN BefStdQty1 ELSE BefStdQty END,1)
+		FROM	PDItemProcess
+		WHERE	ItemNo = @iItemNo
+		AND		ProcessCd = @iProcessCd
+
+		--원공정코드에서 차감했던 내역을 역으로 더해준다.
+		UPDATE A
+		   SET StockQty = StockQty + ((@wWorkQty + @wBadQty + @wTemperingQty) * @wBefStdQty)
+		    ,  PgNo = @iPgNo
+			,  UpdEmpNo = @iAddEmpNo 
+			,  UpdDt = GETDATE()
+		  FROM PDPlanProcessDetail AS A
+		 WHERE PlanYm = @iPlanYm 
+		   AND ItemNo = @wBefItemNo 
+		   AND ProcessCd = @wBefProcessCd
+	END
+
+	--차감코드가 있으면 차감했던 내역을 역으로 더해준다.
+	UPDATE PD
+		-- 여기서는 재열처리수량은 제외되어야 한다.
+	   SET PD.StockQty = PD.StockQty + CONVERT(INT, ROUND(((@wWorkQty + @wBadQty) * (CASE WHEN A.DEDQTYUNIT = 'MM' AND @wPipCutSize > 0 THEN @wPipCutSize ELSE ISNULL(a.DedQty,1) END)),0))
+	   --PD.StockQty = PD.StockQty + ((@wWorkQty + @wBadQty) * ISNULL(a.DedQty,1))
+	   ,   PD.PgNo = @iPgNo
+	   ,   PD.UpdEmpNo = @iAddEmpNo
+	   ,   PD.UpdDt = GETDATE()
+	  FROM PDVBomDedItem a
+	  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @wPlan
+	   AND PD.ItemNo =a.DEDITEMNO AND PD.ProcessCd = a.DEDPROCESSCD
+	 WHERE a.ItemNo = @iItemNo
+	   AND a.ProcessCd = @iProcessCd
+
+	-- 가감코드가 있으면 가감쪽에 역으로 마이너스
+	IF EXISTS (SELECT 1 FROM PDBomAddItem a WHERE a.ItemNo = @iItemNo AND a.ProcessCd = @iProcessCd) BEGIN		
+		UPDATE PD
+			-- 여기서는 불량수량, 재열처리수량은 제외되어야 한다.
+		   SET PD.StockQty = PD.StockQty - (@wWorkQty * ISNULL(a.AddQty,1))
+		   ,   PD.PgNo = @iPgNo
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.UpdDt = GETDATE()
+		  FROM PDBomAddItem a
+		  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @wPlan 
+		   AND PD.ItemNo = CASE WHEN ISNULL(a.AddItemNo,'') = '' THEN  a.ITEMNO ELSE a.AddItemNo END AND PD.ProcessCd = a.AddProcessCd
+		 WHERE a.ItemNo = @iItemNo
+		   AND a.ProcessCd = @iProcessCd
+	END
+	ELSE BEGIN
+		--자기 공정에 역으로 빼준다
+		UPDATE PD
+		   SET PD.StockQty = PD.StockQty - @wWorkQty
+		   ,   PD.PgNo = @iPgNo
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.UpdDt = GETDATE()
+		  FROM PDPlanProcessDetail PD 
+		 WHERE PD.PlanYm = @wPlan 
+		   AND PD.PlanGb = @iPlanGb 
+		   AND PD.ItemNo = @iItemNo
+		   AND PD.ProcessCd = @iProcessCd
+	END
+
+	--재열처리 수량이 있으면 재열처리 공정의 가감쪽에 수량추가했던 내역을 역으로 빼준다.
+	IF @wTemperingQty > 0 BEGIN
+		UPDATE PD 
+		   SET PD.StockQty = PD.StockQty - (@wTemperingQty)
+		   ,   PD.UpdDt = GETDATE()
+		   ,   PD.UpdEmpNo = @iAddEmpNo
+		   ,   PD.PgNo = @iPgNo
+		  FROM PDBomAddItem a
+		  JOIN PDPlanProcessDetail PD ON PD.PlanYm = @wPlan 
+		   AND PD.ItemNo = CASE WHEN ISNULL(a.AddItemNo,'') = '' THEN  a.ITEMNO ELSE a.AddItemNo END AND PD.ProcessCd = a.AddProcessCd
+		 WHERE a.ItemNo = @iItemNo
+		   AND a.ProcessCd = @wTemperingProcessCd
+	END
+
+	--작업보고는 (참조공정이 아닌) 입력한 공정을 삭제 
+	DELETE
+	  FROM PDWork
+	 WHERE PlanYm = @iPlanYm
+	   AND PlanGb = @iPlanGb
+	   AND ItemNo = @iItemNo
+	   AND ProcessCd = @iProcessCd
+	   AND OrderSeq = @iOrderSeq
+	   AND WorkSeq = @iWorkSeq
+	
+	IF @@ROWCOUNT <= 0 BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '(이전) 작업보고가 삭제되지 않습니다.'
+		GOTO ENDSTEP
+	END	
+	*/
+
+
+	SET @wRefItemNO = @iItemNo
+	SET @wRefProcessCd = @iProcessCd
+
+	--해당공정이 참조공정을 가지고 있으면 참조공정에 입고시킨다.
+	SELECT @wRefItemNo = REFITEMNO, @wRefProcessCd = REFPROCESSCD
+	  FROM PDVPlanProcessDetail
+	 WHERE ITEMNO = @iItemNo
+	   AND ProcessCD = @iProcessCd
+	
+
+	BEGIN TRAN
+
+
+	IF EXISTS(SELECT 1
+			  FROM   MISTW.dbo.tbLogProductIn
+			  WHERE  PlanYm = @iPlanYm
+			  AND    PlanGb = @iPlanGb
+			  AND    ItemNo = @iItemNo
+			  AND    ProcessCd = @iProcessCd
+			  AND    OrderSeq = @iOrderSeq
+			  AND    WorkSeq = @iWorkSeq)
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '이미 생산입고되어 삭제할 수 없습니다!'
+		GOTO ENDSTEP
+	END
+
+	SELECT @wPlan = MAX(PlanYm)
+	FROM   PDPlanProcessDetail
+	WHERE  PlanGb = @iPlanGb
+
+	IF @iPlanYm <> @wPlan
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = @wPlan + '월 기초재고가 생성되었습니다. ' + @iPlanYm +  '월 작업보고는 삭제할 수 없습니다!'
+		GOTO ENDSTEP
+	END
+
+	--해당품목의 재열처리 공정코드를 가져온다.
+	SELECT @wTemperingProcessCd = ProcessCd
+	FROM   PDPlanProcessDetail
+	WHERE  PlanYm = @iPlanYm
+	AND    PlanGb = @iPlanGb
+	AND    ItemNo = @iItemNo
+	AND    ProcessNm LIKE '재열처리%'
+
+
+	-- 20161229 강윤철 현진행중인 작업보고의 작업수량, 불량수량, 재열처리수량, 외주용접여부를 가져온다.
+	DECLARE @wWorkQty		INT = 0,
+			@wBadQty		INT = 0,
+			@wTemperingQty	INT = 0,
+			@wOutWeldFl		VARCHAR(1) = 'N',
+			@wPipCutSize	DECIMAL(10,2) = 0.0
+
+	SELECT @wWorkQty = ISNULL(WorkQty, 0),
+		   @wBadQty = ISNULL(BadQty, 0),
+		   @wTemperingQty = ISNULL(TemperingQty, 0),
+		   @wOutWeldFl = ISNULL(OutWeldFl, 'N'),
+		   @wPipCutSize = ISNULL(PipCutSize, 0)
+	FROM   PDWork
+	WHERE  PlanYm = @iPlanYm
+	AND    PlanGb = @iPlanGb
+	AND    ItemNo = @iItemNo
+	AND    ProcessCd = @iProcessCd
+	AND    OrderSeq = @iOrderSeq
+	AND    WorkSeq = @iWorkSeq
+
+
+	IF EXISTS(SELECT 1 FROM PDItemProcess p
+			  INNER JOIN PDBomRefItem r ON r.ItemNo = CASE WHEN @wOutWeldFl = 'Y'
+														   THEN CASE WHEN ISNULL(p.BefItemNo1, '') = '' THEN p.ItemNo ELSE p.BefItemNo1 END
+														   ELSE CASE WHEN ISNULL(p.BefItemNo, '') = '' THEN p.ItemNo ELSE p.BefItemNo END END
+									   AND r.ProcessCd = CASE WHEN @wOutWeldFl = 'Y' THEN p.BefProcessCd1 ELSE p.BefProcessCd END
+			  WHERE  p.ItemNo = @iItemNo 
+			  AND    p.ProcessCd = @iProcessCd)
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty + ((@wWorkQty + @wBadQty + @wTemperingQty) * CASE WHEN @wOutWeldFl = 'Y' THEN ISNULL(p.BefStdQty1, 1) ELSE ISNULL(p.BefStdQty, 1) END),
+			   pd.PgNo = @iPgNo,
+			   pd.UpdEmpNo = @iAddEmpNo,
+			   pd.UpdDt = GETDATE()
+		FROM   PDItemProcess p
+		INNER JOIN PDBomRefItem r ON r.ItemNo = CASE WHEN @wOutWeldFl = 'Y'
+													 THEN CASE WHEN ISNULL(p.BefItemNo1, '') = '' THEN p.ItemNo ELSE p.BefItemNo1 END
+													 ELSE CASE WHEN ISNULL(p.BefItemNo, '') = '' THEN p.ItemNo ELSE p.BefItemNo END END
+								 AND r.ProcessCd = CASE WHEN @wOutWeldFl = 'Y' THEN p.BefProcessCd1 ELSE p.BefProcessCd END
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = r.RefItemNo AND pd.ProcessCd = r.RefProcessCd
+										 AND pd.PlanYm = @iPlanYm
+		WHERE  p.ItemNo = @iItemNo 
+		AND    p.ProcessCd = @iProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '전공정 참조코드 재고 변경 시 오류(삭제)'
+			GOTO ENDSTEP
+		END
+	END
+	ELSE
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty + ((@wWorkQty + @wBadQty + @wTemperingQty) * CASE WHEN @wOutWeldFl = 'Y' THEN ISNULL(p.BefStdQty1, 1) ELSE ISNULL(p.BefStdQty, 1) END),
+			   pd.PgNo = @iPgNo,
+			   pd.UpdEmpNo = @iAddEmpNo,
+			   pd.UpdDt = GETDATE()
+		FROM   PDItemProcess p
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN @wOutWeldFl = 'Y'
+															  THEN CASE WHEN ISNULL(p.BefItemNo1, '') = '' THEN p.ItemNo ELSE p.BefItemNo1 END
+															  ELSE CASE WHEN ISNULL(p.BefItemNo, '') = '' THEN p.ItemNo ELSE p.BefItemNo END END
+										 AND pd.ProcessCd = CASE WHEN @wOutWeldFl = 'Y' THEN p.BefProcessCd1 ELSE p.BefProcessCd END
+										 AND pd.PlanYm = @iPlanYm
+		WHERE  p.ItemNo = @iItemNo
+		AND    p.ProcessCd = @iProcessCd
+
+		IF @@ERROR <> 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '전공정 재고 변경 시 오류(삭제)'
+			GOTO ENDSTEP
+		END
+	END
+
+
+	UPDATE pd
+	SET    pd.StockQty = pd.StockQty + CONVERT(int, ROUND(((@wWorkQty + @wBadQty) * CASE WHEN d.DedQtyUnit = 'MM' AND @wPipCutSize > 0 THEN @wPipCutSize ELSE ISNULL(d.DedQty, 1) END), 0)),
+		   pd.PgNo = @iPgNo,
+		   pd.UpdEmpNo = @iAddEmpNo,
+		   pd.UpdDt = GETDATE()
+	FROM   PDBomDedItem d
+	INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(d.DedItemNo, '') = '' THEN d.ItemNo ELSE d.DedItemNo END
+									 AND pd.ProcessCd = d.DedProceddCd
+									 AND pd.PlanYm = @iPlanYm
+	WHERE  d.ItemNo = @iItemNo
+	AND    d.ProcessCd = @iProcessCd
+
+	IF @@ERROR <> 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '차감코드 재고 변경 시 오류(삭제)'
+		GOTO ENDSTEP
+	END
+
+
+	IF EXISTS(SELECT 1 FROM PDBomAddItem WHERE ItemNo = @iItemNo AND ProcessCd = @iProcessCd)
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty - (@wWorkQty * ISNULL(a.AddQty, 1)),
+			   pd.PgNo = @iPgNo,
+			   pd.UpdEmpNo = @iAddEmpNo,
+			   pd.UpdDt = GETDATE()
+		FROM   PDBomAddItem a
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END
+										 AND pd.ProcessCd = a.AddProcessCd
+										 AND pd.PlanYm = @iPlanYm
+		WHERE  a.ItemNo = @iItemNo
+		AND    a.ProcessCd = @iProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '가감코드 재고 변경 시 오류(삭제)'
+			GOTO ENDSTEP
+		END
+	END
+	ELSE
+	BEGIN
+		UPDATE PDPlanProcessDetail
+		SET    StockQty = StockQty - @wWorkQty,
+			   PgNo = @iPgNo,
+			   UpdEmpNo = @iAddEmpNo,
+			   UpdDt = GETDATE()
+		WHERE  PlanYm = @iPlanYm
+		AND    PlanGb = @iPlanGb
+		AND    ItemNo = @iItemNo
+		AND    ProcessCd = @iProcessCd
+
+		IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '재고 변경 시 오류(삭제)'
+			GOTO ENDSTEP
+		END
+	END
+
+
+	IF @wTemperingQty > 0
+	BEGIN
+		UPDATE pd
+		SET    pd.StockQty = pd.StockQty - @wTemperingQty,
+			   pd.PgNo = @iPgNo,
+			   pd.UpdEmpNo = @iAddEmpNo,
+			   pd.UpdDt = GETDATE()
+		FROM   PDBomAddItem a
+		INNER JOIN PDPlanProcessDetail pd ON pd.ItemNo = CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END
+										 AND pd.ProcessCd = a.AddProcessCd
+										 AND pd.PlanYm = @iPlanYm
+		WHERE  a.ItemNo = @iItemNo
+		AND    a.ProcessCd = @wTemperingProcessCd
+
+		IF @@ERROR <> 0
+		BEGIN
+			SET @wErrYN = 'Y'
+			SET @wErrMsg = '재열처리 수량 변경 시 오류(삭제)'
+			GOTO ENDSTEP
+		END
+	END
+
+
+	--작업보고는 (참조공정이 아닌) 입력한 공정을 삭제 
+	DELETE FROM PDWork
+	WHERE  PlanYm = @iPlanYm
+	AND    PlanGb = @iPlanGb
+	AND    ItemNo = @iItemNo
+	AND    ProcessCd = @iProcessCd
+	AND    OrderSeq = @iOrderSeq
+	AND    WorkSeq = @iWorkSeq
+
+	IF @@ERROR <> 0 OR @@ROWCOUNT <= 0
+	BEGIN
+		SET @wErrYN = 'Y'
+		SET @wErrMsg = '(이전) 작업보고가 삭제되지 않습니다.'
+		GOTO ENDSTEP
+	END
+
+
+
+	--작업보고에 쓰이는 불량코드 삭제
+	DELETE 
+	  FROM PDWorkBadCd
+	 WHERE PlanYm = @iPlanYm
+	   AND PlanGb = @iPlanGb
+	   AND ItemNo = @iItemNo
+	   AND ProcessCd = @iProcessCd
+	   AND OrderSeq = @iOrderSeq
+	   AND WorkSeq = @iWorkSeq
+	
+	--작업보고에 쓰이는 작업자 삭제
+	DELETE 
+	  FROM PDWorkWorker
+	 WHERE PlanYm = @iPlanYm
+	   AND PlanGb = @iPlanGb
+	   AND ItemNo = @iItemNo
+	   AND ProcessCd = @iProcessCd
+	   AND OrderSeq = @iOrderSeq
+	   AND WorkSeq = @iWorkSeq
+
+	--작어보고에 쓰이는 LOTNO 삭제
+	DELETE 
+	  FROM PDMaterialUse
+	 WHERE PlanYm = @iPlanYm
+	   AND PlanGb = @iPlanGb
+	   AND ItemNo = @iItemNo
+	   AND ProcessCd = @iProcessCd
+	   AND OrderSeq = @iOrderSeq
+	   AND WorkSeq = @iWorkSeq
+	
+
+
+	----작업보고 삭제시 해당 전공정에 후공정합계도 변경해 주자.	
+	--UPDATE a 
+	--   SET a.AfterWorkSum = ISNULL(a.AfterWorkSum,0) - WH.WorkQty
+	--  FROM PDWorkAfterWorkHistory WH
+	--  JOIN PDWork a 
+	--    ON a.PlanYm	= WH.PlanYm 
+	--   AND a.PlanGb = WH.PlanGb	
+	--   AND a.ItemNo	= WH.ItemNo
+	--   AND a.ProcessCd = WH.ProcessCd
+	--   AND a.OrderSeq = WH.OrderSeq
+	--   AND a.WorkSeq = WH.WorkSeq
+	-- WHERE WH.AfterPlanYm = @iPlanYm
+	--   AND WH.AfterPlanGb = @iPlanGb
+	--   AND WH.AfterItemNo = @iItemNo
+	--   AND WH.AfterProcessCd = @iProcessCd
+	--   AND WH.AfterOrderSeq = @iOrderSeq
+	--   AND WH.AfterWorkSeq = @iWorkSeq
+
+	--DELETE a
+	--  FROM PDWorkAfterWorkHistory a
+	-- WHERE AfterPlanYm = @iPlanYm
+	--   AND AfterPlanGb = @iPlanGb
+	--   AND AfterItemNo = @iItemNo
+	--   AND AfterProcessCd = @iProcessCd
+	--   AND AfterOrderSeq = @iOrderSeq
+	--   AND AfterWorkSeq = @iWorkSeq
+
+	--UPDATE a 
+	--   SET a.AfterWorkSum = ISNULL(a.AfterWorkSum,0) - WH.WorkQty
+	--  FROM PDOutsourceingInAfterWorkHistory WH
+	--  JOIN PDOutsourceingIn a ON a.InYmd = WH.InYmd
+	--   AND a.InSeq = WH.InSeq
+	-- WHERE WH.AfterPlanYm = @iPlanYm
+	--   AND WH.AfterPlanGb = @iPlanGb
+	--   AND WH.AfterItemNo = @iItemNo
+	--   AND WH.AfterProcessCd = @iProcessCd
+	--   AND WH.AfterOrderSeq = @iOrderSeq
+	--   AND WH.AfterWorkSeq = @iWorkSeq
+
+	--DELETE a
+	--  FROM PDOutsourceingInAfterWorkHistory a
+	-- WHERE AfterPlanYm = @iPlanYm
+	--   AND AfterPlanGb = @iPlanGb
+	--   AND AfterItemNo = @iItemNo
+	--   AND AfterProcessCd = @iProcessCd
+	--   AND AfterOrderSeq = @iOrderSeq
+	--   AND AfterWorkSeq = @iWorkSeq	
+
+	--성공했다고 치고
+	GOTO ENDSTEP
+
+END
+
+/****************/
+ENDSTEP:
+/****************/
+	IF @wErrYN = 'N'
+	BEGIN
+		COMMIT TRAN
+		   SELECT @wErrYN ERRYN, @wErrMsg ERRMSG
+		RETURN 1
+	END
+	ELSE
+	BEGIN
+		ROLLBACK TRAN
+		  SELECT @wErrYN ERRYN, @wErrMsg ERRMSG
+		RETURN 0
+	END
+```
+
+<a id="mispd-str-pdworkjournal-u"></a>
+## `MISPD.dbo.str_PDWorkJournal_U`
+
+화면·호출: 현재 `screen-sp.tsv` exact caller 미확인
+원문 기준: **운영 snapshot 원문 우선**
+원본 경로: `/Users/cigro/Desktop/anasa/anasa-stored-procedure-reverse-engineering/snapshots/live-schema-20260824T064641Z/MISPD/modules/sql_stored_procedure/dbo/1313439753_str_PDWorkJournal_U.sql`
+운영 snapshot은 저장소에 포함되지 않은 읽기 전용 스냅샷이며, 이 문서에는 해당 snapshot 파일을 그대로 보관한다.
+
+```sql
+-- Database: MISPD
+-- Object: [dbo].[str_PDWorkJournal_U]
+-- Type: SQL_STORED_PROCEDURE
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+CREATE PROCEDURE dbo.str_PDWorkJournal_U
+     @iUpdatesJson nvarchar(max)
+    ,@iPgNo        varchar(20) = 'PDT-PRG-012M'
+    ,@iAddEmpNo    varchar(10)
+AS
+DECLARE @wErrYN varchar(1) = 'N',
+        @wErrMsg varchar(1000) = '정상 처리되었습니다.',
+        @wTC int,
+        @wExpected int,
+        @wUpdated int;
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF ISJSON(@iUpdatesJson) <> 1
+    BEGIN
+        SELECT 'Y' AS ERRYN, '작업일지 저장 데이터가 올바른 JSON 형식이 아닙니다.' AS ERRMSG;
+        RETURN;
+    END
+
+    DECLARE @updates TABLE (
+        PlanYm varchar(6) NOT NULL,
+        PlanGb varchar(3) NOT NULL,
+        ItemNo varchar(50) NOT NULL,
+        ProcessCd varchar(20) NOT NULL,
+        OrderSeq varchar(2) NOT NULL,
+        WorkSeq varchar(2) NOT NULL,
+        JournalSequence int NOT NULL,
+        WorkYmd varchar(8) NOT NULL,
+        PlanGbNm varchar(50) NOT NULL,
+        ProcessGbNm varchar(50) NOT NULL,
+        ItemNm varchar(50) NOT NULL,
+        Spec varchar(50) NOT NULL,
+        FacilitiesCd varchar(10) NOT NULL,
+        FacilitiesNm varchar(50) NOT NULL,
+        ProcessNm varchar(30) NOT NULL,
+        WorkEmployeeNames nvarchar(max) NOT NULL,
+        WorkQty int NOT NULL,
+        TotalQty int NOT NULL,
+        TemperingQty int NOT NULL,
+        BadQty int NOT NULL,
+        BadNames nvarchar(max) NOT NULL,
+        StartTime varchar(5) NOT NULL,
+        EndTime varchar(5) NOT NULL,
+        WorkTime int NOT NULL,
+        ReadyTime int NOT NULL,
+        SettingTime int NOT NULL,
+        CheckTime int NOT NULL,
+        EduTime int NOT NULL,
+        RestTime int NOT NULL,
+        PipCutSize decimal(10,2) NOT NULL,
+        PipLength decimal(10,2) NOT NULL,
+        LotNumbers nvarchar(max) NOT NULL,
+        BoxLotNo varchar(10) NOT NULL,
+        BoxPerQty int NOT NULL,
+        BoxQty int NOT NULL,
+        PieceQty int NOT NULL,
+        Found bit NOT NULL DEFAULT 0,
+        SourceAddDt datetime NOT NULL DEFAULT GETDATE(),
+        ProcessGb varchar(2) NOT NULL DEFAULT '',
+        OldFacilitiesCd varchar(10) NOT NULL DEFAULT '',
+        OldFacilitiesNm varchar(50) NOT NULL DEFAULT '',
+        OldWorkQty int NOT NULL DEFAULT 0,
+        OldTemperingQty int NOT NULL DEFAULT 0,
+        OldBadQty int NOT NULL DEFAULT 0,
+        OldPipCutSize decimal(10,2) NOT NULL DEFAULT 0,
+        OutWeldFl varchar(1) NOT NULL DEFAULT 'N',
+        StockChanged bit NOT NULL DEFAULT 0,
+        PRIMARY KEY (PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq)
+    );
+
+    DECLARE @workerChanged TABLE (
+        PlanYm varchar(6), PlanGb varchar(3), ItemNo varchar(50),
+        ProcessCd varchar(20), OrderSeq varchar(2), WorkSeq varchar(2),
+        PRIMARY KEY (PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq)
+    );
+    DECLARE @badChanged TABLE (
+        PlanYm varchar(6), PlanGb varchar(3), ItemNo varchar(50),
+        ProcessCd varchar(20), OrderSeq varchar(2), WorkSeq varchar(2),
+        PRIMARY KEY (PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq)
+    );
+    DECLARE @lotChanged TABLE (
+        PlanYm varchar(6), PlanGb varchar(3), ItemNo varchar(50),
+        ProcessCd varchar(20), OrderSeq varchar(2), WorkSeq varchar(2),
+        PRIMARY KEY (PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq)
+    );
+    DECLARE @oldBad TABLE (
+        PlanYm varchar(6), PlanGb varchar(3), ItemNo varchar(50),
+        ProcessCd varchar(20), OrderSeq varchar(2), WorkSeq varchar(2),
+        InputSeq varchar(2), BadCd varchar(20), BadNm varchar(50), Qty int
+    );
+    DECLARE @oldLot TABLE (
+        PlanYm varchar(6), PlanGb varchar(3), ItemNo varchar(50),
+        ProcessCd varchar(20), OrderSeq varchar(2), WorkSeq varchar(2),
+        InputSeq varchar(2), LotNo varchar(100), Unit varchar(3), InputQty decimal(10,2)
+    );
+
+    BEGIN TRY
+        INSERT INTO @updates (
+            PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq,
+            JournalSequence, WorkYmd, PlanGbNm, ProcessGbNm,
+            ItemNm, Spec, FacilitiesCd, FacilitiesNm, ProcessNm,
+            WorkEmployeeNames, WorkQty, TotalQty, TemperingQty, BadQty, BadNames,
+            StartTime, EndTime, WorkTime, ReadyTime, SettingTime, CheckTime,
+            EduTime, RestTime, PipCutSize, PipLength, LotNumbers, BoxLotNo,
+            BoxPerQty, BoxQty, PieceQty
+        )
+        SELECT
+            LTRIM(RTRIM(j.plan_ym)), LTRIM(RTRIM(j.plan_gb)),
+            LTRIM(RTRIM(j.item_no)), LTRIM(RTRIM(j.process_cd)),
+            LTRIM(RTRIM(j.order_seq)), LTRIM(RTRIM(j.work_seq)),
+            j.journal_sequence, LTRIM(RTRIM(j.work_ymd)),
+            LTRIM(RTRIM(j.plan_gb_name)), LTRIM(RTRIM(j.process_gb_name)),
+            LTRIM(RTRIM(j.item_name)),
+            LTRIM(RTRIM(j.spec)), LTRIM(RTRIM(j.facilities_cd)),
+            LTRIM(RTRIM(j.facilities_name)), LTRIM(RTRIM(j.process_name)),
+            COALESCE(j.work_employee_names, N'[]'), j.work_qty, j.total_qty,
+            j.tempering_qty, j.bad_qty, COALESCE(j.bad_names, N'[]'),
+            LTRIM(RTRIM(j.start_time)), LTRIM(RTRIM(j.end_time)),
+            j.work_time, j.ready_time, j.setting_time, j.check_time,
+            j.edu_time, j.rest_time, j.pip_cut_size, j.pip_length,
+            COALESCE(j.lot_numbers, N'[]'), LTRIM(RTRIM(j.box_lot_no)),
+            j.box_per_qty, j.box_qty, j.piece_qty
+        FROM OPENJSON(@iUpdatesJson)
+        WITH (
+            plan_ym varchar(6) '$.plan_ym', plan_gb varchar(3) '$.plan_gb',
+            item_no varchar(50) '$.item_no', process_cd varchar(20) '$.process_cd',
+            order_seq varchar(2) '$.order_seq', work_seq varchar(2) '$.work_seq',
+            journal_sequence int '$.journal_sequence',
+            work_ymd varchar(8) '$.work_ymd', item_name varchar(50) '$.item_name',
+            plan_gb_name varchar(50) '$.plan_gb_name',
+            process_gb_name varchar(50) '$.process_gb_name',
+            spec varchar(50) '$.spec', facilities_cd varchar(10) '$.facilities_cd',
+            facilities_name varchar(50) '$.facilities_name',
+            process_name varchar(30) '$.process_name',
+            work_employee_names nvarchar(max) '$.work_employee_names' AS JSON,
+            work_qty int '$.work_qty', total_qty int '$.total_qty',
+            tempering_qty int '$.tempering_qty',
+            bad_qty int '$.bad_qty', bad_names nvarchar(max) '$.bad_names' AS JSON,
+            start_time varchar(5) '$.start_time', end_time varchar(5) '$.end_time',
+            work_time int '$.work_time', ready_time int '$.ready_time',
+            setting_time int '$.setting_time', check_time int '$.check_time',
+            edu_time int '$.edu_time', rest_time int '$.rest_time',
+            pip_cut_size decimal(10,2) '$.pip_cut_size',
+            pip_length decimal(10,2) '$.pip_length',
+            lot_numbers nvarchar(max) '$.lot_numbers' AS JSON,
+            box_lot_no varchar(10) '$.box_lot_no',
+            box_per_qty int '$.box_per_qty', box_qty int '$.box_qty',
+            piece_qty int '$.piece_qty'
+        ) j;
+
+        SELECT @wExpected = COUNT(*) FROM @updates;
+        IF @wExpected = 0
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '저장할 작업일지 변경분이 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            WHERE u.PlanYm = '' OR u.PlanGb = '' OR u.ItemNo = ''
+               OR u.ProcessCd = '' OR u.OrderSeq = '' OR u.WorkSeq = ''
+               OR u.ItemNm = '' OR u.Spec = '' OR u.ProcessNm = ''
+               OR u.PlanGbNm = '' OR u.ProcessGbNm = '' OR u.JournalSequence <= 0
+               OR LEN(u.WorkYmd) <> 8 OR u.WorkYmd LIKE '%[^0-9]%'
+               OR TRY_CONVERT(date, u.WorkYmd, 112) IS NULL
+               OR u.WorkQty < 0 OR u.TotalQty < 0
+               OR u.TemperingQty < 0 OR u.BadQty < 0
+               OR u.BoxPerQty < 0 OR u.BoxQty < 0 OR u.PieceQty < 0
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '작업일지 필수값 또는 수량이 올바르지 않습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            WHERE (u.StartTime <> '' AND TRY_CONVERT(time(0), u.StartTime) IS NULL)
+               OR (u.EndTime <> '' AND TRY_CONVERT(time(0), u.EndTime) IS NULL)
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '작업 시작/종료 시간은 HH:mm 형식이어야 합니다.';
+            GOTO ENDSTEP;
+        END
+
+        SET @wTC = @@TRANCOUNT;
+        IF @wTC = 0 BEGIN TRAN ELSE SAVE TRAN spWorkJournalU;
+
+        UPDATE u
+           SET u.Found = 1,
+               u.SourceAddDt = ISNULL(w.AddDt, CONVERT(datetime, '19000101', 112)),
+               u.ProcessGb = ISNULL(ip.ProcessGb, ''),
+               u.OldFacilitiesCd = ISNULL(w.FacilitiesCd, ''),
+               u.OldFacilitiesNm = ISNULL(f.FacilitiesNm, ''),
+               u.OldWorkQty = ISNULL(w.WorkQty, 0),
+               u.OldTemperingQty = ISNULL(w.TemperingQty, 0),
+               u.OldBadQty = ISNULL(w.BadQty, 0),
+               u.OldPipCutSize = ISNULL(w.PipCutSize, 0),
+               u.OutWeldFl = ISNULL(w.OutWeldFl, 'N')
+          FROM @updates u
+          JOIN PDWork w WITH (UPDLOCK, HOLDLOCK)
+            ON w.PlanYm = u.PlanYm AND w.PlanGb = u.PlanGb
+           AND w.ItemNo = u.ItemNo AND w.ProcessCd = u.ProcessCd
+           AND w.OrderSeq = u.OrderSeq AND w.WorkSeq = u.WorkSeq
+          LEFT JOIN PDItemProcess ip
+            ON ip.ItemNo = u.ItemNo AND ip.ProcessCd = u.ProcessCd
+          LEFT JOIN PDFacilities f
+            ON f.FacilitiesCd = w.FacilitiesCd;
+
+        IF EXISTS (SELECT 1 FROM @updates WHERE Found = 0)
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '저장 대상 작업일지를 찾을 수 없습니다. 다시 조회 후 저장해주세요.';
+            GOTO ENDSTEP;
+        END
+
+        UPDATE @updates
+           SET StockChanged = CASE
+               WHEN WorkQty <> OldWorkQty
+                 OR BadQty <> OldBadQty
+                 OR TemperingQty <> OldTemperingQty
+                 OR PipCutSize <> OldPipCutSize
+               THEN 1 ELSE 0 END;
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            WHERE u.StockChanged = 1
+              AND u.PlanYm <> (
+                  SELECT MAX(pd.PlanYm)
+                  FROM PDPlanProcessDetail pd
+                  WHERE pd.PlanGb = u.PlanGb
+              )
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '기초재고가 생성된 과거 작업보고의 수량·컷팅치수는 수정할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            WHERE u.StockChanged = 1
+              AND EXISTS (
+                  SELECT 1 FROM MISTW.dbo.tbLogProductIn x
+                  WHERE x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                    AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                    AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq
+              )
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '이미 생산입고된 작업보고의 수량·컷팅치수는 수정할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            WHERE u.FacilitiesNm <> u.OldFacilitiesNm
+              AND u.FacilitiesNm <> ''
+              AND (SELECT COUNT(*) FROM PDFacilities f
+                   WHERE f.FacilitiesNm = u.FacilitiesNm
+                     AND f.WorkGubun = u.ProcessGb) <> 1
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '설비명을 해당 작업구분에서 한 건으로 확인할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        INSERT INTO @workerChanged
+        SELECT u.PlanYm, u.PlanGb, u.ItemNo, u.ProcessCd, u.OrderSeq, u.WorkSeq
+        FROM @updates u
+        WHERE (SELECT COUNT(*) FROM OPENJSON(u.WorkEmployeeNames)) <>
+              (SELECT COUNT(*) FROM PDWorkWorker x
+               WHERE x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                 AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                 AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq)
+           OR EXISTS (
+                SELECT 1 FROM OPENJSON(u.WorkEmployeeNames) j
+                LEFT JOIN PDWorkWorker x
+                  ON x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                 AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                 AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq
+                 AND x.InputSeq = RIGHT('00' + CONVERT(varchar(2), CONVERT(int, j.[key]) + 1), 2)
+                WHERE ISNULL(x.WorkEmpNm, '') <> LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+           );
+
+        INSERT INTO @badChanged
+        SELECT u.PlanYm, u.PlanGb, u.ItemNo, u.ProcessCd, u.OrderSeq, u.WorkSeq
+        FROM @updates u
+        WHERE u.BadQty <> u.OldBadQty
+           OR (SELECT COUNT(*) FROM OPENJSON(u.BadNames)) <>
+              (SELECT COUNT(*) FROM PDWorkBadCd x
+               WHERE x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                 AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                 AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq)
+           OR EXISTS (
+                SELECT 1 FROM OPENJSON(u.BadNames) j
+                LEFT JOIN PDWorkBadCd x
+                  ON x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                 AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                 AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq
+                 AND x.InputSeq = RIGHT('00' + CONVERT(varchar(2), CONVERT(int, j.[key]) + 1), 2)
+                WHERE ISNULL(x.BadNm, '') <> LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+           );
+
+        INSERT INTO @lotChanged
+        SELECT u.PlanYm, u.PlanGb, u.ItemNo, u.ProcessCd, u.OrderSeq, u.WorkSeq
+        FROM @updates u
+        WHERE (SELECT COUNT(*) FROM OPENJSON(u.LotNumbers)) <>
+              (SELECT COUNT(*) FROM PDMaterialUse x
+               WHERE x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                 AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                 AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq)
+           OR EXISTS (
+                SELECT 1 FROM OPENJSON(u.LotNumbers) j
+                LEFT JOIN PDMaterialUse x
+                  ON x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                 AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                 AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq
+                 AND x.InputSeq = RIGHT('00' + CONVERT(varchar(2), CONVERT(int, j.[key]) + 1), 2)
+                WHERE ISNULL(x.LotNo, '') <> LTRIM(RTRIM(CONVERT(varchar(100), j.value)))
+           );
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            JOIN @workerChanged c
+              ON c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+             AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+             AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+            CROSS APPLY OPENJSON(u.WorkEmployeeNames) j
+            WHERE (SELECT COUNT(*) FROM PDWorker x
+                   WHERE x.EmpNm = LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+                     AND x.WorkGb = '01') <> 1
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '작업자명을 한 건으로 확인할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            JOIN @badChanged c
+              ON c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+             AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+             AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+            CROSS APPLY OPENJSON(u.BadNames) j
+            WHERE (SELECT COUNT(*) FROM PDBadCode x
+                   WHERE x.BadNm = LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+                     AND x.ProcessGb = u.ProcessGb AND x.UseFl = 'Y') <> 1
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '불량사유를 해당 작업구분에서 한 건으로 확인할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            JOIN @lotChanged c
+              ON c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+             AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+             AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+            WHERE (SELECT COUNT(*) FROM OPENJSON(u.LotNumbers)) >
+                  (SELECT COUNT(*) FROM PDMaterialUse x
+                   WHERE x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                     AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                     AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq)
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = 'LOT는 기존 투입 단위·수량을 보존할 수 있는 개수 안에서만 수정할 수 있습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            JOIN @lotChanged c
+              ON c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+             AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+             AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+            CROSS APPLY OPENJSON(u.LotNumbers) j
+            WHERE NOT EXISTS (
+                SELECT 1 FROM PDMaterialUse x
+                WHERE x.PlanYm = u.PlanYm AND x.PlanGb = u.PlanGb
+                  AND x.ItemNo = u.ItemNo AND x.ProcessCd = u.ProcessCd
+                  AND x.OrderSeq = u.OrderSeq AND x.WorkSeq = u.WorkSeq
+                  AND x.InputSeq = RIGHT(
+                      '00' + CONVERT(varchar(2), CONVERT(int, j.[key]) + 1), 2
+                  )
+            )
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = 'LOT 순번의 기존 투입 단위·수량을 확인할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        INSERT INTO @oldBad
+        SELECT x.PlanYm, x.PlanGb, x.ItemNo, x.ProcessCd, x.OrderSeq, x.WorkSeq,
+               x.InputSeq, x.BadCd, x.BadNm, x.Qty
+        FROM PDWorkBadCd x
+        JOIN @badChanged c
+          ON c.PlanYm = x.PlanYm AND c.PlanGb = x.PlanGb
+         AND c.ItemNo = x.ItemNo AND c.ProcessCd = x.ProcessCd
+         AND c.OrderSeq = x.OrderSeq AND c.WorkSeq = x.WorkSeq;
+
+        INSERT INTO @oldLot
+        SELECT x.PlanYm, x.PlanGb, x.ItemNo, x.ProcessCd, x.OrderSeq, x.WorkSeq,
+               x.InputSeq, x.LotNo, x.Unit, x.InputQty
+        FROM PDMaterialUse x
+        JOIN @lotChanged c
+          ON c.PlanYm = x.PlanYm AND c.PlanGb = x.PlanGb
+         AND c.ItemNo = x.ItemNo AND c.ProcessCd = x.ProcessCd
+         AND c.OrderSeq = x.OrderSeq AND c.WorkSeq = x.WorkSeq;
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            WHERE u.StockChanged = 1 AND u.WorkQty <> u.OldWorkQty
+              AND EXISTS (SELECT 1 FROM PDBomAddItem a
+                          WHERE a.ItemNo = u.ItemNo AND a.ProcessCd = u.ProcessCd)
+              AND EXISTS (
+                  SELECT 1 FROM PDBomAddItem a
+                  WHERE a.ItemNo = u.ItemNo AND a.ProcessCd = u.ProcessCd
+                    AND NOT EXISTS (
+                        SELECT 1 FROM PDPlanProcessDetail pd
+                        WHERE pd.PlanYm = u.PlanYm AND pd.PlanGb = u.PlanGb
+                          AND pd.ItemNo = CASE WHEN ISNULL(a.AddItemNo, '') = ''
+                                               THEN a.ItemNo ELSE a.AddItemNo END
+                          AND pd.ProcessCd = a.AddProcessCd
+                    )
+              )
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '가감 대상 재고를 찾을 수 없어 작업수량을 저장할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1 FROM @updates u
+            WHERE u.StockChanged = 1 AND u.WorkQty <> u.OldWorkQty
+              AND NOT EXISTS (SELECT 1 FROM PDBomAddItem a
+                              WHERE a.ItemNo = u.ItemNo AND a.ProcessCd = u.ProcessCd)
+              AND NOT EXISTS (
+                  SELECT 1 FROM PDPlanProcessDetail pd
+                  WHERE pd.PlanYm = u.PlanYm AND pd.PlanGb = u.PlanGb
+                    AND pd.ItemNo = u.ItemNo AND pd.ProcessCd = u.ProcessCd
+              )
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '현재 공정 재고를 찾을 수 없어 작업수량을 저장할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1
+            FROM @updates u
+            JOIN PDItemProcess p
+              ON p.ItemNo = u.ItemNo AND p.ProcessCd = u.ProcessCd
+            CROSS APPLY (
+                SELECT
+                    CASE WHEN u.OutWeldFl = 'Y'
+                         THEN CASE WHEN ISNULL(p.BefItemNo1, '') = ''
+                                   THEN p.ItemNo ELSE p.BefItemNo1 END
+                         ELSE CASE WHEN ISNULL(p.BefItemNo, '') = ''
+                                   THEN p.ItemNo ELSE p.BefItemNo END END AS BefItemNo,
+                    CASE WHEN u.OutWeldFl = 'Y' THEN p.BefProcessCd1
+                         ELSE p.BefProcessCd END AS BefProcessCd
+            ) base
+            LEFT JOIN PDBomRefItem r
+              ON r.ItemNo = base.BefItemNo AND r.ProcessCd = base.BefProcessCd
+            LEFT JOIN PDPlanProcessDetail pd
+              ON pd.PlanYm = u.PlanYm AND pd.PlanGb = u.PlanGb
+             AND pd.ItemNo = ISNULL(r.RefItemNo, base.BefItemNo)
+             AND pd.ProcessCd = ISNULL(r.RefProcessCd, base.BefProcessCd)
+            WHERE u.StockChanged = 1
+              AND (u.WorkQty + u.BadQty + u.TemperingQty) <>
+                  (u.OldWorkQty + u.OldBadQty + u.OldTemperingQty)
+              AND ISNULL(base.BefProcessCd, '') <> ''
+              AND pd.ItemNo IS NULL
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '전공정 재고를 찾을 수 없어 수량을 저장할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1
+            FROM @updates u
+            JOIN PDBomDedItem d
+              ON d.ItemNo = u.ItemNo AND d.ProcessCd = u.ProcessCd
+            LEFT JOIN PDPlanProcessDetail pd
+              ON pd.PlanYm = u.PlanYm AND pd.PlanGb = u.PlanGb
+             AND pd.ItemNo = CASE WHEN ISNULL(d.DedItemNo, '') = ''
+                                  THEN d.ItemNo ELSE d.DedItemNo END
+             AND pd.ProcessCd = d.DedProceddCd
+            WHERE u.StockChanged = 1
+              AND ROUND((u.WorkQty + u.BadQty) *
+                    CASE WHEN d.DedQtyUnit = 'MM' AND u.PipCutSize > 0
+                         THEN u.PipCutSize ELSE ISNULL(d.DedQty, 1) END, 0) <>
+                  ROUND((u.OldWorkQty + u.OldBadQty) *
+                    CASE WHEN d.DedQtyUnit = 'MM' AND u.OldPipCutSize > 0
+                         THEN u.OldPipCutSize ELSE ISNULL(d.DedQty, 1) END, 0)
+              AND pd.ItemNo IS NULL
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '차감 대상 재고를 찾을 수 없어 수량을 저장할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        IF EXISTS (
+            SELECT 1
+            FROM @updates u
+            CROSS APPLY (
+                SELECT MAX(pd.ProcessCd) AS TemperingProcessCd
+                FROM PDPlanProcessDetail pd
+                WHERE pd.PlanYm = u.PlanYm AND pd.PlanGb = u.PlanGb
+                  AND pd.ItemNo = u.ItemNo AND pd.ProcessNm LIKE '재열처리%'
+            ) t
+            JOIN PDBomAddItem a
+              ON a.ItemNo = u.ItemNo AND a.ProcessCd = t.TemperingProcessCd
+            LEFT JOIN PDPlanProcessDetail pd
+              ON pd.PlanYm = u.PlanYm AND pd.PlanGb = u.PlanGb
+             AND pd.ItemNo = CASE WHEN ISNULL(a.AddItemNo, '') = ''
+                                  THEN a.ItemNo ELSE a.AddItemNo END
+             AND pd.ProcessCd = a.AddProcessCd
+            WHERE u.StockChanged = 1
+              AND u.TemperingQty <> u.OldTemperingQty
+              AND pd.ItemNo IS NULL
+        )
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '재열처리 대상 재고를 찾을 수 없어 수량을 저장할 수 없습니다.';
+            GOTO ENDSTEP;
+        END
+
+        ;WITH PreviousDeltas AS (
+            SELECT u.PlanYm, u.PlanGb,
+                   ISNULL(r.RefItemNo, base.BefItemNo) AS TargetItemNo,
+                   ISNULL(r.RefProcessCd, base.BefProcessCd) AS TargetProcessCd,
+                   SUM(-1 * ((u.WorkQty + u.BadQty + u.TemperingQty)
+                           - (u.OldWorkQty + u.OldBadQty + u.OldTemperingQty))
+                       * base.BefStdQty) AS QtyDelta
+            FROM @updates u
+            JOIN PDItemProcess p
+              ON p.ItemNo = u.ItemNo AND p.ProcessCd = u.ProcessCd
+            CROSS APPLY (
+                SELECT
+                    CASE WHEN u.OutWeldFl = 'Y'
+                         THEN CASE WHEN ISNULL(p.BefItemNo1, '') = ''
+                                   THEN p.ItemNo ELSE p.BefItemNo1 END
+                         ELSE CASE WHEN ISNULL(p.BefItemNo, '') = ''
+                                   THEN p.ItemNo ELSE p.BefItemNo END END AS BefItemNo,
+                    CASE WHEN u.OutWeldFl = 'Y' THEN p.BefProcessCd1
+                         ELSE p.BefProcessCd END AS BefProcessCd,
+                    CASE WHEN u.OutWeldFl = 'Y' THEN ISNULL(p.BefStdQty1, 1)
+                         ELSE ISNULL(p.BefStdQty, 1) END AS BefStdQty
+            ) base
+            LEFT JOIN PDBomRefItem r
+              ON r.ItemNo = base.BefItemNo AND r.ProcessCd = base.BefProcessCd
+            WHERE u.StockChanged = 1 AND ISNULL(base.BefProcessCd, '') <> ''
+            GROUP BY u.PlanYm, u.PlanGb,
+                     ISNULL(r.RefItemNo, base.BefItemNo),
+                     ISNULL(r.RefProcessCd, base.BefProcessCd)
+        )
+        UPDATE pd
+           SET pd.StockQty = ISNULL(pd.StockQty, 0) + d.QtyDelta,
+               pd.PgNo = @iPgNo, pd.UpdEmpNo = @iAddEmpNo, pd.UpdDt = GETDATE()
+          FROM PDPlanProcessDetail pd
+          JOIN PreviousDeltas d
+            ON d.PlanYm = pd.PlanYm AND d.PlanGb = pd.PlanGb
+           AND d.TargetItemNo = pd.ItemNo AND d.TargetProcessCd = pd.ProcessCd
+         WHERE d.QtyDelta <> 0;
+
+        ;WITH DeductionDeltas AS (
+            SELECT u.PlanYm, u.PlanGb,
+                   CASE WHEN ISNULL(d.DedItemNo, '') = '' THEN d.ItemNo ELSE d.DedItemNo END AS TargetItemNo,
+                   d.DedProceddCd AS TargetProcessCd,
+                   SUM(-1 * (
+                       ROUND((u.WorkQty + u.BadQty) *
+                           CASE WHEN d.DedQtyUnit = 'MM' AND u.PipCutSize > 0
+                                THEN u.PipCutSize ELSE ISNULL(d.DedQty, 1) END, 0)
+                       - ROUND((u.OldWorkQty + u.OldBadQty) *
+                           CASE WHEN d.DedQtyUnit = 'MM' AND u.OldPipCutSize > 0
+                                THEN u.OldPipCutSize ELSE ISNULL(d.DedQty, 1) END, 0)
+                   )) AS QtyDelta
+            FROM @updates u
+            JOIN PDBomDedItem d
+              ON d.ItemNo = u.ItemNo AND d.ProcessCd = u.ProcessCd
+            WHERE u.StockChanged = 1
+            GROUP BY u.PlanYm, u.PlanGb,
+                     CASE WHEN ISNULL(d.DedItemNo, '') = '' THEN d.ItemNo ELSE d.DedItemNo END,
+                     d.DedProceddCd
+        )
+        UPDATE pd
+           SET pd.StockQty = ISNULL(pd.StockQty, 0) + d.QtyDelta,
+               pd.PgNo = @iPgNo, pd.UpdEmpNo = @iAddEmpNo, pd.UpdDt = GETDATE()
+          FROM PDPlanProcessDetail pd
+          JOIN DeductionDeltas d
+            ON d.PlanYm = pd.PlanYm AND d.PlanGb = pd.PlanGb
+           AND d.TargetItemNo = pd.ItemNo AND d.TargetProcessCd = pd.ProcessCd
+         WHERE d.QtyDelta <> 0;
+
+        ;WITH AdditionRows AS (
+            SELECT u.PlanYm, u.PlanGb,
+                   CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END AS TargetItemNo,
+                   a.AddProcessCd AS TargetProcessCd,
+                   (u.WorkQty - u.OldWorkQty) * ISNULL(a.AddQty, 1) AS QtyDelta
+            FROM @updates u
+            JOIN PDBomAddItem a
+              ON a.ItemNo = u.ItemNo AND a.ProcessCd = u.ProcessCd
+            WHERE u.StockChanged = 1 AND u.WorkQty <> u.OldWorkQty
+            UNION ALL
+            SELECT u.PlanYm, u.PlanGb, u.ItemNo, u.ProcessCd,
+                   u.WorkQty - u.OldWorkQty
+            FROM @updates u
+            WHERE u.StockChanged = 1 AND u.WorkQty <> u.OldWorkQty
+              AND NOT EXISTS (SELECT 1 FROM PDBomAddItem a
+                              WHERE a.ItemNo = u.ItemNo AND a.ProcessCd = u.ProcessCd)
+        ), AdditionDeltas AS (
+            SELECT PlanYm, PlanGb, TargetItemNo, TargetProcessCd,
+                   SUM(QtyDelta) AS QtyDelta
+            FROM AdditionRows
+            GROUP BY PlanYm, PlanGb, TargetItemNo, TargetProcessCd
+        )
+        UPDATE pd
+           SET pd.StockQty = ISNULL(pd.StockQty, 0) + d.QtyDelta,
+               pd.PgNo = @iPgNo, pd.UpdEmpNo = @iAddEmpNo, pd.UpdDt = GETDATE()
+          FROM PDPlanProcessDetail pd
+          JOIN AdditionDeltas d
+            ON d.PlanYm = pd.PlanYm AND d.PlanGb = pd.PlanGb
+           AND d.TargetItemNo = pd.ItemNo AND d.TargetProcessCd = pd.ProcessCd
+         WHERE d.QtyDelta <> 0;
+
+        ;WITH TemperingDeltas AS (
+            SELECT u.PlanYm, u.PlanGb,
+                   CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END AS TargetItemNo,
+                   a.AddProcessCd AS TargetProcessCd,
+                   SUM(u.TemperingQty - u.OldTemperingQty) AS QtyDelta
+            FROM @updates u
+            CROSS APPLY (
+                SELECT MAX(pd.ProcessCd) AS TemperingProcessCd
+                FROM PDPlanProcessDetail pd
+                WHERE pd.PlanYm = u.PlanYm AND pd.PlanGb = u.PlanGb
+                  AND pd.ItemNo = u.ItemNo AND pd.ProcessNm LIKE '재열처리%'
+            ) t
+            JOIN PDBomAddItem a
+              ON a.ItemNo = u.ItemNo AND a.ProcessCd = t.TemperingProcessCd
+            WHERE u.StockChanged = 1
+              AND u.TemperingQty <> u.OldTemperingQty
+            GROUP BY u.PlanYm, u.PlanGb,
+                     CASE WHEN ISNULL(a.AddItemNo, '') = '' THEN a.ItemNo ELSE a.AddItemNo END,
+                     a.AddProcessCd
+        )
+        UPDATE pd
+           SET pd.StockQty = ISNULL(pd.StockQty, 0) + d.QtyDelta,
+               pd.PgNo = @iPgNo, pd.UpdEmpNo = @iAddEmpNo, pd.UpdDt = GETDATE()
+          FROM PDPlanProcessDetail pd
+          JOIN TemperingDeltas d
+            ON d.PlanYm = pd.PlanYm AND d.PlanGb = pd.PlanGb
+           AND d.TargetItemNo = pd.ItemNo AND d.TargetProcessCd = pd.ProcessCd
+         WHERE d.QtyDelta <> 0;
+
+        UPDATE w
+           SET w.ItemNm = u.ItemNm,
+               w.Spec = u.Spec,
+               w.ProceddNm = u.ProcessNm,
+               w.WorkYmd = u.WorkYmd,
+               w.WorkYy = LEFT(u.WorkYmd, 4),
+               w.WorkMm = SUBSTRING(u.WorkYmd, 5, 2),
+               w.WorkDd = RIGHT(u.WorkYmd, 2),
+               w.StartTimeH = CASE WHEN u.StartTime = '' THEN '' ELSE LEFT(u.StartTime, 2) END,
+               w.StartTimeM = CASE WHEN u.StartTime = '' THEN '' ELSE RIGHT(u.StartTime, 2) END,
+               w.EndTimeH = CASE WHEN u.EndTime = '' THEN '' ELSE LEFT(u.EndTime, 2) END,
+               w.EndTimeM = CASE WHEN u.EndTime = '' THEN '' ELSE RIGHT(u.EndTime, 2) END,
+               w.WorkTime = u.WorkTime,
+               w.FacilitiesCd = CASE
+                   WHEN u.FacilitiesNm = u.OldFacilitiesNm THEN u.OldFacilitiesCd
+                   WHEN u.FacilitiesNm = '' THEN ''
+                   ELSE (SELECT MAX(f.FacilitiesCd) FROM PDFacilities f
+                         WHERE f.FacilitiesNm = u.FacilitiesNm
+                           AND f.WorkGubun = u.ProcessGb)
+               END,
+               w.WorkEmpNo = CASE
+                   WHEN EXISTS (
+                       SELECT 1 FROM @workerChanged c
+                       WHERE c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+                         AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+                         AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+                   ) THEN ISNULL((
+                       SELECT MAX(x.EmpNo)
+                       FROM OPENJSON(u.WorkEmployeeNames) j
+                       JOIN PDWorker x
+                         ON x.EmpNm = LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+                        AND x.WorkGb = '01'
+                       WHERE CONVERT(int, j.[key]) = 0
+                   ), '') ELSE w.WorkEmpNo END,
+               w.BoxQty = u.BoxQty,
+               w.BoxPerQty = u.BoxPerQty,
+               w.PieceQty = u.PieceQty,
+               w.WorkQty = u.WorkQty,
+               w.BadQty = u.BadQty,
+               w.BadCd = CASE
+                   WHEN EXISTS (
+                       SELECT 1 FROM @badChanged c
+                       WHERE c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+                         AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+                         AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+                   ) THEN ISNULL((
+                       SELECT MAX(x.BadCd)
+                       FROM OPENJSON(u.BadNames) j
+                       JOIN PDBadCode x
+                         ON x.BadNm = LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+                        AND x.ProcessGb = u.ProcessGb AND x.UseFl = 'Y'
+                       WHERE CONVERT(int, j.[key]) = 0
+                   ), '') ELSE w.BadCd END,
+               w.TemperingQty = u.TemperingQty,
+               w.BoxLotNo = u.BoxLotNo,
+               w.PipCutSize = u.PipCutSize,
+               w.PipLength = u.PipLength,
+               w.ReadyTime = u.ReadyTime,
+               w.SettingTime = u.SettingTime,
+               w.CheckTime = u.CheckTime,
+               w.EduTime = u.EduTime,
+               w.RestTime = u.RestTime,
+               w.PgNo = @iPgNo,
+               w.UpdEmpNo = @iAddEmpNo,
+               w.UpdDt = GETDATE()
+          FROM PDWork w
+          JOIN @updates u
+            ON u.PlanYm = w.PlanYm AND u.PlanGb = w.PlanGb
+           AND u.ItemNo = w.ItemNo AND u.ProcessCd = w.ProcessCd
+           AND u.OrderSeq = w.OrderSeq AND u.WorkSeq = w.WorkSeq;
+
+        SET @wUpdated = @@ROWCOUNT;
+        IF @wUpdated <> @wExpected
+        BEGIN
+            SET @wErrYN = 'Y';
+            SET @wErrMsg = '일부 작업일지가 저장되지 않았습니다. 다시 조회 후 저장해주세요.';
+            GOTO ENDSTEP;
+        END
+
+        DELETE x
+        FROM PDWorkWorker x
+        JOIN @workerChanged c
+          ON c.PlanYm = x.PlanYm AND c.PlanGb = x.PlanGb
+         AND c.ItemNo = x.ItemNo AND c.ProcessCd = x.ProcessCd
+         AND c.OrderSeq = x.OrderSeq AND c.WorkSeq = x.WorkSeq;
+
+        INSERT INTO PDWorkWorker (
+            PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq,
+            InputSeq, WorkEmpNo, WorkEmpNm
+        )
+        SELECT u.PlanYm, u.PlanGb, u.ItemNo, u.ProcessCd, u.OrderSeq, u.WorkSeq,
+               RIGHT('00' + CONVERT(varchar(2), CONVERT(int, j.[key]) + 1), 2),
+               (SELECT MAX(x.EmpNo) FROM PDWorker x
+                WHERE x.EmpNm = LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+                  AND x.WorkGb = '01'),
+               LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+        FROM @updates u
+        JOIN @workerChanged c
+          ON c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+         AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+         AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+        CROSS APPLY OPENJSON(u.WorkEmployeeNames) j;
+
+        DELETE x
+        FROM PDWorkBadCd x
+        JOIN @badChanged c
+          ON c.PlanYm = x.PlanYm AND c.PlanGb = x.PlanGb
+         AND c.ItemNo = x.ItemNo AND c.ProcessCd = x.ProcessCd
+         AND c.OrderSeq = x.OrderSeq AND c.WorkSeq = x.WorkSeq;
+
+        INSERT INTO PDWorkBadCd (
+            PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq,
+            InputSeq, BadCd, BadNm, Qty
+        )
+        SELECT u.PlanYm, u.PlanGb, u.ItemNo, u.ProcessCd, u.OrderSeq, u.WorkSeq,
+               seq.InputSeq,
+               (SELECT MAX(x.BadCd) FROM PDBadCode x
+                WHERE x.BadNm = LTRIM(RTRIM(CONVERT(varchar(50), j.value)))
+                  AND x.ProcessGb = u.ProcessGb AND x.UseFl = 'Y'),
+               LTRIM(RTRIM(CONVERT(varchar(50), j.value))),
+               CASE WHEN u.BadQty = u.OldBadQty
+                    THEN ISNULL((SELECT MAX(ob.Qty) FROM @oldBad ob
+                                 WHERE ob.PlanYm = u.PlanYm AND ob.PlanGb = u.PlanGb
+                                   AND ob.ItemNo = u.ItemNo AND ob.ProcessCd = u.ProcessCd
+                                   AND ob.OrderSeq = u.OrderSeq AND ob.WorkSeq = u.WorkSeq
+                                   AND ob.InputSeq = seq.InputSeq), 0)
+                    WHEN CONVERT(int, j.[key]) = 0 THEN u.BadQty
+                    ELSE 0 END
+        FROM @updates u
+        JOIN @badChanged c
+          ON c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+         AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+         AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+        CROSS APPLY OPENJSON(u.BadNames) j
+        CROSS APPLY (
+            SELECT RIGHT('00' + CONVERT(varchar(2), CONVERT(int, j.[key]) + 1), 2) AS InputSeq
+        ) seq;
+
+        DELETE x
+        FROM PDMaterialUse x
+        JOIN @lotChanged c
+          ON c.PlanYm = x.PlanYm AND c.PlanGb = x.PlanGb
+         AND c.ItemNo = x.ItemNo AND c.ProcessCd = x.ProcessCd
+         AND c.OrderSeq = x.OrderSeq AND c.WorkSeq = x.WorkSeq;
+
+        INSERT INTO PDMaterialUse (
+            PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq,
+            InputSeq, LotNo, Unit, InputQty, PgNo, AddEmpNo, AddDt, UpdEmpNo, UpdDt
+        )
+        SELECT u.PlanYm, u.PlanGb, u.ItemNo, u.ProcessCd, u.OrderSeq, u.WorkSeq,
+               seq.InputSeq, LTRIM(RTRIM(CONVERT(varchar(100), j.value))),
+               old.Unit, old.InputQty, @iPgNo, @iAddEmpNo, GETDATE(), @iAddEmpNo, GETDATE()
+        FROM @updates u
+        JOIN @lotChanged c
+          ON c.PlanYm = u.PlanYm AND c.PlanGb = u.PlanGb
+         AND c.ItemNo = u.ItemNo AND c.ProcessCd = u.ProcessCd
+         AND c.OrderSeq = u.OrderSeq AND c.WorkSeq = u.WorkSeq
+        CROSS APPLY OPENJSON(u.LotNumbers) j
+        CROSS APPLY (
+            SELECT RIGHT('00' + CONVERT(varchar(2), CONVERT(int, j.[key]) + 1), 2) AS InputSeq
+        ) seq
+        JOIN @oldLot old
+          ON old.PlanYm = u.PlanYm AND old.PlanGb = u.PlanGb
+         AND old.ItemNo = u.ItemNo AND old.ProcessCd = u.ProcessCd
+         AND old.OrderSeq = u.OrderSeq AND old.WorkSeq = u.WorkSeq
+         AND old.InputSeq = seq.InputSeq;
+
+        MERGE PDWorkJournalEditOverride AS target
+        USING (
+            SELECT PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq,
+                   SourceAddDt, JournalSequence, PlanGbNm, ProcessGbNm, TotalQty
+            FROM @updates
+        ) AS source
+           ON target.PlanYm = source.PlanYm
+          AND target.PlanGb = source.PlanGb
+          AND target.ItemNo = source.ItemNo
+          AND target.ProcessCd = source.ProcessCd
+          AND target.OrderSeq = source.OrderSeq
+          AND target.WorkSeq = source.WorkSeq
+          AND target.SourceAddDt = source.SourceAddDt
+        WHEN MATCHED THEN
+            UPDATE SET SequenceNo = source.JournalSequence,
+                       PlanGbNm = source.PlanGbNm,
+                       ProcessGbNm = source.ProcessGbNm,
+                       TotalQty = source.TotalQty,
+                       PgNo = @iPgNo,
+                       UpdEmpNo = @iAddEmpNo,
+                       UpdDt = GETDATE()
+        WHEN NOT MATCHED THEN
+            INSERT (
+                PlanYm, PlanGb, ItemNo, ProcessCd, OrderSeq, WorkSeq,
+                SourceAddDt, SequenceNo, PlanGbNm, ProcessGbNm, TotalQty,
+                PgNo, AddEmpNo, AddDt, UpdEmpNo, UpdDt
+            )
+            VALUES (
+                source.PlanYm, source.PlanGb, source.ItemNo, source.ProcessCd,
+                source.OrderSeq, source.WorkSeq, source.SourceAddDt,
+                source.JournalSequence, source.PlanGbNm, source.ProcessGbNm,
+                source.TotalQty, @iPgNo, @iAddEmpNo, GETDATE(), @iAddEmpNo, GETDATE()
+            );
+    END TRY
+    BEGIN CATCH
+        SET @wErrYN = 'Y';
+        SET @wErrMsg = ERROR_MESSAGE();
+    END CATCH
+
+ENDSTEP:
+    IF @wTC IS NOT NULL
+    BEGIN
+        IF @wErrYN = 'Y'
+        BEGIN
+            IF @wTC = 0 AND XACT_STATE() <> 0 ROLLBACK TRAN;
+            ELSE IF XACT_STATE() = 1 ROLLBACK TRAN spWorkJournalU;
+        END
+        ELSE IF @wTC = 0 COMMIT TRAN;
+    END
+
+    SELECT @wErrYN AS ERRYN, @wErrMsg AS ERRMSG;
+END
+GO
+```
+
